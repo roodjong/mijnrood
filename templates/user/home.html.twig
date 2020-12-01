@@ -1,0 +1,16 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}" />
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Mijn <span class="rood">ROOD</span></h1>
+        <p>
+            Dit is de interne website van ROOD, jong in de SP.
+            Hier kun je je lidmaadschapsgegevens aanpassen, je contributie betalen, en relevante documenten raadplegen.
+        </p>
+    </div>
+{% endblock %}

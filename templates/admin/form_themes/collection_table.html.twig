@@ -1,0 +1,106 @@
+{% block collection_table_row %}
+    {% if prototype is defined and not prototype.rendered %}
+        {% set row_attr = row_attr|merge({ 'data-prototype': form_widget(prototype) }) %}
+    {% endif %}
+
+    {% set row_attr = row_attr|merge({
+        'data-ea-collection-field': 'true',
+        'data-entry-is-complex': form.vars.ea_crud_form.ea_field and form.vars.ea_crud_form.ea_field.customOptions.get('entryIsComplex') ? 'true' : 'false',
+        'data-allow-add': allow_add ? 'true' : 'false',
+        'data-allow-delete': allow_delete ? 'true' : 'false',
+        'data-num-items': form.children|length,
+        'data-form-type-name-placeholder': prototype is defined ? prototype.vars.name : '',
+    }) %}
+
+    {{ block('form_row') }}
+{% endblock %}
+
+{% block collection_table_widget %}
+    <table class="table">
+        <thead>
+            <tr>
+            {% for field in form.vars.prototype %}
+                <th>{{ field.vars.label }}</th>
+            {% endfor %}
+            {% if form.vars.allow_delete %}<td></td>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for field in form %}
+                {{ form_widget(field) }}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if allow_add|default(false) %}
+        <button type="button" class="btn btn-link field-collection-table-add-button">
+            <i class="fa fa-plus pr-1"></i>
+            {{ 'action.add_new_item'|trans({}, 'EasyAdminBundle') }}
+        </button>
+    {% endif %}
+
+    <script>
+        const eaCollectionTableHandler = function (event) {
+            document.querySelectorAll('button.field-collection-table-add-button').forEach(function(addButton) {
+                let collection = addButton.closest('[data-ea-collection-field]');
+                if (!collection || collection.classList.contains('processed')) {
+                    return;
+                }
+                EaCollectionTableProperty.handleAddButton(addButton, collection);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', eaCollectionTableHandler);
+        document.addEventListener('ea.collection.item-added', eaCollectionTableHandler);
+
+
+        const EaCollectionTableProperty = {
+            handleAddButton: function(addButton, collection) {
+                addButton.addEventListener('click', function() {
+                    // Use a counter to avoid having the same index more than once
+                    let numItems = parseInt(collection.dataset.numItems);
+
+                    // Remove the 'Empty Collection' badge, if present
+                    const emptyCollectionBadge = this.parentElement.querySelector('.collection-empty');
+                    if (null !== emptyCollectionBadge) {
+                        emptyCollectionBadge.remove();
+                    }
+
+                    const formTypeNamePlaceholder = collection.dataset.formTypeNamePlaceholder;
+                    const labelRegexp = new RegExp(formTypeNamePlaceholder + 'label__', 'g');
+                    const nameRegexp = new RegExp(formTypeNamePlaceholder, 'g');
+
+                    let newItemHtml = collection.dataset.prototype
+                        .replace(labelRegexp, numItems)
+                        .replace(nameRegexp, numItems);
+
+                    collection.dataset.numItems = ++numItems;
+                    collection.querySelector('.form-widget .table > tbody').insertAdjacentHTML('beforeend', newItemHtml);
+
+                    document.dispatchEvent(new Event('ea.collection.item-added'));
+                });
+
+                collection.classList.add('processed');
+            }
+        };
+    </script>
+{% endblock %}
+
+{% block collection_table_entry_widget %}
+    <tr class="field-collection-table-item">
+        {% for field in form %}
+            <td>
+                {{ form_widget(field) }}
+            </td>
+        {% endfor %}
+        {% if form_parent(form).vars.allow_delete|default(false) %}
+            <td>
+                <button type="button" class="btn btn-link field-collection-delete-button"
+                        title="{{ 'action.remove_item'|trans({}, 'EasyAdminBundle') }}"
+                        onclick="this.closest('tr').remove(); return false;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        {% endif %}
+    </tr>
+{% endblock %}

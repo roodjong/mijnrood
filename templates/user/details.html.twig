@@ -1,0 +1,106 @@
+{% set pageTitle = 'Persoonlijke gegevens' %}
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/details.less') }}" />
+{% endblock %}
+
+{% block content %}
+    <div class="main-content" id="main-content-details">
+        <div class="details">
+            <h1>Mijn gegevens</h1>
+
+            {% if success %}
+            <div class="message message-success">
+                <p>
+                    Je gegevens zijn succesvol bijgewerkt.
+                </P>
+            </div>
+            {% endif %}
+
+            {{ form_start(form) }}
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Lidnummer') }}
+                {{ form_widget(form.id, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Naam') }}
+                {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' }}) }}
+                {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'E-mailadres') }}
+                {{ form_widget(form.email, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Telefoonnummer') }}
+                {{ form_widget(form.phone, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'IBAN') }}
+                {{ form_widget(form.iban, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Adres') }}
+                {{ form_widget(form.address, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Plaats') }}
+                {{ form_widget(form.city, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(form.id, 'Postcode') }}
+                {{ form_widget(form.postCode, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <button type="submit" class="button">Opslaan</button>
+
+            {{ form_end(form) }}
+        </div>
+        <div class="contributions">
+            <h1>Contributie</h1>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>Bedrag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contributionPayment in app.user.contributionPayments %}
+                        <tr>
+                            <td>{{ contributionPayment.paymentTime|format_date('medium', 'none') }}</td>
+                            <td>{{ contributionPayment.amountInCents|formatPrice }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2">Er zijn nog geen contributiebetalingen geregistreerd.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if app.user.contributionPaidAutomatically %}
+                <p>
+                    Je contributie wordt elk{{ { 0: 'e maand', 1: ' kwartaal', 2: ' jaar'}[app.user.contributionPeriod] }} automatisch per automatische incasso afgeschreven via Mollie.
+                </p>
+            {% else %}
+                <p>
+                    Je hebt aangegeven je contributie van <strong>{{ 0|formatPrice }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
+                    Je moet uiterlijk <strong>(datum)</strong> betalen.
+                </p>
+                <a class="button" href="#">Contributiebetaling doen</a>
+            {% endif %}
+            <a href="#">Contributievoorkeuren wijzigen</a>
+        </div>
+    </div>
+{% endblock %}

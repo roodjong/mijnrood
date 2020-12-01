@@ -1,0 +1,5 @@
+framework:
+    assets:
+        # json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
+        # base_urls:
+        #     - http://127.0.0.1/administratie/public/

@@ -1,0 +1,37 @@
+@import 'members.less';
+
+#main-content-details {
+    @media @desktop, @tablet {
+        display: flex;
+
+        .details {
+            flex: 1 1 auto;
+        }
+
+        .contributions {
+            margin-left: 50px;
+            flex: 0 0 400px;
+        }
+    }
+
+    @media @mobile {
+        .contributions {
+            margin-top: 20px;
+        }
+    }
+
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+
+        th {
+            background: #eee;
+            font-weight: normal;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    }
+}

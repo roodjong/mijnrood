@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@font-face {
+    font-family: 'HelveticaNeueLTStd';
+    src: url('{{ app.request.baseUrl ~ asset('assets/font/HelveticaNeueLTStd-Md.woff2') }}') format('woff2'),
+        url('{{ app.request.baseUrl ~ asset('assets/font/HelveticaNeueLTStd-Md.woff') }}') format('woff'),
+        url('{{ app.request.baseUrl ~ asset('assets/font/HelveticaNeueLTStd-Md.ttf') }}') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+</style>
+</head>
+<body style="font-family: 'HelveticaNeueLTStd'">
+    <img style="width: 200px; display: block; margin: 0 auto" src="{{ app.request.baseUrl ~ asset('assets/image/rood-logo-sp.svg') }}" />
+
+    {% block content %}{% endblock %}
+
+    <div style="color: #444">
+        Deze e-mail werd automatisch verstuurd door Mijn ROOD, het ledenadministratiesysteem van ROOD, jong in de SP.
+        Mocht je vragen hebben, neem dan contact op met ROOD via <a href="mailto:info@roodjongindesp.nl">info@roodjongindesp.nl</a>.
+    </div>
+</body>
+</html>

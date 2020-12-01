@@ -1,0 +1,32 @@
+{% extends 'user/layout/base.html.twig' %}
+
+{% block body %}
+    <div id="header">
+        <div id="header-content-wrapper">
+            <div id="header-content">
+                <img id="header-logo" src="{{ asset('assets/image/mijn-rood-sp.svg') }}" />
+                <div id="header-menu">
+                    <ul>
+                    {% for text, route in {
+                        'Home': 'member_home',
+                        'Gegevens': 'member_details',
+                        'Documenten': 'member_home',
+                        'Uitloggen': 'logout'
+                    } %}
+                        <li{% if app.request.attributes.get('_route') == route %} class="current"{% endif %}>
+                            <a href="{{ url(route) }}">{{ text }}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div id="footer">
+
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% set pageTitle = 'Inloggen' %}
+{% extends 'user/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper">
+
+        <img id="logo" src="{{ asset('assets/image/mijn-rood-sp.svg') }}" />
+
+        <span class="center-form-title">
+            Inloggen op Mijn <span class="rood">ROOD</span>
+        </span>
+
+        {% if error %}
+            <div class="error">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form action="{{ path('login') }}" method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+
+            <input class="text-input" type="text" id="username" name="_username" value="{{ last_username }}" placeholder="Lidnummer of e-mailadres" aria-aria-label="Lidnummer of e-mailadres" />
+            <input class="text-input" type="password" id="password" name="_password" placeholder="Wachtwoord" aria-label="Wachtwoord" />
+
+            <button class="submit-button" type="submit">Inloggen</button>
+        </form>
+
+        <a class="form-link" href="{{ url('request_new_password') }}">Wachtwoord vergeten?</a>
+
+        <a class="form-link" href="https://roodjongindesp.nl">Terug naar de website</a>
+
+    </div>
+{% endblock %}
