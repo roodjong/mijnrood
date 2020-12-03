@@ -3,17 +3,15 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Member;
-use App\Form\MemberDetailsType;
+use Symfony\Component\HttpFoundation\{ Response, Request };
+use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Swift_Mailer;
-use Swift_Message;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Mollie\Api\MollieApiClient;
+use Swift_Mailer, Swift_Message;
+use App\Form\MemberDetailsType;
+use App\Entity\{ Member, MemberDetailsRevision };
 
 class MemberController extends AbstractController
 {
@@ -29,7 +27,7 @@ class MemberController extends AbstractController
     /**
      * @Route("/gegevens", name="member_details")
      */
-    public function personalInformation(Request $request): Response {
+    public function details(Request $request): Response {
         $member = $this->getUser();
 
         $form = $this->createForm(MemberDetailsType::class, $member);

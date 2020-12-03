@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Admin;
 
 use App\Entity\ContributionPayment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\{ DateType, MoneyType, ChoiceType };
 
 class ContributionPaymentType extends AbstractType
 {
@@ -17,6 +16,15 @@ class ContributionPaymentType extends AbstractType
             ->add('paymentTime', DateType::class, ['label' => 'Datum van betaling', 'required' => true, 'widget' => 'single_text'])
             ->add('amountInEuros', MoneyType::class, ['label' => 'Bedrag', 'attr' => ['step' => '0.01'], 'required' => true])
             ->add('molliePaymentId', null, ['label' => 'Payment-ID (Mollie)', 'disabled' => true, 'required' => false])
+            ->add('status', ChoiceType::class, [
+                'label' => 'Status',
+                'choices' => [
+                    'In afwachting' => ContributionPayment::STATUS_PENDING,
+                    'Betaald' => ContributionPayment::STATUS_PAID,
+                    'Mislukt' => ContributionPayment::STATUS_FAILED,
+                    'Terugbetaald' => ContributionPayment::STATUS_REFUNDED
+                ]
+            ])
         ;
     }
 

@@ -97,6 +97,11 @@ class Member implements UserInterface {
     private int $contributionPeriod = self::PERIOD_MONTHLY;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private int $contributionPerPeriodInCents;
+
+    /**
      * @ORM\Column(type="json", options={ "default": "[]" })
      */
     private array $roles = [];
@@ -161,7 +166,17 @@ class Member implements UserInterface {
     public function getRegistrationTime(): ?DateTime { return $this->registrationTime; }
     public function setRegistrationTime(?DateTime $registrationTime): void { $this->registrationTime = $registrationTime; }
 
+    public function getContributionPerPeriodInCents(): int { return $this->contributionPerPeriodInCents; }
+    public function setContributionPerPeriodInCents(int $contributionPerPeriodInCents): void { $this->contributionPerPeriodInCents = $contributionPerPeriodInCents; }
+
+    public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
+    public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
+
     public function getContributionPayments(): Collection { return $this->contributionPayments; }
+
+    public function isContributionCompleted(DateTime $when) {
+        return false;
+    }
 
     public function addContributionPayment(ContributionPayment $payment) {
         $payment->setMember($this);

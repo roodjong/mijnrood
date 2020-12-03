@@ -6,7 +6,7 @@ use App\Entity\Email;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, FormField, TextField, UrlField, EmailField, AssociationField };
 
-class EmailController extends AbstractCrudController
+class EmailCrud extends AbstractCrudController
 {
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
     public static function getEntityFqcn(): string

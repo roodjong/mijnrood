@@ -1,0 +1,87 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/documents.less') }}" />
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/script/documents.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Documenten</h1>
+
+        <div class="breadcrumbs">
+            <span>Pad:</span>
+            <a href="{{ url('member_documents') }}">Documenten</a>
+            {% for breadcrumb in breadcrumbs %}
+                <a href="{{ url('member_documents', { folderId: breadcrumb.id }) }}">{{ breadcrumb.name }}</a>
+            {% endfor %}
+        </div>
+
+
+        <div class="document-actions">
+            {% if canUpload %}<a href="#" class="btn-upload">Upload</a>{% endif %}
+            {% if canCreateFolder %}<a href="#" class="btn-new-folder">Map aanmaken</a>{% endif %}
+        </div>
+        <div class="document-action-forms">
+            {% if canUpload %}
+                {{ form_start(uploadForm, { attr: { id: 'form-upload' } }) }}
+                    <strong>Upload</strong>
+                    {{ form_rest(uploadForm) }}
+                    <button type="submit">Upload</button>
+                {{ form_end(uploadForm) }}
+            {% endif %}
+            {% if canCreateFolder %}
+                {{ form_start(newFolderForm, { attr: { id: 'form-new-folder' } }) }}
+                    <strong>Map aanmaken</strong>
+                    {{ form_rest(newFolderForm) }}
+                    <button type="submit">Map aanmaken</button>
+                {{ form_end(newFolderForm) }}
+            {% endif %}
+        </div>
+
+        <table class="document-list">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Bestandsgrootte</th>
+                    <th>Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for folder in folders %}
+                    <tr>
+                        <td>
+                            <a href="{{ url('member_documents', { folderId: folder.id }) }}">{{ folder.name }}</a>
+                        </td>
+                        <td>-</td>
+                        <td>
+                            {% if canDelete %}
+                                <a onclick="return confirm('Weet je zeker dat je &quot;{{ folder.name }}&quot; wil verwijderen?')" href="{{ url('member_documents_delete_folder', { folderId: folder.id }) }}">Verwijder</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% for document in documents %}
+                    <tr>
+                        <td>
+                            <a href="{{ url('member_documents_download', { documentId: document.id }) }}">{{ document.fileName }}</a>
+                        </td>
+                        <td>
+                            {{ document.sizeInBytes|format_size }}
+                        </td>
+                        <td>
+                            {% if canDelete %}
+                                <a onclick="return confirm('Weet je zeker dat je &quot;{{ document.fileName }}&quot; wil verwijderen?')" href="{{ url('member_documents_delete', { documentId: document.id }) }}">Verwijder</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

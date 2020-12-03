@@ -1,5 +1,10 @@
 {% extends 'user/layout/base.html.twig' %}
 
+{% block scripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/script/vendor/jquery.min.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <div id="header">
         <div id="header-content-wrapper">
@@ -10,7 +15,7 @@
                     {% for text, route in {
                         'Home': 'member_home',
                         'Gegevens': 'member_details',
-                        'Documenten': 'member_home',
+                        'Documenten': 'member_documents',
                         'Uitloggen': 'logout'
                     } %}
                         <li{% if app.request.attributes.get('_route') == route %} class="current"{% endif %}>

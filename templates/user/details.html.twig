@@ -80,7 +80,7 @@
                     {% for contributionPayment in app.user.contributionPayments %}
                         <tr>
                             <td>{{ contributionPayment.paymentTime|format_date('medium', 'none') }}</td>
-                            <td>{{ contributionPayment.amountInCents|formatPrice }}</td>
+                            <td>{{ contributionPayment.amountInCents|format_price }}</td>
                         </tr>
                     {% else %}
                         <tr>
@@ -95,12 +95,16 @@
                 </p>
             {% else %}
                 <p>
-                    Je hebt aangegeven je contributie van <strong>{{ 0|formatPrice }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
+                    Je hebt aangegeven je contributie van <strong>{{ app.user.contributionPerPeriodInCents|format_price }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
                     Je moet uiterlijk <strong>(datum)</strong> betalen.
                 </p>
-                <a class="button" href="#">Contributiebetaling doen</a>
+                {% if app.user.contributionCompleted(date()) %}
+                    <a class="button" href="#">Contributie vooruit betaling</a>
+                {% else %}
+                    <a class="button" href="#">Contributiebetaling doen</a>
+                {% endif %}
             {% endif %}
-            <a href="#">Contributievoorkeuren wijzigen</a>
+            <a class="action-link" href="{{ url('member_contribution_preferences') }}">Contributievoorkeuren wijzigen</a>
         </div>
     </div>
 {% endblock %}

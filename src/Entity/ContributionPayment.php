@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\{ ArrayCollection, Collection };
 use DateTime;
+use RangeException;
 
 /**
  * @ORM\Entity
@@ -12,6 +13,11 @@ use DateTime;
  */
 class ContributionPayment
 {
+    public const STATUS_PENDING = 0;
+    public const STATUS_PAID = 1;
+    public const STATUS_FAILED = 2;
+    public const STATUS_REFUNDED = 3;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -35,6 +41,11 @@ class ContributionPayment
     private DateTime $paymentTime;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private int $status = 0;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private ?string $molliePaymentId = null;
@@ -54,6 +65,14 @@ class ContributionPayment
 
     public function getMember(): Member { return $this->member; }
     public function setMember(Member $member): void { $this->member = $member; }
+
+    public function getStatus(): int { return $this->status; }
+    public function setStatus(int $status): void {
+        if ($status < 0 || $status > 3)
+            throw new RangeException('$status must be STATUS_PENDING, STATUS_PAID, STATUS_FAILED or STATUS_REFUNDED');
+
+        $this->status = $status;
+    }
 
     public function getMolliePaymentId(): ?string { return $this->molliePaymentId; }
     public function setMolliePaymentId(?string $molliePaymentId): void { $this->molliePaymentId = $molliePaymentId; }

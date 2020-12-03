@@ -1,0 +1,20 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Contributie-instellingen</h1>
+        {{ form_start(form, { attr: { class: 'form' }}) }}
+            {% for field in [form.contributionPeriod, form.contributionPerPeriodInEuros] %}
+            <div class="form-row">
+                {{ form_label(field) }}
+                {{ form_widget(field, { attr: { class: 'text-input' } }) }}
+            </div>
+            {% endfor %}
+            <button type="submit" class="button">Opslaan</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

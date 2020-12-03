@@ -1,0 +1,60 @@
+@import 'members.less';
+
+.breadcrumbs {
+    margin-bottom: 10px;
+
+    a {
+        color: @rood;
+        text-decoration: none;
+
+        &::before {
+            contnet: '> ';
+            color: #000;
+        }
+    }
+
+}
+
+.document-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    a {
+        background: @rood;
+        color: #ffffff;
+        margin-left: 10px;
+        padding: 10px;
+        text-decoration: none;
+    }
+
+    margin-bottom: 10px;
+
+}
+
+.document-action-forms form {
+    display: none;
+    margin-bottom: 10px;
+}
+
+.document-list {
+    border-collapse: collapse;
+    width: 100%;
+
+    th, td {
+        border: none;
+        padding: 10px;
+    }
+
+    th {
+        background: #E40613;
+        font-weight: normal;
+        color: #fff;
+        border: none;
+    }
+
+    td + td {
+        border-top: 1px solid #ccc;
+    }
+
+}

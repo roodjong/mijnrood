@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use App\Repository\MemberRepository;
 
 /**
- * @ORM\Enttiy
+ * @ORM\Entity
  * @ORM\Table("admin_member_revision")
  */
 class MemberDetailsRevision {
@@ -70,7 +70,7 @@ class MemberDetailsRevision {
         $this->iban = $member->getIban();
         $this->address = $member->getAddress();
         $this->city = $member->getCity();
-        $htis->postCode = $member->getPostCode();
+        $this->postCode = $member->getPostCode();
     }
 
     public function getId(): ?int { return $this->id; }

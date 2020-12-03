@@ -7,7 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, FormField, TextField, UrlField, EmailField, AssociationField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
-class DivisionController extends AbstractCrudController
+class DivisionCrud extends AbstractCrudController
 {
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
     public static function getEntityFqcn(): string
