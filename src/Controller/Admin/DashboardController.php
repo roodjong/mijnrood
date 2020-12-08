@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Dashboard, MenuItem };
-use App\Entity\{ Member, Division, Email };
+use App\Entity\{ Member, Division, Email, EmailDomain, Event };
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Asset\Packages;
@@ -50,9 +50,19 @@ class DashboardController extends AbstractDashboardController
         return [
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
+            MenuItem::section('Website'),
+            MenuItem::linkToCrud('Evenementen', 'fa fa-calendar', Event::class),
+
+            MenuItem::section('Administratie'),
             MenuItem::linkToCrud('Leden', 'fa fa-users', Member::class),
             MenuItem::linkToCrud('Groepen', 'fa fa-building', Division::class),
+
+            MenuItem::section('Technisch'),
             MenuItem::linkToCrud('E-mailadressen', 'fa fa-at', Email::class),
+            MenuItem::linkToCrud('E-maildomeinen', 'fa fa-globe', EmailDomain::class),
+
+            MenuItem::section(''),
+            MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
         ];
     }

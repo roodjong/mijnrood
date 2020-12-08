@@ -31,7 +31,7 @@ class DivisionCrud extends AbstractCrudController
             AssociationField::new('contact', 'Contactpersoon'),
 
             FormField::addPanel('Contactinformatie'),
-            EmailField::new('email', 'E-mailadres'),
+            AssociationField::new('email', 'E-mailadres'),
             TextField::new('phone', 'Telefoonnummer'),
             TextField::new('address', 'Postadres')->hideOnIndex(),
             TextField::new('city', 'Plaats postadres')->hideOnIndex(),

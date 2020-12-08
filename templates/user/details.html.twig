@@ -66,7 +66,9 @@
 
             {{ form_end(form) }}
         </div>
+
         <div class="contributions">
+        <!--
             <h1>Contributie</h1>
 
             <table class="table">
@@ -77,9 +79,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for contributionPayment in app.user.contributionPayments %}
+                    {% for contributionPayment in app.user.paidContributionPayments[:5] %}
                         <tr>
-                            <td>{{ contributionPayment.paymentTime|format_date('medium', 'none') }}</td>
+                            <td>{{ contributionPayment.paymentTime|format_date('long') }}</td>
                             <td>{{ contributionPayment.amountInCents|format_price }}</td>
                         </tr>
                     {% else %}
@@ -87,6 +89,11 @@
                             <td colspan="2">Er zijn nog geen contributiebetalingen geregistreerd.</td>
                         </tr>
                     {% endfor %}
+                    {% if app.user.paidContributionPayments|length > 5 %}
+                        <tr>
+                            <td colspan="2">En nog {{ app.user.contributionPayments - 5 }} andere...</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
             {% if app.user.contributionPaidAutomatically %}
@@ -96,15 +103,16 @@
             {% else %}
                 <p>
                     Je hebt aangegeven je contributie van <strong>{{ app.user.contributionPerPeriodInCents|format_price }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
-                    Je moet uiterlijk <strong>(datum)</strong> betalen.
+                    {# Je moet uiterlijk <strong>(datum)</strong> betalen. #}
                 </p>
                 {% if app.user.contributionCompleted(date()) %}
-                    <a class="button" href="#">Contributie vooruit betaling</a>
+                    {# <a class="button" href="#">Contributie vooruit betaling</a> #}
                 {% else %}
-                    <a class="button" href="#">Contributiebetaling doen</a>
+                    <a class="button" href="{{ url('member_contribution_pay') }}">Contributiebetaling doen</a>
                 {% endif %}
             {% endif %}
             <a class="action-link" href="{{ url('member_contribution_preferences') }}">Contributievoorkeuren wijzigen</a>
+            -->
         </div>
     </div>
 {% endblock %}

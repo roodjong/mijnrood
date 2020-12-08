@@ -12,5 +12,27 @@
             Dit is de interne website van ROOD, jong in de SP.
             Hier kun je je lidmaadschapsgegevens aanpassen, je contributie betalen, en relevante documenten raadplegen.
         </p>
+
+        <h2>Aankomende <span class="rood">evenementen</span></h2>
+        {% for event in events %}
+            <div class="event">
+                <div class="event-image">
+                </div>
+                <div class="event-info">
+                    <span class="event-name">{{ event.name }}</span>
+                    <span class="event-date">
+                        {{ event.timeStart|format_date('medium') }}
+                        {% if not event.startsAndEndsOnSameDay %}
+                            - {{ event.timeEnd|format_date('medium') }}
+                        {% endif %}
+                    </span>
+                    <span class="event-division">Georganiseerd door {{ event.division is null ? 'ROOD Landelijk' : event.division.name }}</span>
+                    <span class="event-description">{{ event.description|raw }}</span>
+                    {# <a href="{{ url('member_event') }}">Lees meer</a> #}
+                </div>
+            </div>
+        {% else %}
+            Er staan nog geen evenementen op de planning.
+        {% endfor %}
     </div>
 {% endblock %}

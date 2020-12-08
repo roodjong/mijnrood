@@ -6,6 +6,7 @@ use App\Entity\Member;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
 class IdOrEmailMemberProvider implements UserProviderInterface {
 
@@ -16,10 +17,13 @@ class IdOrEmailMemberProvider implements UserProviderInterface {
     }
 
     public function loadUserByUsername(string $usernameOrEmail) {
-        return $this->entityManager->createQuery('SELECT m FROM App\Entity\Member m WHERE m.id = ?1 OR m.email = ?1')
+        $user = $this->entityManager->createQuery('SELECT m FROM App\Entity\Member m WHERE m.id = ?1 OR m.email = ?1')
             ->setParameter(1, $usernameOrEmail)
             ->getOneOrNullResult()
         ;
+        if ($user === null)
+            throw new UsernameNotFoundException();
+        return $user;
     }
 
     public function refreshUser(UserInterface $user) {

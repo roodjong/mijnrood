@@ -28,7 +28,8 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
-    App\EventSubcriber\EasyAdminEventSubscriber:
+    App\EventSubscriber\:
+        resource: '../src/EventSubscriber/'
         tags: ['event_subscriber']
 
     # add more service definitions when explicit configuration is needed
@@ -37,3 +38,9 @@ services:
     Mollie\Api\MollieApiClient:
         calls:
             - setApiKey: ['%env(MOLLIE_API_KEY)%']
+
+    App\Service\DirectAdmin:
+        arguments:
+            - '%env(DIRECTADMIN_URL)%'
+            - '%env(DIRECTADMIN_USERNAME)%'
+            - '%env(DIRECTADMIN_PASSWORD)%'

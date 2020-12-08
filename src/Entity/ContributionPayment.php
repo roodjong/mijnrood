@@ -20,8 +20,8 @@ class ContributionPayment
 
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={ "unsigned": false })
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -50,6 +50,21 @@ class ContributionPayment
      */
     private ?string $molliePaymentId = null;
 
+    /**
+     * @ORM\Column(type="smallint", options={"unsigned": true})
+     */
+    private int $periodYear;
+
+    /**
+     * @ORM\Column(type="smallint", options={"unsigned": true})
+     */
+    private int $periodMonthStart;
+
+    /**
+     * @ORM\Column(type="smallint", options={"unsigned": true})
+     */
+    private int $periodMonthEnd;
+
     public function __construct() {
         $this->time = new DateTime();
     }
@@ -73,6 +88,15 @@ class ContributionPayment
 
         $this->status = $status;
     }
+
+    public function getPeriodYear(): int { return $this->periodYear; }
+    public function setPeriodYear(int $periodYear): void { $this->periodYear = $periodYear; }
+
+    public function getPeriodMonthStart(): int { return $this->periodMonthStart; }
+    public function setPeriodMonthStart(int $periodMonthStart): void { $this->periodMonthStart = $periodMonthStart; }
+
+    public function getPeriodMonthEnd(): int { return $this->periodMonthEnd; }
+    public function setPeriodMonthEnd(int $periodMonthEnd): void { $this->periodMonthEnd = $periodMonthEnd; }
 
     public function getMolliePaymentId(): ?string { return $this->molliePaymentId; }
     public function setMolliePaymentId(?string $molliePaymentId): void { $this->molliePaymentId = $molliePaymentId; }

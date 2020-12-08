@@ -48,12 +48,12 @@ class Member implements UserInterface {
     private string $phone = '';
 
     /**
-     * @ORM\Column(type="string", length=34)
+     * @ORM\Column(type="string", length=34, nullable=true)
      * @Assert\Regex(
      *   pattern="/^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/i"
      * )
      */
-    private string $iban = '';
+    private ?string $iban = null;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -92,12 +92,12 @@ class Member implements UserInterface {
     private ?string $mollieSubscriptionId;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     private int $contributionPeriod = self::PERIOD_MONTHLY;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     private int $contributionPerPeriodInCents;
 
@@ -121,9 +121,21 @@ class Member implements UserInterface {
      */
     private ?string $newPasswordToken = null;
 
+    /**
+     * @ORM\OneToMany(targetEntity="MemberDetailsRevision", mappedBy="member")
+     */
+    private Collection $detailRevisions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Email", mappedBy="manager")
+     */
+    private Collection $managingEmails;
+
     public function __construct() {
         $this->timeRegistered = new DateTime();
         $this->contributionPayments = new ArrayCollection();
+        $this->revisions = new ArrayCollection();
+        $this->managingEmails = new ArrayCollection();
     }
 
     public function __toString() {
@@ -148,8 +160,8 @@ class Member implements UserInterface {
     public function getPhone(): string { return $this->phone; }
     public function setPhone(string $phone): void { $this->phone = $phone; }
 
-    public function getIban(): string { return $this->iban; }
-    public function setIban(string $iban): void { $this->iban = $iban; }
+    public function getIban(): ?string { return $this->iban; }
+    public function setIban(?string $iban): void { $this->iban = $iban; }
 
     public function getEmail(): string { return $this->email; }
     public function setEmail(string $email): void { $this->email = $email; }
@@ -172,10 +184,26 @@ class Member implements UserInterface {
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
 
+    public function getPaidContributionPayments(): Collection { return $this->contributionPayments->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID); }
+
     public function getContributionPayments(): Collection { return $this->contributionPayments; }
 
     public function isContributionCompleted(DateTime $when) {
-        return false;
+        $year = $when->format('Y');
+        $month = $when->format('n');
+        switch ($this->getContributionPeriod()) {
+            case self::PERIOD_MONTHLY:
+                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year && $payment->getPeriodMonthStart() == $month);
+                break;
+            case self::PERIOD_QUARTERLY:
+                $quarter = ceil($month / 3);
+                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year && $payment->getPeriodMonthStart() <= $month && $payment->getPeriodMonthEnd() >= $month);
+                break;
+            case self::PERIOD_ANNUALLY:
+                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year);
+                break;
+        }
+        return count($payments) > 0;
     }
 
     public function addContributionPayment(ContributionPayment $payment) {
@@ -199,6 +227,17 @@ class Member implements UserInterface {
 
     public function isContributionPaidAutomatically(): bool {
         return $this->mollieSubscriptionId !== null;
+    }
+
+    public function getDetailRevisions(): Collection { return $this->detailRevisions; }
+    public function getLastDetailRevision(): ?MemberDetailsRevision {
+        return $this->detailRevisions->getIterator()->uasort(function(MemberDetailsRevision $a, MemberDetailsRevision $b) {
+            return $b->getId() - $a->getId();
+        })[0] ?? null;
+    }
+
+    public function getManagingEmails(): Collection {
+        return $this->managingEmails;
     }
 
     /** @see UserInterface */

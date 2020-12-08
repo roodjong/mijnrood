@@ -62,6 +62,7 @@ class MemberCrud extends AbstractCrudController
                 ->setEntryType(ContributionPaymentType::class)
                 ->setFormTypeOptions([
                     'block_prefix' => 'collection_table',
+                    'entry_options' => ['block_prefix' => 'collection_table_entry'],
                     'allow_add' => true,
                     'allow_delete' => false
                 ])

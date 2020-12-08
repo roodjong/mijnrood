@@ -11,16 +11,27 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
 use Swift_Mailer, Swift_Message;
 use App\Form\MemberDetailsType;
-use App\Entity\{ Member, MemberDetailsRevision };
+use DateTime;
+use App\Entity\{ Member, MemberDetailsRevision, Event};
 
-class MemberController extends AbstractController
-{
+class MemberController extends AbstractController {
+
     /**
      * @Route("/", name="member_home")
      */
-    public function home(): Response
-    {
+    public function home(): Response {
+        $member = $this->getUser();
+
+        $events = $this->getDoctrine()->getRepository(Event::class)->createQueryBuilder('e')
+            ->where('e.division IS NULL or e.division = ?1')
+            ->andWhere('e.timeEnd > ?2')
+            ->setParameter(1, $member->getDivision())
+            ->setParameter(2, new DateTime())
+            ->getQuery()
+            ->getResult();
+
         return $this->render('user/home.html.twig', [
+            'events' => $events
         ]);
     }
 

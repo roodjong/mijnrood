@@ -23,7 +23,7 @@ class MemberDetailsRevision {
     private ?int $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Member")
+     * @ORM\ManyToOne(targetEntity="Member", inversedBy="detailRevisions")
      * @ORM\JoinColumn(nullable=false)
      */
     private Member $member;
@@ -73,8 +73,21 @@ class MemberDetailsRevision {
         $this->postCode = $member->getPostCode();
     }
 
+    public function hasChanged(Member $member) {
+        return
+            $this->getMember()->getId() !== $member->getId()
+         || $this->getFirstName() !== $member->getFirstName()
+         || $this->getLastName() !== $member->getLastName()
+         || $this->getAddress() !== $member->getAddress()
+         || $this->getCity() !== $member->getCity()
+         || $this->getPhone() !== $member->getPhone()
+         || $this->getIban() !== $member->getIban()
+         || $this->getEmail() !== $member->getEmail()
+         || $this->getPostCode() !== $member->getPostCode();
+    }
+
     public function getId(): ?int { return $this->id; }
-    public function getMember(): Member { $this->member = $member; }
+    public function getMember(): Member { return $this->member; }
     public function isOwn(): bool { return $this->own; }
 
     public function getFirstName(): string { return $this->firstName; }

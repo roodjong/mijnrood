@@ -31,7 +31,6 @@ class ContributionPaymentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'block_prefix' => 'collection_table_entry',
             'data_class' => ContributionPayment::class,
         ]);
     }

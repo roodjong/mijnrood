@@ -35,10 +35,10 @@ class Division {
     private Collection $members;
 
     /**
-     * @ORM\Column(type="string", length=200)
-     * @Assert\Email
+     * @ORM\ManyToOne(targetEntity="Email")
+     * @ORM\JoinColumn(nullable=true)
      */
-    private string $email = '';
+    private ?Email $email = null;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
@@ -79,8 +79,14 @@ class Division {
      */
     private string $twitter;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Event", mappedBy="division")
+     */
+    private Collection $events;
+
     public function __construct() {
         $this->members = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     public function __toString() {
@@ -100,8 +106,8 @@ class Division {
     public function getPostCode(): ?string { return $this->postCode; }
     public function setPostCode(?string $postCode): void { $this->postCode = $postCode; }
 
-    public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): void { $this->email = $email; }
+    public function getEmail(): ?Email { return $this->email; }
+    public function setEmail(?Email $email): void { $this->email = $email; }
 
     public function getPhone(): ?string { return $this->phone; }
     public function setPhone(?string $phone): void { $this->phone = $phone; }

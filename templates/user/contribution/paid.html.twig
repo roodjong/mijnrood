@@ -1,0 +1,15 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Contributie betaald</h1>
+        <p>
+            Je contributiebetalingen is succesvol afgerond.
+        </p>
+        <a href="{{ url('member_details') }}" class="button">Terug</a>
+    </div>
+{% endblock %}

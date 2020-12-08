@@ -13,3 +13,42 @@ h1, h2, h3 {
     padding: 0 20px;
     max-width: 1240px;
 }
+
+.event {
+    display: flex;
+
+    .event-image {
+        flex: 0 0 120px;
+
+        img {
+            display: block;
+            width: 100%;
+        }
+    }
+
+    .event-info {
+        display: flex;
+        flex-direction: column;
+
+        .event-name {
+            font-size: 20px;
+            font-family: @font-titles;
+            margin-bottom: 10px;
+        }
+
+        .event-date {
+            color: #444;
+            font-size: 14px;
+        }
+
+        .event-division {
+            color: @rood;
+        }
+
+        .event-description {
+            margin: 10px 0;
+        }
+
+
+    }
+}
