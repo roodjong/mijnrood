@@ -27,38 +27,38 @@
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'Naam') }}
+                {{ form_label(form.firstName, 'Naam') }}
                 {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' }}) }}
                 {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'E-mailadres') }}
+                {{ form_label(form.email, 'E-mailadres') }}
                 {{ form_widget(form.email, { attr: { class: 'text-input' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'Telefoonnummer') }}
+                {{ form_label(form.phone, 'Telefoonnummer') }}
                 {{ form_widget(form.phone, { attr: { class: 'text-input' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'IBAN') }}
+                {{ form_label(form.iban, 'IBAN') }}
                 {{ form_widget(form.iban, { attr: { class: 'text-input' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'Adres') }}
+                {{ form_label(form.address, 'Adres') }}
                 {{ form_widget(form.address, { attr: { class: 'text-input' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'Plaats') }}
+                {{ form_label(form.city, 'Plaats') }}
                 {{ form_widget(form.city, { attr: { class: 'text-input' }}) }}
             </div>
 
             <div class="form-row">
-                {{ form_label(form.id, 'Postcode') }}
+                {{ form_label(form.postCode, 'Postcode') }}
                 {{ form_widget(form.postCode, { attr: { class: 'text-input' }}) }}
             </div>
 
@@ -68,7 +68,6 @@
         </div>
 
         <div class="contributions">
-        <!--
             <h1>Contributie</h1>
 
             <table class="table">
@@ -91,7 +90,7 @@
                     {% endfor %}
                     {% if app.user.paidContributionPayments|length > 5 %}
                         <tr>
-                            <td colspan="2">En nog {{ app.user.contributionPayments - 5 }} andere...</td>
+                            <td colspan="2">En nog {{ app.user.paidContributionPayments|length - 5 }} andere...</td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -100,19 +99,26 @@
                 <p>
                     Je contributie wordt elk{{ { 0: 'e maand', 1: ' kwartaal', 2: ' jaar'}[app.user.contributionPeriod] }} automatisch per automatische incasso afgeschreven via Mollie.
                 </p>
+
+                <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso stopzetten</a>
             {% else %}
                 <p>
                     Je hebt aangegeven je contributie van <strong>{{ app.user.contributionPerPeriodInCents|format_price }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
                     {# Je moet uiterlijk <strong>(datum)</strong> betalen. #}
                 </p>
                 {% if app.user.contributionCompleted(date()) %}
+                    Je contributie voor {{ { 0: 'deze maand', 1: 'dit kwartaal', 2: 'dit jaar' }[app.user.contributionPeriod] }} is betaald.
                     {# <a class="button" href="#">Contributie vooruit betaling</a> #}
                 {% else %}
+                    <p>
+                        <strong>Let op:</strong> Door een contributiebetaling te doen, ga je ermee akkoord dat we je naam en e-mailadres delen met onze betaalprovider <a style="color:#E40613" href="https://mollie.com" target="_blank">Mollie</a>.
+                    </p>
                     <a class="button" href="{{ url('member_contribution_pay') }}">Contributiebetaling doen</a>
                 {% endif %}
+
+                <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso instellen</a>
             {% endif %}
             <a class="action-link" href="{{ url('member_contribution_preferences') }}">Contributievoorkeuren wijzigen</a>
-            -->
         </div>
     </div>
 {% endblock %}

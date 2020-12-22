@@ -7,21 +7,20 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType, MoneyType };
 use App\Entity\Member;
+use Symfony\Component\Validator\Constraints\Range;
 
 class PreferencesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('contributionPeriod', ChoiceType::class, [
-                'label' => 'Betalingsperiode',
-                'choices' => [
-                    'Maandelijks' => 0,
-                    'Per kwartaal' => 1,
-                    'Jaarlijks' => 2
+            ->add('contributionPeriod', ContributionPeriodType::class, ['label' => 'Betalingsperiode'])
+            ->add('contributionPerPeriodInEuros', MoneyType::class, [
+                'label' => 'Bedrag',
+                'constraints' => [
+                    new Range(['min' => 5.0, 'notInRangeMessage' => 'Je contributie moet minimaal {{ min }} euro per jaar bedragen.'])
                 ]
             ])
-            ->add('contributionPerPeriodInEuros', MoneyType::class, ['label' => 'Hoogte'])
         ;
     }
 

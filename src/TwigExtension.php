@@ -21,12 +21,12 @@ class TwigExtension extends AbstractExtension {
 
     public static function formatSize(int $bytes): string {
         if ($bytes < 2)
-            return '0 byte';
+            return $bytes.' byte';
 
         foreach ([' bytes', ' kB', ' MB', ' GB', ' TB'] as $i => $text) {
-            $next = 1024 ** ($i + 1);
-            if ($size < $next)
-                return number_format($size / $lower, ',', '.') . $text;
+            $thisBytes = 1024 ** ($i + 1);
+            if ($bytes < $thisBytes)
+                return number_format($bytes / $thisBytes * 1024, 0, ',', '.') . $text;
         }
     }
 

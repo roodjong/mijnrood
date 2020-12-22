@@ -18,23 +18,45 @@
         }
     }
 
-    #header-menu {
+    #show-header {
+        display: none;
+
         @media @mobile {
+            &:not(:checked) ~ #header-menu {
+                top: -100vh;
+                bottom: 100vh;
+            }
+        }
+    }
+
+    #show-header-button {
+        width: 30px;
+        height: 20px;
+        color: #000;
+        background: linear-gradient(0deg, currentColor 0%, currentColor 0%, currentColor 20%, transparent 20%, transparent 40%, currentColor 40%, currentColor 60%, transparent 60%, transparent 80%, currentColor 80%, currentColor 100%);
+
+        @media @desktop {
             display: none;
         }
-
+    }
+    #header-menu {
         ul {
             display: flex;
 
             li {
                 display: block;
 
-                & + li {
-                    margin-left: 60px;
+                @media @desktop {
+                    & + li {
+                        margin-left: 60px;
+                    }
+
+                    a {
+                        color: #000;
+                    }
                 }
 
                 a {
-                    color: #000;
                     font-size: 24px;
                     font-family: @font-titles;
                     text-transform: uppercase;
@@ -45,6 +67,56 @@
                 &.current, &:hover {
                     a {
                         color: @rood;
+                    }
+                }
+            }
+        }
+
+        @media @mobile {
+            display: flex;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            transition: 0.5s ease all;
+            bottom: 0;
+            z-index: 1000;
+            background: @rood;
+
+            #hide-header-button {
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                width: 30px;
+                height: 20px;
+                color: #fff;
+                background: linear-gradient(0deg, currentColor 0%, currentColor 0%, currentColor 20%, transparent 20%, transparent 40%, currentColor 40%, currentColor 60%, transparent 60%, transparent 80%, currentColor 80%, currentColor 100%);
+
+                @media @desktop {
+                    display: none;
+                }
+            }
+
+            ul {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+
+                li {
+                    margin-bottom: 40px;
+
+                    a {
+                        color: #fff;
+
+                    }
+
+                    &.current a, &:hover a {
+                        color: #fff;
+                        text-decoration: underline 4px;
                     }
                 }
             }

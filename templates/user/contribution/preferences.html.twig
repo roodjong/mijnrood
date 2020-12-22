@@ -8,6 +8,12 @@
     <div class="main-content">
         <h1>Contributie-instellingen</h1>
         {{ form_start(form, { attr: { class: 'form' }}) }}
+            {% if form.vars.errors|length > 0 %}
+                <div class="error">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
             {% for field in [form.contributionPeriod, form.contributionPerPeriodInEuros] %}
             <div class="form-row">
                 {{ form_label(field) }}

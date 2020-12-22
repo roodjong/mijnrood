@@ -40,12 +40,21 @@ class DocumentFolder {
     private Collection $documents;
 
     /**
+     * @ORM\OneToMany(targetEntity="DocumentFolder", mappedBy="parent")
+     */
+    private Collection $subFolders;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Member")
      */
     private ?Member $memberCreated = null;
 
     public function __construct() {
         $this->documents = new ArrayCollection();
+    }
+
+    public function __toString() {
+        return $this->name;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -57,6 +66,7 @@ class DocumentFolder {
     public function setParent(?DocumentFolder $parent): void { $this->parent = $parent; }
 
     public function getDocuments(): Collection { return $this->documents; }
+    public function getSubFolders(): Collection { return $this->subFolders; }
 
     public function getMemberCreated(): ?Member { return $this->memebrCreated; }
     public function setMemberCreated(?Member $memebrCreated): void { $this->memebrCreated = $memebrCreated; }

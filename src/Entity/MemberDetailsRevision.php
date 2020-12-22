@@ -46,8 +46,8 @@ class MemberDetailsRevision {
     /** @ORM\Column(type="string", length=20) */
     private string $phone;
 
-    /** @ORM\Column(type="string", length=34) */
-    private string $iban;
+    /** @ORM\Column(type="string", length=34, nullable=true) */
+    private ?string $iban;
 
     /** @ORM\Column(type="string", length=100) */
     private string $address;
@@ -55,8 +55,14 @@ class MemberDetailsRevision {
     /** @ORM\Column(type="string", length=100) */
     private string $city;
 
-    /** @ORM\Column(type="string", length=6) */
+    /** @ORM\Column(type="string", length=14) */
     private string $postCode;
+
+    /** @ORM\Column(type="string", length=2) */
+    private string $country = 'NL';
+
+    /** @ORM\Column(type="date", nullable=true) */
+    private ?DateTime $dateOfBirth = null;
 
     public function __construct(Member $member, bool $own) {
         $this->member = $member;
@@ -71,6 +77,8 @@ class MemberDetailsRevision {
         $this->address = $member->getAddress();
         $this->city = $member->getCity();
         $this->postCode = $member->getPostCode();
+        $this->country = $member->getCountry();
+        $this->dateOfBirth = $member->getDateOfBirth();
     }
 
     public function hasChanged(Member $member) {
@@ -83,7 +91,9 @@ class MemberDetailsRevision {
          || $this->getPhone() !== $member->getPhone()
          || $this->getIban() !== $member->getIban()
          || $this->getEmail() !== $member->getEmail()
-         || $this->getPostCode() !== $member->getPostCode();
+         || $this->getPostCode() !== $member->getPostCode()
+         || $this->getCountry() !== $member->getCountry()
+         || $this->getDateOfBirth()->format('Ymd') !== $member->getDateOfBirth('Ymd');
     }
 
     public function getId(): ?int { return $this->id; }
@@ -95,8 +105,10 @@ class MemberDetailsRevision {
     public function getAddress(): string { return $this->address; }
     public function getCity(): string { return $this->city; }
     public function getPhone(): string { return $this->phone; }
-    public function getIban(): string { return $this->iban; }
+    public function getIban(): ?string { return $this->iban; }
     public function getEmail(): string { return $this->email; }
     public function getPostCode(): string { return $this->postCode; }
+    public function getCountry(): string { return $this->country; }
+    public function getDateOfBirth(): ?DateTime { return $this->dateOfBirth; }
 
 }

@@ -11,7 +11,9 @@ use App\Repository\MemberRepository;
 
 /**
  * @ORM\Entity
- * @ORM\Table("admin_member")
+ * @ORM\Table("admin_member", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="email", columns={"email"})
+ * })
  */
 class Member implements UserInterface {
 
@@ -37,10 +39,10 @@ class Member implements UserInterface {
     private string $lastName = '';
 
     /**
-     * @ORM\Column(type="string", length=200)
+     * @ORM\Column(type="string", length=200, nullable=true)
      * @Assert\Email
      */
-    private string $email = '';
+    private ?string $email = null;
 
     /**
      * @ORM\Column(type="string", length=20)
@@ -66,10 +68,20 @@ class Member implements UserInterface {
     private string $city = '';
 
     /**
-     * @ORM\Column(type="string", length=6)
-     * @Assert\Regex(pattern="/^[1-9][0-9]{3}[A-Z]{2}$/", htmlPattern="\d{4}[A-Z]{2}")
+     * @ORM\Column(type="string", length=14)
      */
     private string $postCode = '';
+
+    /**
+     * @ORM\Column(type="string", length=2)
+     * @Assert\Regex(pattern="/^[A-Z]{2}$/")
+     */
+    private string $country = 'NL';
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private ?DateTime $dateOfBirth = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Division", inversedBy="members")
@@ -89,7 +101,17 @@ class Member implements UserInterface {
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $mollieSubscriptionId;
+    private ?string $mollieCustomerId = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $mollieSubscriptionId = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $createSubscriptionAfterPayment = false;
 
     /**
      * @ORM\Column(type="integer", options={"default": 0})
@@ -131,6 +153,11 @@ class Member implements UserInterface {
      */
     private Collection $managingEmails;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $acceptUsePersonalInformation = true;
+
     public function __construct() {
         $this->timeRegistered = new DateTime();
         $this->contributionPayments = new ArrayCollection();
@@ -151,6 +178,10 @@ class Member implements UserInterface {
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
 
+    public function getFullName(): string {
+        return $this->firstName. ' ' . $this->lastName;
+    }
+
     public function getAddress(): string { return $this->address; }
     public function setAddress(string $address): void { $this->address = $address; }
 
@@ -169,14 +200,20 @@ class Member implements UserInterface {
     public function getPostCode(): string { return $this->postCode; }
     public function setPostCode(string $postCode): void { $this->postCode = $postCode; }
 
+    public function getCountry(): string { return $this->country; }
+    public function setCountry(string $country): void { $this->country = $country; }
+
+    public function getDateOfBirth(): ?DateTime { return $this->dateOfBirth; }
+    public function setDateOfBirth(?DateTime $dateOfBirth): void { $this->dateOfBirth = $dateOfBirth; }
+
     public function getDivision(): ?Division { return $this->division; }
     public function setDivision(?Division $division): void { $this->division = $division; }
 
-    public function getSpMembershipId(): int { return $this->spMembershipId; }
-    public function setSpMembershipId(int $spMembershipId): void { $this->spMembershipId = $spMembershipId; }
-
     public function getRegistrationTime(): ?DateTime { return $this->registrationTime; }
     public function setRegistrationTime(?DateTime $registrationTime): void { $this->registrationTime = $registrationTime; }
+
+    public function getAcceptUsePersonalInformation(): bool { return $this->acceptUsePersonalInformation; }
+    public function setAcceptUsePersonalInformation(bool $acceptUsePersonalInformation): void { $this->acceptUsePersonalInformation = $acceptUsePersonalInformation; }
 
     public function getContributionPerPeriodInCents(): int { return $this->contributionPerPeriodInCents; }
     public function setContributionPerPeriodInCents(int $contributionPerPeriodInCents): void { $this->contributionPerPeriodInCents = $contributionPerPeriodInCents; }
@@ -184,9 +221,20 @@ class Member implements UserInterface {
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
 
+    public function getCreateSubscriptionAfterPayment(): bool { return $this->createSubscriptionAfterPayment; }
+    public function setCreateSubscriptionAfterPayment(bool $createSubscriptionAfterPayment): void { $this->createSubscriptionAfterPayment = $createSubscriptionAfterPayment; }
+
     public function getPaidContributionPayments(): Collection { return $this->contributionPayments->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID); }
 
     public function getContributionPayments(): Collection { return $this->contributionPayments; }
+
+    public function isAdmin(): bool { return in_array('ROLE_ADMIN', $this->getRoles()); }
+    public function setIsAdmin(bool $isAdmin): void {
+        if ($isAdmin)
+            $this->roles = array_merge($this->roles, ['ROLE_ADMIN']);
+        else
+            $this->roles = array_diff($this->roles, ['ROLE_ADMIN']);
+    }
 
     public function isContributionCompleted(DateTime $when) {
         $year = $when->format('Y');
@@ -214,6 +262,9 @@ class Member implements UserInterface {
     public function removeContributionPayment(ContributionPayment $payment) {
         $this->contributionPayments->removeElement($payment);
     }
+
+    public function getMollieCustomerId(): ?string { return $this->mollieCustomerId; }
+    public function setMollieCustomerId(?string $mollieCustomerId): void { $this->mollieCustomerId = $mollieCustomerId; }
 
     public function getMollieSubscriptionId(): ?string { return $this->mollieSubscriptionId; }
     public function setMollieSubscriptionId(?string $mollieSubscriptionId): void { $this->mollieSubscriptionId = $mollieSubscriptionId; }

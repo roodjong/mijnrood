@@ -1,0 +1,27 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Automatische incasso</h1>
+
+        {% if app.user.contributionPaidAutomatically %}
+            <p>
+                Je contributie wordt momenteel {{ { 0: 'elke maand', 1: 'elk kwartaal', 2: 'elk jaar' }[app.user.contributionPeriod] }} automatisch afgeschreven via Mollie.
+            </p>
+            <p>
+                Wil je de automatische incasso stopzetten, en in plaats daarvan je contributie handmatig betalen? Klik dan op deze knop.
+            </p>
+            <a href="{{ url('member_contribution_automatic_collection_disable') }}" class="button">Automatische incasso stopzetten</a>
+        {% else %}
+            <p>
+                Momenteel moet je je contributie {{ { 0: 'elke maand', 1: 'elk kwartaal', 2: 'elk jaar' }[app.user.contributionPeriod] }} handmatig betalen.
+                Wil je je contributie automatisch over laten maken met een automatische incasso? Klik dan op deze knop.
+            </p>
+            <a href="{{ url('member_contribution_automatic_collection_enable') }}" class="button">Automatische incasso instellen</a>
+        {% endif %}
+    </div>
+{% endblock %}

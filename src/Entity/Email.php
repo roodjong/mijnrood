@@ -29,13 +29,13 @@ class Email {
     private string $user = '';
 
     /**
-     * @ORM\ManyToOne(targetEntity="EmailDomain", inversedBy="emails")
+     * @ORM\ManyToOne(targetEntity="EmailDomain")
      * @ORM\JoinColumn(nullable=false)
      */
     private EmailDomain $domain;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Member")
+     * @ORM\ManyToOne(targetEntity="Member", inversedBy="managingEmails")
      */
     private ?Member $manager = null;
 

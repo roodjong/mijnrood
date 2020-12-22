@@ -1,8 +1,23 @@
 {% extends 'user/layout/members.html.twig' %}
 
+{% set classToExtension = {
+    'pdf': ['pdf'],
+    'image': ['png', 'gif', 'jpeg', 'jpg', 'webp'],
+    'video': ['mp4', 'm4v', 'mov'],
+    'excel': ['xls', 'xlsx', 'xlsm', 'ods'],
+    'epub': ['epub'],
+    'archive': ['zip', 'tar', 'rar', 'gz'],
+    'word': ['doc', 'docx', 'odt', 'rtf'],
+    'text': ['txt'],
+    'audio': ['mp3', 'wav', 'ogg']
+} %}
+{% set extensionToClass = {} %}
+{% for class, extensions in classToExtension %}{% for extension in extensions %}{% set extensionToClass = extensionToClass|merge({ (extension): class } ) %}{% endfor %}{% endfor %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/documents.less') }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous">
 {% endblock %}
 
 {% block scripts %}
@@ -14,33 +29,65 @@
     <div class="main-content">
         <h1>Documenten</h1>
 
-        <div class="breadcrumbs">
-            <span>Pad:</span>
-            <a href="{{ url('member_documents') }}">Documenten</a>
-            {% for breadcrumb in breadcrumbs %}
-                <a href="{{ url('member_documents', { folderId: breadcrumb.id }) }}">{{ breadcrumb.name }}</a>
-            {% endfor %}
-        </div>
-
-
-        <div class="document-actions">
-            {% if canUpload %}<a href="#" class="btn-upload">Upload</a>{% endif %}
-            {% if canCreateFolder %}<a href="#" class="btn-new-folder">Map aanmaken</a>{% endif %}
+        <div class="document-interface-head">
+            <div class="breadcrumbs">
+                <span>Pad:</span>
+                <a href="{{ url('member_documents') }}">Documenten</a>
+                {% for breadcrumb in breadcrumbs %}
+                    <a href="{{ url('member_documents', { folderId: breadcrumb.id }) }}">{{ breadcrumb.name }}</a>
+                {% endfor %}
+            </div>
+            <div class="document-folder-actions">
+                {% if canUpload %}
+                    <a href="#" class="btn-upload">
+                        <i class="fa fa-fw fa-upload"></i>
+                        Upload
+                    </a>
+                {% endif %}
+                {% if canCreateFolder %}
+                    <a href="#" class="btn-new-folder">
+                        <i class="fa fa-fw fa-folder"></i>
+                        Map aanmaken
+                    </a>
+                {% endif %}
+            </div>
         </div>
         <div class="document-action-forms">
             {% if canUpload %}
                 {{ form_start(uploadForm, { attr: { id: 'form-upload' } }) }}
-                    <strong>Upload</strong>
-                    {{ form_rest(uploadForm) }}
-                    <button type="submit">Upload</button>
+                    <h3>Upload</h3>
+                    {% for field in uploadForm %}
+                        {{ form_row(field, { row_attr: { class: 'form-row' }, attr: { class: 'text-input' } }) }}
+                    {% endfor %}
+                    <button type="submit" class="button">
+                        <i class="fa fa-fw fa-upload"></i>
+                        Upload
+                    </button>
                 {{ form_end(uploadForm) }}
             {% endif %}
             {% if canCreateFolder %}
                 {{ form_start(newFolderForm, { attr: { id: 'form-new-folder' } }) }}
-                    <strong>Map aanmaken</strong>
-                    {{ form_rest(newFolderForm) }}
-                    <button type="submit">Map aanmaken</button>
+                    <h3>Map aanmaken</h3>
+                    {% for field in newFolderForm %}
+                        {{ form_row(field, { row_attr: { class: 'form-row' }, attr: { class: 'text-input' } }) }}
+                    {% endfor %}
+                    <button type="submit" class="button">
+                        <i class="fa fa-fw fa-folder"></i>
+                        Map aanmaken
+                    </button>
                 {{ form_end(newFolderForm) }}
+            {% endif %}
+            {% if canDelete %}
+                {{ form_start(moveForm, { attr: { id: 'form-move'} }) }}
+                    <h3><span id="move-header">Document</span> verplaatsen</h3>
+                    {% for field in moveForm %}
+                        {{ form_row(field, { row_attr: { class: 'form-row' }, attr: { class: 'text-input' } }) }}
+                    {% endfor %}
+                    <button type="submit" class="button">
+                        <i class="fa fa-fw fa-arrow-right"></i>
+                        Verplaatsen
+                    </button>
+                {{ form_end(moveForm) }}
             {% endif %}
         </div>
 
@@ -48,39 +95,72 @@
             <thead>
                 <tr>
                     <th>Naam</th>
-                    <th>Bestandsgrootte</th>
-                    <th>Acties</th>
+                    <th>Grootte</th>
+                    <th>Datum</th>
+                    <th class="document-actions"></th>
                 </tr>
             </thead>
             <tbody>
                 {% for folder in folders %}
-                    <tr>
-                        <td>
-                            <a href="{{ url('member_documents', { folderId: folder.id }) }}">{{ folder.name }}</a>
+                    <tr class="folder entry" data-id="{{ folder.id }}">
+                        <td class="document-name">
+                            <a href="{{ url('member_documents', { folderId: folder.id }) }}">
+                                <i class="fa fa-fw fa-folder-open-o"></i>
+                                <span class="slot-name">{{ folder.name }}</span>
+                            </a>
                         </td>
-                        <td>-</td>
                         <td>
+                            ({{ folder.documents|length }} bestanden)
+                        </td>
+                        <td></td>
+                        <td class="document-actions">
                             {% if canDelete %}
-                                <a onclick="return confirm('Weet je zeker dat je &quot;{{ folder.name }}&quot; wil verwijderen?')" href="{{ url('member_documents_delete_folder', { folderId: folder.id }) }}">Verwijder</a>
+                                <a class="btn-rename" href="#"><i class="fa fa-fw fa-pencil"></i></a>
+                                {# <a class="btn-move-folder" href="#"><i class="fa fa-fw fa-arrow-right"></i></a> #}
+                                <a class="btn-delete" href="#" href="#"><i class="fa fa-trash fa-fw"></i></a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
                 {% for document in documents %}
-                    <tr>
-                        <td>
-                            <a href="{{ url('member_documents_download', { documentId: document.id }) }}">{{ document.fileName }}</a>
+                {% set extension = document.fileName|split('.')|last %}
+                    <tr class="document entry" data-id="{{ document.id }}">
+                        <td class="document-name">
+                            <a href="{{ url('member_documents_download', { documentId: document.id }) }}">
+                                <i class="fa fa-fw fa-file-{{ extensionToClass[extension] is defined ? extensionToClass[extension] ~ '-o' : 'o' }}"></i>
+                                <span class="slot-name">{{ document.fileName }}</span>
+                            </a>
                         </td>
                         <td>
                             {{ document.sizeInBytes|format_size }}
                         </td>
                         <td>
+                            <span class="date-long">
+                                {{ document.dateUploaded|format_date('long') }}
+                            </span>
+                            <span class="date-short">
+                                {{ document.dateUploaded|format_date('medium') }}
+                            </span>
+                        </td>
+                        <td class="document-actions">
                             {% if canDelete %}
-                                <a onclick="return confirm('Weet je zeker dat je &quot;{{ document.fileName }}&quot; wil verwijderen?')" href="{{ url('member_documents_delete', { documentId: document.id }) }}">Verwijder</a>
+                            <label>
+                                <input type="checkbox">
+                                <div class="document-action-buttons">
+                                    <a class="btn-rename" href="#"><i class="fa fa-fw fa-pencil"></i><span>Hernoemen</span></a>
+                                    <a class="btn-move" href="#"><i class="fa fa-fw fa-arrow-right"></i><span>Verplaatsen</span></a>
+                                    <a class="btn-delete" href="#"><i class="fa fa-fw fa-trash"></i><span>Verwijderen</span></a>
+                                </div>
+                            </div>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
+                    <tr class="folder-empty"{% if documents|length + folders|length > 0 %} style="display: none"{% endif %}>
+                    <td colspan="4">
+                        Er zijn geen bestanden of mappen in deze map aanwezig.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

@@ -1,0 +1,16 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Automatisch incasso ingesteld</h1>
+        <p>
+            Je automatische incasso is succesvol ingesteld. Vanaf nu zal je contributie elke eerste dag van
+            {{ { 0: 'de maand', 1: 'het kwartaal', 2: 'het jaar'}[app.user.contributionPeriod] }}
+            van je rekening afgeschreven worden.
+        </p>
+        <a href="{{ url('member_contribution_automatic_collection') }}" class="button">Terug</a>
+{% endblock %}

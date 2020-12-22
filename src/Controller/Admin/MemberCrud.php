@@ -4,11 +4,12 @@ namespace App\Controller\Admin;
 
 use App\Entity\Member;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
+use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use App\Form\Admin\ContributionPaymentType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\{ ChoiceFilter, EntityFilter };
+use App\Form\Contribution\ContributionPeriodType;
 
 class MemberCrud extends AbstractCrudController
 {
@@ -23,36 +24,49 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+        ;
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add(EntityFilter::new('division'))
         ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id', 'Lidnummer'),
+            IdField::new('id', 'Lidnummer')
+                ->setRequired(false)
+                ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam'),
             TextField::new('lastName', 'Achternaam'),
+            DateField::new('dateOfBirth', 'Geboortedatum')
+                ->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             AssociationField::new('division', 'Groep'),
+            BooleanField::new('isAdmin', 'Toegang tot administratie')
+                ->hideOnIndex(),
 
-            FormField::addPanel('Contactinfomratie'),
+            FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres'),
             TextField::new('phone', 'Telefoonnummer'),
             TextField::new('address', 'Adres')->hideOnIndex(),
             TextField::new('city', 'Plaats'),
             TextField::new('postCode', 'Postcode')->hideOnIndex(),
+            TextField::new('country', 'Landcode')
+                ->hideOnIndex()
+                ->setFormTypeOptions(['attr' => ['placeholder' => 'Twee-letterige landcode']]),
 
             FormField::addPanel('Contributie'),
             TextField::new('iban', 'IBAN-rekeningnummer')->hideOnIndex(),
-            ChoiceField::new('contributionPeriod', 'Betalingsperiode')
-                ->setChoices([
-                    'Maandelijks' => Member::PERIOD_MONTHLY,
-                    'Kwartaallijks' => Member::PERIOD_QUARTERLY,
-                    'Jaarlijks' => Member::PERIOD_QUARTERLY
-                ])
+            Field::new('contributionPeriod', 'Betalingsperiode')
+                ->setFormType(ContributionPeriodType::class)
                 ->hideOnIndex(),
             MoneyField::new('contributionPerPeriodInCents', 'Bedrag')
                 ->setCurrency('EUR')
@@ -68,13 +82,6 @@ class MemberCrud extends AbstractCrudController
                 ])
                 ->hideOnIndex()
         ];
-    }
-
-    public function configureFilters(Filters $filters): Filters
-    {
-        return $filters
-            ->add(EntityFilter::new('division'))
-        ;
     }
 
 }
