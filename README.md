@@ -23,15 +23,15 @@ Do this after you install the composer dependencies as it mutates packages.json:
 
 Create the database by executing:
 
-`sudo docker-compose run --rm php74-service symfony console doctrine:database:create`
+`docker-compose run --rm php74-service symfony console doctrine:database:create`
 
 Create the schema with:
 
-`sudo docker-compose run --rm php74-service symfony console doctrine:schema:create`
+`docker-compose run --rm php74-service symfony console doctrine:schema:create`
 
 And finally populate the DB with some test data:
 
-`sudo docker-compose run --rm php74-service symfony console doctrine:fixtures:load`
+`docker-compose run --rm php74-service symfony console doctrine:fixtures:load`
 
 The default admin ID is 1, but be wary that each time you run the fixtures, this
 ID will be incremented because of auto-increment options in the database.
