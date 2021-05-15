@@ -21,4 +21,8 @@ Do this after you install the composer dependencies as it mutates packages.json:
 
 `docker-compose run --rm node-service yarn install --force`
 
+Create the database by executing:
+
+`sudo docker-compose run --rm php74-service symfony console doctrine:database:create`
+
 Go to `http://localhost:8080/` and you should be greeted by the MijnRood login page.
