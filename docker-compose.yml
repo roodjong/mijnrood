@@ -16,7 +16,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php74-service
-      - mysql8-service
+      - mariadb10-service
     networks:
       - nginx-php74-mysql8-node
 
@@ -34,14 +34,14 @@ services:
       - nginx-php74-mysql8-node
 
   # mysql
-  mysql8-service:
-    image: mysql:8
-    container_name: mysql8-container
+  mariadb10-service:
+    image: mariadb:10
+    container_name: mariadb10-container
     ports:
       - "3306:3306"
     volumes:
       - ./mysql:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: trotzalledem
