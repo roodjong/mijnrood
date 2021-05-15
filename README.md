@@ -25,8 +25,15 @@ Create the database by executing:
 
 `sudo docker-compose run --rm php74-service symfony console doctrine:database:create`
 
-And finally create the schema with:
+Create the schema with:
 
 `sudo docker-compose run --rm php74-service symfony console doctrine:schema:create`
+
+And finally populate the DB with some test data:
+
+`sudo docker-compose run --rm php74-service symfony console doctrine:fixtures:load`
+
+The default admin ID is 1, but be wary that each time you run the fixtures, this
+ID will be incremented because of auto-increment options in the database.
 
 Go to `http://localhost:8080/` and you should be greeted by the MijnRood login page.
