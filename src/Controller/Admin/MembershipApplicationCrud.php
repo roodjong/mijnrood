@@ -31,8 +31,9 @@ class MembershipApplicationCrud extends AbstractCrudController
         ;
     }
 
-    public function configureActions(Actions $actions): Actions {
-        $action = Action::new('Afkeuren', 'Goedkeuren', 'fa fa-check')
+    public function configureActions(Actions $actions): Actions
+    {
+        $action = Action::new('accept', 'Goedkeuren', 'fa fa-check')
             ->linkToCrudAction('acceptApplication');
 
         return $actions
@@ -43,7 +44,8 @@ class MembershipApplicationCrud extends AbstractCrudController
             ->remove(Crud::PAGE_DETAIL, Action::EDIT);
     }
 
-    public function acceptApplication(AdminContext $context) {
+    public function acceptApplication(AdminContext $context)
+    {
         $mailer = $this->mailer;
 
         $application = $context->getEntity()->getInstance();
