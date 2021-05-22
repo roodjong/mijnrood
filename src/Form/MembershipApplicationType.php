@@ -38,7 +38,16 @@ class MembershipApplicationType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'error_bubbling' => true,
-                'constraints' => [new IsTrue(['message' => 'Je moet lid zijn van de SP om ook lid te worden van ROOD, tenzij je jonger bent dan 16.'])]
+                'constraints' => [new IsTrue(['message' => 'Je moet lid zijn van de SP om ook lid te worden van ROOD.'])]
+            ])
+            ->add('preferredDivision', null, [
+                'label' => 'Bij welke groep wil je je aansluiten',
+                'query_builder' => function($repo) {
+                    return $repo->createQueryBuilder('d')
+                        ->where('d.canBeSelectedOnApplication = true')
+                    ;
+                },
+                // 'placeholder' => 'Geen voorkeur'
             ])
             ->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongindesp.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
@@ -46,7 +55,7 @@ class MembershipApplicationType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'error_bubbling' => true,
-                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met het privacybeleid van ROOD.'])]
+                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met het privacybeleid van ROOD, tenzij je jonger bent dan 16.'])]
             ])
         ;
     }

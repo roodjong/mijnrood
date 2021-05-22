@@ -43,10 +43,14 @@
                 {{ form_row(form.address, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.city, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
+                {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
 
                 <div>
                     {{ form_widget(form.accept) }}
                     {{ form_label(form.accept) }}
+                </div>
+
+                <div>
                     {{ form_widget(form.isSPMember) }}
                     {{ form_label(form.isSPMember) }}
                 </div>

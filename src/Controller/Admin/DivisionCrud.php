@@ -4,7 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Division;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, FormField, TextField, UrlField, EmailField, AssociationField };
+use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, FormField, BooleanField, TextField, UrlField, EmailField, AssociationField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
 class DivisionCrud extends AbstractCrudController
@@ -29,6 +29,8 @@ class DivisionCrud extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('name', 'Groepsnaam'),
             AssociationField::new('contact', 'Contactpersoon'),
+            BooleanField::new('canBeSelectedOnApplication', 'Kan als gewenste groep worden geselecteerd bij aanmelding')
+                ->hideOnIndex(),
 
             FormField::addPanel('Contactinformatie'),
             AssociationField::new('email', 'E-mailadres'),

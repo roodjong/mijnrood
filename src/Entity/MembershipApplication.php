@@ -87,6 +87,11 @@ class MembershipApplication {
     private int $contributionPeriod = Member::PERIOD_MONTHLY;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Division")
+     */
+    private ?Division $preferredDivision = null;
+
+    /**
      * @ORM\Column(type="integer", options={"default": 0})
      */
     private int $contributionPerPeriodInCents = 0;
@@ -114,6 +119,7 @@ class MembershipApplication {
         $member->setRegistrationTime($this->getRegistrationTime());
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
+        $member->setDivision($this->getPreferredDivision());
         return $member;
     }
 
@@ -158,6 +164,9 @@ class MembershipApplication {
 
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
+
+    public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
+    public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }
 
     public function getContributionPeriod(): int { return $this->contributionPeriod; }
     public function setContributionPeriod(int $contributionPeriod): void {

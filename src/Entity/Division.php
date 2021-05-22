@@ -84,6 +84,11 @@ class Division {
      */
     private Collection $events;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private bool $canBeSelectedOnApplication = false;
+
     public function __construct() {
         $this->members = new ArrayCollection();
         $this->events = new ArrayCollection();
@@ -97,6 +102,9 @@ class Division {
 
     public function getName(): string { return $this->name; }
     public function setName(string $name): void { $this->name = $name; }
+
+    public function getCanBeSelectedOnApplication(): bool { return $this->canBeSelectedOnApplication; }
+    public function setCanBeSelectedOnApplication(bool $canBeSelectedOnApplication): void { $this->canBeSelectedOnApplication = $canBeSelectedOnApplication; }
 
     public function getMembers(): Collection { return $this->members; }
 
