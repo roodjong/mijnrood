@@ -11,9 +11,7 @@ use App\Repository\MemberRepository;
 
 /**
  * @ORM\Entity
- * @ORM\Table("admin_member", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="email", columns={"email"})
- * })
+ * @ORM\Table("admin_member")
  */
 class Member implements UserInterface {
 
@@ -114,12 +112,12 @@ class Member implements UserInterface {
     private bool $createSubscriptionAfterPayment = false;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 0})
+     * @ORM\Column(type="integer", options={"default": 2})
      */
-    private int $contributionPeriod = self::PERIOD_MONTHLY;
+    private int $contributionPeriod = self::PERIOD_ANNUALLY;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 0})
+     * @ORM\Column(type="integer", options={"default": 500})
      */
     private int $contributionPerPeriodInCents;
 
@@ -194,8 +192,8 @@ class Member implements UserInterface {
     public function getIban(): ?string { return $this->iban; }
     public function setIban(?string $iban): void { $this->iban = $iban; }
 
-    public function getEmail(): ?string { return $this->email; }
-    public function setEmail(?string $email): void { $this->email = $email; }
+    public function getEmail(): string { return $this->email; }
+    public function setEmail(string $email): void { $this->email = $email; }
 
     public function getPostCode(): string { return $this->postCode; }
     public function setPostCode(string $postCode): void { $this->postCode = $postCode; }
@@ -251,6 +249,7 @@ class Member implements UserInterface {
                 $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year);
                 break;
         }
+        $payments = $payments->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID);
         return count($payments) > 0;
     }
 
@@ -303,6 +302,8 @@ class Member implements UserInterface {
 
     /** @see UserInterface */
     public function getPassword(): string { return (string) $this->passwordHash; }
+
+    public function hasPassword(): bool { return $this->passwordHash !== null; }
 
     public function setPasswordHash(?string $passwordHash): void { $this->passwordHash = $passwordHash; }
 

@@ -105,10 +105,13 @@ class SecurityController extends AbstractController
         $error = null;
         $errorLink = null;
         $success = false;
-        if ($member === null || (time() - $member->getNewPasswordTokenGeneratedTime()->format('U')) > (3600 * 12)) {
+        $hasPassword = false;
+        if ($member === null || ((time() - $member->getNewPasswordTokenGeneratedTime()->format('U')) > (3600 * 12) && $member->hasPassword())) {
             $error = 'Deze link is verlopen.';
             $errorLink = ['Vraag opnieuw een link aan.', $this->generateUrl('request_new_password')];
         } else {
+            $hasPassword = $member->hasPassword();
+
             $form = $this->createFormBuilder()
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -141,6 +144,7 @@ class SecurityController extends AbstractController
             'form' => $form === null ? null : $form->createView(),
             'member' => $member,
             'success' => $success,
+            'hasPassword' => $hasPassword,
             'error' => $error,
             'errorLink' => $errorLink
         ]);
