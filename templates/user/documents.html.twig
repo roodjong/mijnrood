@@ -79,14 +79,20 @@
             {% endif %}
             {% if canDelete %}
                 {{ form_start(moveForm, { attr: { id: 'form-move'} }) }}
-                    <h3><span id="move-header">Document</span> verplaatsen</h3>
+                    <h3>
+                        <span id="move-header">Document</span> verplaatsen
+                    </h3>
                     {% for field in moveForm %}
                         {{ form_row(field, { row_attr: { class: 'form-row' }, attr: { class: 'text-input' } }) }}
                     {% endfor %}
-                    <button type="submit" class="button">
+                    <button type="submit" style="display: inline-block" class="button">
                         <i class="fa fa-fw fa-arrow-right"></i>
                         Verplaatsen
                     </button>
+                    <a class="button button-secondary" style="display: inline-block" onclick="documentActions('#null', '#null')">
+                        <i class="fa fa-fw fa-times"></i>
+                        Annuleren
+                    </a>
                 {{ form_end(moveForm) }}
             {% endif %}
         </div>
