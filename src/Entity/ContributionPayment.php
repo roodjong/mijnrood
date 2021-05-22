@@ -41,7 +41,7 @@ class ContributionPayment
     private DateTime $paymentTime;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="smallint")
      */
     private int $status = 0;
 
