@@ -192,8 +192,8 @@ class Member implements UserInterface {
     public function getIban(): ?string { return $this->iban; }
     public function setIban(?string $iban): void { $this->iban = $iban; }
 
-    public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): void { $this->email = $email; }
+    public function getEmail(): ?string { return $this->email; }
+    public function setEmail(?string $email): void { $this->email = $email; }
 
     public function getPostCode(): string { return $this->postCode; }
     public function setPostCode(string $postCode): void { $this->postCode = $postCode; }
