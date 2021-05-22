@@ -102,12 +102,14 @@
 
                 <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso stopzetten</a>
             {% else %}
-                <p>
+                {# <p>
                     Je hebt aangegeven je contributie van <strong>{{ app.user.contributionPerPeriodInCents|format_price }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
-                    {# Je moet uiterlijk <strong>(datum)</strong> betalen. #}
-                </p>
+                    Je moet uiterlijk <strong>(datum)</strong> betalen.
+                </p> #}
                 {% if app.user.contributionCompleted(date()) %}
-                    Je contributie voor {{ { 0: 'deze maand', 1: 'dit kwartaal', 2: 'dit jaar' }[app.user.contributionPeriod] }} is betaald.
+                    <p>
+                        Je contributie voor {{ { 0: 'deze maand', 1: 'dit kwartaal', 2: 'dit jaar' }[app.user.contributionPeriod] }} is betaald.
+                    </p>
                     {# <a class="button" href="#">Contributie vooruit betaling</a> #}
                 {% else %}
                     <p>
@@ -118,7 +120,7 @@
 
                 <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso instellen</a>
             {% endif %}
-            <a class="action-link" href="{{ url('member_contribution_preferences') }}">Contributievoorkeuren wijzigen</a>
+            {# <a class="action-link" href="{{ url('member_contribution_preferences') }}">Contributievoorkeuren wijzigen</a> #}
         </div>
     </div>
 {% endblock %}
