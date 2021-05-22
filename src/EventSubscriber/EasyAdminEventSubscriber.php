@@ -63,7 +63,7 @@ class EasyAdminEventSubscriber implements EventSubscriberInterface {
                 $this->emails->changePassword(
                     $instance->getDomain(),
                     $instance->getUser(),
-                    $instance->getTemporaryPassword()
+                    $instance->getChangePassword()
                 );
             }
         }
