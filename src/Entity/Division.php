@@ -120,8 +120,8 @@ class Division {
     public function getPhone(): ?string { return $this->phone; }
     public function setPhone(?string $phone): void { $this->phone = $phone; }
 
-    public function getAddress(): string { return $this->address; }
-    public function setAddress(string $address): void { $this->address = $address; }
+    public function getAddress(): ?string { return $this->address; }
+    public function setAddress(?string $address): void { $this->address = $address; }
 
     public function getCity(): ?string { return $this->city; }
     public function setCity(?string $city): void { $this->city = $city; }
