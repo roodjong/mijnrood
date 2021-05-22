@@ -1,4 +1,5 @@
 {% extends 'email/html/layout.html.twig' %}
+{% set url = url('set_new_password', { token: member.newPasswordToken }) %}
 {% block content %}
     <p>
         Beste geïnteresseerde,
@@ -14,6 +15,10 @@
         <li>Word actief bij een van onze lokale groepen. Momenteel hebben wij een ROOD-groep in de volgende steden: Rotterdam, Amsterdam, Utrecht, Zwolle, Groningen, Nijmegen, Eindhoven en Leiden. Om actief te worden in deze groepen is het niet vereist in deze specifieke gemeente te wonen. Leden die bijvoorbeeld in de buurt van één van deze steden wonen zijn meer dan welkom. Wanneer jij tijdens het invullen van het aanmeldingsformulier een woonplaats hebt doorgegeven, zal het bestuur ervoor zorgen dat de desbetreffende groep contact opneemt. Mocht dit niet het geval zijn maar wil jij wel actief worden bij één van deze groepen, stuur dan vooral een mailtje terug!</li>
         <li>Voor leden zonder lokale groep zijn er nog genoeg mogelijkheden om actief te zijn. Zo is er bijvoorbeeld een scholingsteam en een social media team waarbij nieuwe, enthousiaste leden altijd welkom zijn. Voor meer informatie kun je contact opnemen met het ROOD-bestuur.</li>
     </ul>
+    <p>
+        Je kunt een wachtwoord instellen voor Mijn ROOD, de ledenwebsite van ROOD, door op deze link te klikken:
+        <a href="{{ url }}">{{ url }}</a>
+    </p>
     <p>
         Groetjes,
     </p>

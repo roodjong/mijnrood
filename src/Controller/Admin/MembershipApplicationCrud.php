@@ -14,6 +14,8 @@ use Swift_Mailer, Swift_Message;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
+    public function __construct(Swift_Mailer $mailer) { $this->mailer = $mailer; }
+
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
     public static function getEntityFqcn(): string
     {
@@ -41,9 +43,12 @@ class MembershipApplicationCrud extends AbstractCrudController
             ->remove(Crud::PAGE_DETAIL, Action::EDIT);
     }
 
-    public function acceptApplication(AdminContext $context, Swift_Mailer $mailer) {
+    public function acceptApplication(AdminContext $context) {
+        $mailer = $this->mailer;
+
         $application = $context->getEntity()->getInstance();
         $member = $application->createMember();
+        $member->setNewPasswordToken(sha1($member->getEmail().time()));
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($member);
@@ -94,6 +99,8 @@ class MembershipApplicationCrud extends AbstractCrudController
             TextField::new('country', 'Landcode')
                 ->hideOnIndex()
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Twee-letterige landcode']]),
+            AssociationField::new('preferredDivision', 'Gewenste groep')
+                ->hideOnIndex(),
 
             FormField::addPanel('Contributie'),
             TextField::new('iban', 'IBAN-rekeningnummer')->hideOnIndex(),
