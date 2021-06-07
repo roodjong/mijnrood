@@ -20,7 +20,7 @@ class DivisionController extends AbstractController
         $division = $this->getDoctrine()->getRepository(Division::class)->findOneBy([
             'name' => $division
         ]);
-        if ($division->getContact()->getId() !== $member->getId()) {
+        if ($division->getContact()->getId() !== $member->getId() && !$this->getUser()->isAdmin()) {
             throw $this->createAccessDeniedException("Geen toegang!");
         }
         return $this->render('division/members.html.twig', [
