@@ -35,7 +35,7 @@ $(document).ready(function() {
         let conf = confirm('Weet je zeker dat je "' + entry.name + '" wil verwijderen?' + (entry.type == 'folder' ? ' Alle documenten in deze map zullen verplaatst worden naar de bovenliggende map.' : ''));
         if (conf) {
             let route = entry.type == 'folder' ? 'member_documents_delete_folder' : 'member_documents_delete';
-            let deleteUrl = Routing.generate('member_documents_delete_folder', { [entry.type + 'Id']: entry.id });
+            let deleteUrl = Routing.generate(route, { [entry.type + 'Id']: entry.id });
             $.post(deleteUrl, {}, function(r) {
                 if (r.status == 'deleted') {
                     $this.parents('.entry').remove();
