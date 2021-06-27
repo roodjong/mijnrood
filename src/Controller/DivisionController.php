@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use DateTime;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,8 +25,13 @@ class DivisionController extends AbstractController
         if ($division->getContact()->getId() !== $member->getId() && !$this->getUser()->isAdmin()) {
             throw $this->createAccessDeniedException("Geen toegang!");
         }
+
+        $newMemberDate = new DateTime('NOW -1 month');
+
         return $this->render('division/members.html.twig', [
-            'members' => $division->getMembers()
+            'division' => $division,
+            'members' => $division->getMembers(),
+            'newMemberDate' => $newMemberDate
         ]);
     }
 
