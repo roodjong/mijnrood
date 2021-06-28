@@ -32,14 +32,6 @@ class MembershipApplicationType extends AbstractType
             ->add('address', null, ['label' => 'Adres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('city', null, ['label' => 'Plaats', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('isSPMember', CheckboxType::class, [
-                'label' => 'Ik ben lid van de SP of jonger dan 16 jaar.',
-                'label_html' => false,
-                'mapped' => false,
-                'required' => true,
-                'error_bubbling' => true,
-                'constraints' => [new IsTrue(['message' => 'Je moet lid zijn van de SP om ook lid te worden van ROOD.'])]
-            ])
             ->add('preferredDivision', null, [
                 'label' => 'Bij welke groep wil je je aansluiten',
                 'query_builder' => function($repo) {
