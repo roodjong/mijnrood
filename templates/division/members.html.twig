@@ -3,28 +3,51 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Contacten</title>
-    <style> table, th, td {
-     border: 1px solid black;
-     min-width: 50%;
-}</style>
+    <title>Contactoverzicht {{ division.name }}</title>
+    <link rel="stylesheet" href="/bundles/easyadmin/app.css">
+    <style>
+      .newMember td {
+        background-color: #00820038
+      }
+      .newMember:hover td {
+        background-color: #00820048 !important
+      }
+    </style>
 </head>
 <body>
-  <table>
-    <tr>
-      <th>Voornaam</th>
-      <th>Achternaam</th>
-      <th>Email</th>
-      <th>Telefoon</th>
-    </tr>
-    {% for member in members %}
-    <tr>
-      <td>{{ member.firstName }}</td>
-      <td>{{ member.lastName }}</td>
-      <td>{{ member.email }}</td>
-      <td>{{ member.phone }}</td>
-    </tr>
-    {% endfor %}
-  </table>
+  <section style="margin: 1rem">
+    <h2>Contactoverzicht {{ division.name }}</h2>
+    <p>Leden die zich minder dan een maand geleden geregisteerd hebben zijn met groen aangeduid.</p>
+  </section>
+  <div class="content-panel" style="margin: 1rem">  
+    <div class="content-panel-body with-rounded-top with-min-h-250 without-padding">
+    <table class="table datagrid with-rounded-top ">
+      <tr>
+        <th>Naam</th>
+        <th>Email</th>
+        <th>Telefoon</th>
+        <th>Adres</th>
+        <th>Geboortedatum</th>
+        <th>Registratiedatum</th>
+      </tr>
+      <tbody>
+        {% for member in members %}
+          {% if member.registrationTime > newMemberDate %}
+            <tr class="newMember">
+          {% else %}
+            <tr>
+          {% endif %}
+          <td>{{ member.firstName }} {{ member.lastName }}</td>
+          <td>{{ member.email ?: '-' }}</td>
+          <td>{{ member.phone ?: '-' }}</td>
+          <td>{{ member.address }}, {{ member.postCode }}, {{ member.city }}</td>
+          <td>{{ member.dateOfBirth ? member.dateOfBirth.format("Y-m-d") : '-' }}</td>
+          <td>{{ member.registrationTime.format("Y-m-d") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
 </body>
 </html>
