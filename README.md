@@ -8,7 +8,7 @@ The docker-compose file creates four containers:
 
 Build and run these images with docker-compose:
 
-`docker-compose up --build --d`
+`sudo docker-compose up --build --d`
 
 The container will have appropriate volume bindings with `./app`.
 
