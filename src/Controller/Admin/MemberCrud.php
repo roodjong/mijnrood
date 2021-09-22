@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 use Symfony\Component\HttpFoundation\{ BinaryFileResponse, ResponseHeaderBag };
 use DateTime;
@@ -91,8 +92,17 @@ class MemberCrud extends AbstractCrudController
             $sheet->setCellValue('A'. $i, $member->getId());
             $sheet->setCellValue('B'. $i, $member->getFirstName());
             $sheet->setCellValue('C'. $i, $member->getLastName());
+
             $sheet->setCellValue('D'. $i, $member->getDateOfBirth() ? Date::PHPToExcel($member->getDateOfBirth()) : '');
+            $sheet->getStyle('D'. $i)
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+
             $sheet->setCellValue('E'. $i, $member->getRegistrationTime() ? Date::PHPToExcel($member->getRegistrationTime()): '');
+            $sheet->getStyle('E'. $i)
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+
             $sheet->setCellValue('F'. $i, $member->getDivision() ? $member->getDivision()->getName() : '');
             $sheet->setCellValue('G'. $i, $member->getEmail());
             $sheet->setCellValue('H'. $i, $member->getPhone());
