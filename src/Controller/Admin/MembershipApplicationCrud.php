@@ -36,12 +36,32 @@ class MembershipApplicationCrud extends AbstractCrudController
         $action = Action::new('accept', 'Goedkeuren', 'fa fa-check')
             ->linkToCrudAction('acceptApplication');
 
+
         return $actions
             ->add(Crud::PAGE_DETAIL, $action)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
             ->remove(Crud::PAGE_DETAIL, Action::EDIT);
+    }
+
+    public function notifyContact(Swift_Mailer $mailer, Member $member)
+    {
+        print($member);
+        // TODO ff checken of dit lid wel bij een groep hoort
+
+        $message = (new Swift_Message())
+            ->setSubject('Nieuw lid') //TODO
+            ->setTo('') // TODO goede email pakken
+            ->setBody(
+                $this->renderView('email/html/new_member.html.twig', ['member' => $member]),
+                'text/html'
+            )
+            ->addPart(
+                $this->renderView('email/text/new_member.txt.twig', ['member' => $member]),
+                'text/plain'
+            );
+        $mailer->send($message);
     }
 
     public function acceptApplication(AdminContext $context)
@@ -51,11 +71,12 @@ class MembershipApplicationCrud extends AbstractCrudController
         $application = $context->getEntity()->getInstance();
         $member = $application->createMember();
         $member->setNewPasswordToken(sha1($member->getEmail().time()));
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($member);
-        $em->remove($application);
-        $em->flush();
+        
+        // TODO dit voor testen
+        // $em = $this->getDoctrine()->getManager();
+        // $em->persist($member);
+        // $em->remove($application);
+        // $em->flush();
 
         $message = (new Swift_Message())
             ->setSubject('Welkom bij ROOD, jong in de SP')
@@ -70,6 +91,8 @@ class MembershipApplicationCrud extends AbstractCrudController
                 'text/plain'
             );
         $mailer->send($message);
+
+        $this->notifyContact($mailer, $member);
 
         $url = $this->get(CrudUrlGenerator::class)
             ->build()
