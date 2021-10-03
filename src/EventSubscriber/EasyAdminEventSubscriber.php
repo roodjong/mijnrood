@@ -7,8 +7,10 @@ use App\Controller\DirectAdminEmailController;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Event\{
         BeforeCrudActionEvent, BeforeEntityUpdatedEvent,
-        AfterEntityPersistedEvent, AfterEntityUpdatedEvent
+        AfterEntityPersistedEvent, AfterEntityUpdatedEvent,
+        AfterEntityDeletedEvent
 };
+use \DrewM\MailChimp\MailChimp;
 use App\Entity\{ Member, MemberDetailsRevision, Email };
 
 class EasyAdminEventSubscriber implements EventSubscriberInterface {
@@ -27,7 +29,8 @@ class EasyAdminEventSubscriber implements EventSubscriberInterface {
             BeforeCrudActionEvent::class => [['beforeCrud']],
             BeforeEntityUpdatedEvent::class => [['beforeEntityUpdate']],
             AfterEntityUpdatedEvent::class => [['afterEntityUpdate']],
-            AfterEntityPersistedEvent::class => [['afterEntityPersist']]
+            AfterEntityPersistedEvent::class => [['afterEntityPersist']],
+            AfterEntityDeletedEvent::class => [['afterEntityDeleted']]
         ];
     }
 
@@ -66,6 +69,15 @@ class EasyAdminEventSubscriber implements EventSubscriberInterface {
                     $instance->getChangePassword()
                 );
             }
+        }
+    }
+
+
+    public function afterEntityDeleted(AfterEntityUpdatedEvent $event) {
+        $instance = $event->getEntityInstance();
+        if ($instance instanceof Member) {
+            $subscriberHash = MailChimp::subscriberHash($instance->getEmail());
+            $mailChimp = new MailChimp('abc123abc123abc123abc123abc123-us1');
         }
     }
 
