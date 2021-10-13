@@ -51,7 +51,7 @@ class SupportMemberController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $supportMemberRepository = $this->em->getRepository(SupportMember::class);
+            $supportMemberRepository = $this->getDoctrine()->getRepository(SupportMember::class);
             $existingSupportMember = $supportMemberRepository->findOneByEmail($form['email']->getData());
 
             if ($existingSupportMember !== null)
