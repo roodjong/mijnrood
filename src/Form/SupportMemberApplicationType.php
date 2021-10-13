@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\{ CheckboxType, ChoiceType, Numbe
 use App\Validator\Age;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 
 class SupportMembershipApplicationType extends AbstractType
 {
@@ -35,16 +36,19 @@ class SupportMembershipApplicationType extends AbstractType
                 'label' => 'Betaling per',
                 'choices' => [
                     'Maand' => SupportMembershipApplication::PERIOD_MONTHLY,
-                    'Kwartaal' => SupportMembershipApplication::PERIOD_QUARTERLY,
-                    'Jaar' => SupportMembershipApplication::PERIOD_ANNUALLY
+                    // 'Kwartaal' => SupportMembershipApplication::PERIOD_QUARTERLY,
+                    // 'Jaar' => SupportMembershipApplication::PERIOD_ANNUALLY
                 ],
-                'constraints' => [new NotBlank]
+                'constraints' => [new NotBlank],
+                'error_bubbling' => true
             ])
             ->add('contributionPerPeriodInEuros', NumberType::class, [
                 'label' => 'Contributie per {period}',
                 'html5' => true,
                 'scale' => 2,
-                'input' => 'number'
+                'input' => 'number',
+                'constraints' => [new Range(['min' => 5, 'minMessage' => 'De contributie bedraagt ten minste 5 euro per maand.'])],
+                'error_bubbling' => true
             ])
             ->add('acceptPrivacy', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongindesp.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
@@ -52,7 +56,8 @@ class SupportMembershipApplicationType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'error_bubbling' => true,
-                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met het privacybeleid van ROOD, tenzij je jonger bent dan 16.'])]
+                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met het privacybeleid van ROOD, tenzij je jonger bent dan 16.'])],
+                'error_bubbling' => true
             ])
             ->add('acceptRecurringPayments', CheckboxType::class, [
                 'label' => 'Ik ga ermee akkoord dat ROOD periodiek door middel van automatische incasso mijn contributie int.',
@@ -60,7 +65,8 @@ class SupportMembershipApplicationType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'error_bubbling' => true,
-                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met deze voorwaarde.'])]
+                'constraints' => [new IsTrue(['message' => 'Je moet akkoord gaan met deze voorwaarde.'])],
+                'error_bubbling' => true
             ])
         ;
     }
