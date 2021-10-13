@@ -36,6 +36,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login$, roles: IS_ANONYMOUS }
+        - { path: ^/steunlid-worden(/|$), roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/wachtwoord-opvragen$, roles: IS_ANONYMOUS }
         - { path: ^/wachtwoord-instellen/.+$, roles: IS_ANONYMOUS }
         - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }

@@ -1,0 +1,37 @@
+{% set pageTitle = 'Steunlid worden' %}
+{% extends 'user/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function enqueueCheck() {
+            setTimeout(function() {
+                fetch(window.location.href + '?check=1').then(r => r.json()).then(d => {
+                    if (d.success)
+                        window.location.reload();
+                    else
+                        enqueueCheck();
+                })
+            }, 1000)
+        }
+        enqueueCheck();
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset('assets/image/rood-sp.svg') }}" />
+
+        <span class="center-form-title">
+            Betaling verwerken...
+        </span>
+
+        <p>
+            Je betaling wordt verwerkt. Gelieve even geduld te hebben.
+        </p>
+    </div>
+{% endblock %}

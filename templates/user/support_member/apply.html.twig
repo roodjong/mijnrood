@@ -1,0 +1,117 @@
+{% set pageTitle = 'Steunlid worden' %}
+{% extends 'user/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const contributionPeriodInput = document.querySelector('#{{ form.contributionPeriod.vars.id }}');
+            const contributionPerPeriodInEurosInput = document.querySelector('#{{ form.contributionPerPeriodInEuros.vars.id }}');
+            const contributionPerPeriodInEurosLabel = document.querySelector('label[for="{{ form.contributionPerPeriodInEuros.vars.id }}"]');
+            const minimumAmountLabel = document.querySelector('#contribution-per-period-minimum-amount');
+            const minimumPeriodLabel = document.querySelector('#contribution-per-period-minimum-period');
+            const originalLabelText = contributionPerPeriodInEurosLabel.textContent;
+
+            // Values
+            const periodNames = {
+                0: 'maand',
+                1: 'kwartaal',
+                2: 'jaar'
+            };
+            const minimumContributions = {
+                0: 5,
+                1: 15,
+                2: 60
+            };
+
+            let previousPeriod = contributionPeriodInput.value;
+            const updateContributionPeriod = function() {
+                let period = contributionPeriodInput.value;
+
+                contributionPerPeriodInEurosLabel.textContent = originalLabelText.replace('{period}', periodNames[period]);
+                contributionPerPeriodInEurosInput.min = minimumContributions[period];
+                minimumAmountLabel.textContent = minimumContributions[period];
+                minimumPeriodLabel.textContent = periodNames[period];
+
+                if (contributionPerPeriodInEurosInput.value == '')
+                {
+                    contributionPerPeriodInEurosInput.value = minimumContributions[period];
+                }
+                else
+                {
+                    let ratio = minimumContributions[period] / minimumContributions[previousPeriod];
+                    contributionPerPeriodInEurosInput.value = ratio * parseFloat(contributionPerPeriodInEurosInput.value);
+                }
+
+                previousPeriod = period;
+            };
+
+            updateContributionPeriod();
+
+            contributionPeriodInput.addEventListener('change', updateContributionPeriod);
+            contributionPerPeriodInEurosInput.addEventListener('keyup', function(e) {
+
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset('assets/image/rood-sp.svg') }}" />
+
+        <span class="center-form-title">
+            Steunlid worden van <span class="rood">ROOD</span>
+        </span>
+
+        <p>
+            Als steunlid steun je <span class="rood">ROOD</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.
+        </p>
+
+        {% if form.vars.submitted and not form.vars.valid %}
+            <div class="error">
+                {{ form_errors(form) }}
+            </div>
+        {% endif %}
+
+        {{ form_start(form) }}
+            <div class="form-row">
+                {{ form_label(form.firstName, 'Naam') }}
+                <div class="form-field-group">
+                    {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' } }) }}
+                    {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' } }) }}
+                </div>
+            </div>
+
+            {{ form_row(form.email, { attr: { class: 'text-input' } }) }}
+            {{ form_row(form.phone, { attr: { class: 'text-input' } }) }}
+            {{ form_row(form.dateOfBirth, { attr: { class: 'text-input' } }) }}
+
+            {{ form_row(form.address, { attr: { class: 'text-input' } }) }}
+            {{ form_row(form.city, { attr: { class: 'text-input' } }) }}
+            {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
+            {{ form_row(form.contributionPeriod, { row_attr: { style: 'display: none' }, attr: { class: 'text-input' } }) }}
+            {{ form_row(form.contributionPerPeriodInEuros, { attr: { class: 'text-input' } }) }}
+            <span id="contribution-per-period-minimum">
+                Contributie moet ten minste &euro; <span id="contribution-per-period-minimum-amount"></span> per
+                <span id="contribution-per-period-minimum-period"></span> bedragen.
+            </span>
+
+            <div>
+                {{ form_widget(form.acceptPrivacy, { attr: { class: 'checkbox-input' } }) }}
+                {{ form_label(form.acceptPrivacy) }}
+            </div>
+            <div>
+                {{ form_widget(form.acceptRecurringPayments, { attr: { class: 'checkbox-input' } }) }}
+                {{ form_label(form.acceptRecurringPayments) }}
+            </div>
+
+            <button class="submit-button" type="submit">Naar betaling</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

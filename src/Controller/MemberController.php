@@ -9,7 +9,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
-use Swift_Mailer, Swift_Message;
 use App\Form\MemberDetailsType;
 use DateTime;
 use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
