@@ -21,6 +21,7 @@
   </section>
   <div class="content-panel" style="margin: 1rem">  
     <div class="content-panel-body with-rounded-top with-min-h-250 without-padding">
+    <button onClick="alert(Array.from(document.querySelectorAll('td')).map(x => x.innerHTML).filter(x => x.includes('@')).join('\n'))">Kopieer emails</button>
     <table class="table datagrid with-rounded-top ">
       <tr>
         <th>Naam</th>
@@ -48,6 +49,6 @@
       </tbody>
     </table>
     </div>
-  </div>
+  </script>
 </body>
 </html>
