@@ -127,7 +127,7 @@ class ContributionController extends AbstractController
                 $contributionPayment->setStatus(ContributionPayment::STATUS_PAID);
 
                 if ($member->getCreateSubscriptionAfterPayment()) {
-                    $this->setupSubscription($member, $customer, $mollieApiClient);
+                    $this->setupSubscription($member, $customer);
                     $member->setCreateSubscriptionAfterPayment(false);
                 }
                 break;
@@ -170,7 +170,7 @@ class ContributionController extends AbstractController
         }
 
         // 3. If a mandate does exist, set up subscription
-        $this->setupSubscription($member, $customer, $mollieApiClient);
+        $this->setupSubscription($member, $customer);
 
         // 4. Show automatic collection enabled screen
         return $this->redirectToRoute('member_contribution_automatic_collection');
@@ -376,7 +376,7 @@ class ContributionController extends AbstractController
         return $contributionPayment;
     }
 
-    private function setupSubscription(Member $member, $customer, MollieApiClient $mollieApiClient) {
+    private function setupSubscription(Member $member, $customer) {
         $startDate = new DateTime('next year 1 january');
         $subscription = $customer->createSubscription([
             'amount' => [

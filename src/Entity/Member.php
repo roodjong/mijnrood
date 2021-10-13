@@ -157,10 +157,10 @@ class Member implements UserInterface {
     private bool $acceptUsePersonalInformation = true;
 
     public function __construct() {
-        $this->timeRegistered = new DateTime();
-        $this->contributionPayments = new ArrayCollection();
-        $this->revisions = new ArrayCollection();
-        $this->managingEmails = new ArrayCollection();
+        $this->registrationTime = new DateTime;
+        $this->contributionPayments = new ArrayCollection;
+        $this->detailRevisions = new ArrayCollection;
+        $this->managingEmails = new ArrayCollection;
     }
 
     public function __toString() {
