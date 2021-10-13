@@ -16,8 +16,8 @@ class ContributionPeriodType extends ChoiceType
         parent::configureOptions($resolver);
         $resolver->setDefaults([
             'choices' => [
-                // 'Maandelijks' => Member::PERIOD_MONTHLY,
-                // 'Per kwartaal' => Member::PERIOD_QUARTERLY,
+                'Maandelijks' => Member::PERIOD_MONTHLY,
+                'Per kwartaal' => Member::PERIOD_QUARTERLY,
                 'Jaarlijks' => Member::PERIOD_ANNUALLY
             ]
         ]);

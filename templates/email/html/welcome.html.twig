@@ -2,7 +2,7 @@
 {% set url = url('set_new_password', { token: member.newPasswordToken }) %}
 {% block content %}
     <p>
-        Beste geïnteresseerde,
+        Beste {{ member.firstName }},
     </p>
     <p>
         Recentelijk heb jij het aanmeldingsformulier van ROOD, jong in de SP ingevuld. Via deze mail heten wij je namens het ROOD-bestuur hartelijk welkom in onze organisatie. Wij zijn erg blij om te horen dat jij je wil aansluiten bij de meest linkse en radicale jongerenorganisatie van Nederland. Je lidnummer is {{ member.id }}.
