@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=App\Repository\SupportMemberRepository::class)
  * @ORM\Table("admin_support_member")
  */
 class SupportMember
