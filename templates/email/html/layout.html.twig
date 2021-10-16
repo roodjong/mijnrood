@@ -14,7 +14,7 @@
 </style>
 </head>
 <body style="font-family: 'HelveticaNeueLTStd'">
-    <img style="width: 200px; display: block; margin: 0 auto" src="{{ app.request.baseUrl ~ asset('assets/image/rood-sp.svg') }}" />
+    <img style="width: 200px; display: block; margin: 0 auto" src="{{ absolute_url(asset('assets/image/rood-sp.svg')) }}" />
 
     {% block content %}{% endblock %}
 
