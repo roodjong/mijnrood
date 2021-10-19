@@ -18,7 +18,7 @@ class StatisticsController extends AbstractController
      * @Route("/admin/statistics}", name="admin_statistics")
      */
     public function statisticsController(Request $request): Response {
-        $contributionSupportMembers = $this->getDoctrine()->getRepository(SupportMember::class)->sumByContributionPerMonth();
+        $contributionSupportMembers = $this->getDoctrine()->getRepository(SupportMember::class)->sumByContributionPerMonth() / 100;
         return $this->render('admin/statistics.html.twig',
                              ['contributionSupportMembers' => $contributionSupportMembers]);
     }
