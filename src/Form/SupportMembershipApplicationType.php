@@ -25,7 +25,8 @@ class SupportMembershipApplicationType extends AbstractType
             ->add('dateOfBirth', null, [
                 'label' => 'Geboortedatum',
                 'required' => true,
-                'widget' => 'single_text',
+                'widget' => 'choice',
+                'years' => range(1900, 2021),
                 'constraints' => [new NotBlank],
                 'error_bubbling' => true
             ])
