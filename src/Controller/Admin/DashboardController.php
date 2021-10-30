@@ -65,6 +65,7 @@ class DashboardController extends AbstractDashboardController
 
             MenuItem::section(''),
             MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
+            MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
         ];
     }
