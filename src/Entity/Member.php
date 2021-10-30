@@ -142,7 +142,7 @@ class Member implements UserInterface {
     private ?string $newPasswordToken = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="MemberDetailsRevision", mappedBy="member")
+     * @ORM\OneToMany(targetEntity="MemberDetailsRevision", mappedBy="member", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private Collection $detailRevisions;
 
