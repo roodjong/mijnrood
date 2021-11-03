@@ -71,6 +71,31 @@ class MembershipApplicationCrud extends AbstractCrudController
             );
         $mailer->send($message);
 
+        // Email naar de contactpersoon
+        if ($member->getDivision() !== null)
+        {
+            if ($member->getDivision()->getContact() !== null)
+            {
+                $message2 = (new Swift_Message())
+                    ->setSubject('Nieuw lid aangesloten bij je groep')
+                    ->setTo([$member->getDivision()->getContact()->getEmail() => $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()])
+                    ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
+                    ->setBody(
+                        $this->renderView('email/html/contact_new_member.html.twig', [
+                            'member' => $member,
+                        ]),
+                        'text/html'
+                    )
+                    ->addPart(
+                        $this->renderView('email/text/contact_new_member.txt.twig', [
+                            'member' => $member,
+                        ]),
+                        'text/plain'
+                    );
+                $mailer->send($message2);
+            }
+        }
+
         $url = $this->get(CrudUrlGenerator::class)
             ->build()
             ->setController(MemberCrud::class)

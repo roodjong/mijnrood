@@ -9,11 +9,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
-use App\Form\MemberDetailsType;
+use App\Form\{ MemberDetailsType, ChangePasswordType };
 use DateTime;
 use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
 use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Form\FormError;
 
 class MemberController extends AbstractController {
 
@@ -92,7 +93,7 @@ class MemberController extends AbstractController {
     /**
      * @Route("/gegevens", name="member_details")
      */
-    public function details(Request $request): Response {
+    public function details(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response {
         $member = $this->getUser();
         if (!$member->getAcceptUsePersonalInformation())
             return $this->memberAcceptPersonalDetails($request);
@@ -109,9 +110,31 @@ class MemberController extends AbstractController {
             $success = true;
         }
 
+        $successPassword = false;
+
+        $formPassword = $this->createForm(ChangePasswordType::class);
+        $formPassword->handleRequest($request);
+        if ($formPassword->isSubmitted() && $formPassword->isValid())
+        {
+            $valid = $passwordEncoder->isPasswordValid($member, $formPassword['currentPassword']->getData());
+            if (!$valid)
+            {
+                $formPassword->addError(new FormError('Het opgegeven huidige wachtwoord is niet correct.'));
+            }
+            else
+            {
+                $passwordHash = $passwordEncoder->encodePassword($member, $formPassword['newPassword']->getData());
+                $member->setPasswordHash($passwordHash);
+                $this->getDoctrine()->getManager()->flush();
+                $successPassword = true;
+            }
+        }
+
         return $this->render('user/details.html.twig', [
             'form' => $form->createView(),
-            'success' => $success
+            'formPassword' => $formPassword->createView(),
+            'success' => $success,
+            'successPassword' => $successPassword
         ]);
     }
 
