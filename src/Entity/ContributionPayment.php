@@ -69,6 +69,8 @@ class ContributionPayment
         $this->time = new DateTime();
     }
 
+    public function getId(): ?int { return $this->id; }
+
     public function getAmountInCents(): int { return $this->amountInCents; }
     public function setAmountInCents(int $amountInCents): void { $this->amountInCents = $amountInCents; }
 

@@ -1,0 +1,33 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        window.setInterval(function() {
+            fetch(window.location, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(r => r.json()).then(d => {
+                if (d.status != 'pending')
+                {
+                    window.location.reload();
+                }
+            });
+        }, 1500);
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Betaling verwerken...</h1>
+        <p>
+            We controleren of je betaling is gelukt.
+        </p>
+    </div>
+{% endblock %}
