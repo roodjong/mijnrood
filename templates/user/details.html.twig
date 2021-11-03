@@ -21,6 +21,8 @@
 
             {{ form_start(form) }}
 
+            {{ form_errors(form) }}
+
             <div class="form-row">
                 {{ form_label(form.id, 'Lidnummer') }}
                 {{ form_widget(form.id, { attr: { class: 'text-input' }}) }}
@@ -65,6 +67,39 @@
             <button type="submit" class="button">Opslaan</button>
 
             {{ form_end(form) }}
+
+            <h3>Wachtwoord wijzigen</h3>
+
+            {% if successPassword %}
+            <div class="message message-success">
+                <p>
+                    Je wachtwoord is gewijzigd.
+                </p>
+            </div>
+            {% endif %}
+
+            {{ form_start(formPassword) }}
+
+            {{ form_errors(formPassword) }}
+
+            <div class="form-row">
+                {{ form_label(formPassword.currentPassword) }}
+                {{ form_widget(formPassword.currentPassword, { attr: { class: 'text-input' } }) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(formPassword.newPassword.first) }}
+                {{ form_widget(formPassword.newPassword.first, { attr: { class: 'text-input' } }) }}
+            </div>
+
+            <div class="form-row">
+                {{ form_label(formPassword.newPassword.second) }}
+                {{ form_widget(formPassword.newPassword.second, { attr: { class: 'text-input' } }) }}
+            </div>
+
+            <button type="submit" class="button">Wachtwoord wijzigen</button>
+
+            {{ form_end(formPassword) }}
         </div>
 
         <div class="contributions">
