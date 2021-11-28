@@ -214,9 +214,9 @@ class SupportMemberController extends AbstractController
 
             // Send confirmation email
             $message = (new Swift_Message())
-                ->setSubject('Welkom als steunlid bij ROOD, jong in de SP')
+                ->setSubject('Welkom als steunlid bij ROOD, Socialistische Jongeren')
                 ->setTo([$supportMember->getEmail() => $supportMember->getFirstName() .' '. $supportMember->getLastName()])
-                ->setFrom(['noreply@roodjongindesp.nl' => 'ROOD, jong in de SP'])
+                ->setFrom(['noreply@roodjongindesp.nl' => 'ROOD, Socialisische Jongeren'])
                 ->setBody(
                     $this->renderView('email/html/welcome_support.html.twig', ['supportMember' => $supportMember]),
                     'text/html'

@@ -58,7 +58,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->flush();
 
         $message = (new Swift_Message())
-            ->setSubject('Welkom bij ROOD, jong in de SP')
+            ->setSubject('Welkom bij ROOD, Socialistische Jongeren')
             ->setTo([$member->getEmail() => $member->getFirstName() .' '. $member->getLastName()])
             ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
             ->setBody(
