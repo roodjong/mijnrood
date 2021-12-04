@@ -27,7 +27,7 @@ Create the database by executing:
 
 Create the schema with:
 
-`docker-compose run --rm php74-service symfony console doctrine:schema:create`
+`docker-compose run --rm php74-service symfony console doctrine:migrations:migrate`
 
 And finally populate the DB with some test data:
 
