@@ -42,7 +42,7 @@ class MembershipApplicationType extends AbstractType
                 // 'placeholder' => 'Geen voorkeur'
             ])
             ->add('accept', CheckboxType::class, [
-                'label' => 'Ik heb het <a target="_blank" href="https://roodjongindesp.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
+                'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,
                 'mapped' => false,
                 'required' => true,
