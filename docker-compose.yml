@@ -1,7 +1,7 @@
 version: '3'
 
 networks:
-  nginx-php74-mysql8-node:
+  mijnrood:
 
 services:
 
@@ -18,7 +18,7 @@ services:
       - php74-service
       - mariadb10-service
     networks:
-      - nginx-php74-mysql8-node
+      - mijnrood
 
   # php
   php74-service:
@@ -31,7 +31,7 @@ services:
     volumes:
       - .:/var/www/project
     networks:
-      - nginx-php74-mysql8-node
+      - mijnrood
 
   # mysql
   mariadb10-service:
@@ -46,7 +46,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: trotzalledem
     networks:
-      - nginx-php74-mysql8-node
+      - mijnrood
 
   # node
   node-service:
@@ -56,4 +56,11 @@ services:
       - .:/var/www/project
     working_dir: /var/www/project
     networks:
-      - nginx-php74-mysql8-node
+      - mijnrood
+
+  mailcatcher:
+    image: sj26/mailcatcher:v0.8.1
+    ports:
+      - "1080:1080"
+    networks:
+      - mijnrood
