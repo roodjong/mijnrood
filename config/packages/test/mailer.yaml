@@ -1,0 +1,3 @@
+src/Controller/Admin/MembershipApplicationCrud.phpframework:
+    mailer:
+        dsn: 'null://null'
