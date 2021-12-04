@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\MemberCrud;
 use App\Entity\{ Member, MembershipApplication };
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
@@ -9,12 +10,17 @@ use App\Form\Admin\ContributionPaymentType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Action, Actions };
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Swift_Mailer, Swift_Message;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
-    public function __construct(Swift_Mailer $mailer) { $this->mailer = $mailer; }
+    private $crudUrlGenerator;
+
+    public function __construct(Swift_Mailer $mailer, AdminUrlGenerator $crudUrlGenerator) {
+        $this->mailer = $mailer;
+        $this->crudUrlGenerator = $crudUrlGenerator;
+    }
 
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
     public static function getEntityFqcn(): string
@@ -96,8 +102,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             }
         }
 
-        $url = $this->get(CrudUrlGenerator::class)
-            ->build()
+        $url = $this->crudUrlGenerator
             ->setController(MemberCrud::class)
             ->setAction(Action::DETAIL)
             ->setEntityId($member->getId())
