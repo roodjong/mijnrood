@@ -1,0 +1,34 @@
+'Steunlid worden': 'Become a supporting member'
+maand: month
+Maand: Month
+kwartaal: quarter
+jaar: year
+'Steunlid worden van <span class="rood">ROOD</span>': 'Become a supporing member of <span class="rood">ROOD</span>'
+'Als steunlid steun je <span class="rood">ROOD</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.': 'As supporing member of <span class="rood">ROOD</span> you give financial support with a monthly monetary amount. This amount will be withdrawn from your bank account via SEPA direct debit mandate.'
+"Contributie moet ten minste &euro; <span id=\"contribution-per-period-minimum-amount\"></span> per\n                <span id=\"contribution-per-period-minimum-period\"></span> bedragen.": "Contribution has to be a minimum of &euro; <span id=\"contribution-per-period-minimum-amount\"></span> per\n                <span id=\"contribution-per-period-minimum-period\"></span> bedragen."
+'Naar betaling': 'Start payment'
+Naam: Name
+Voornaam: 'Given name'
+Achternaam: Surname
+E-mailadres: 'Email address'
+Telefoonnummer: 'Phone number'
+Geboortedatum: 'Birth date'
+Adres: Address
+Plaats: City
+Postcode: 'Postal code'
+'Betaling per': 'Payment per'
+'Contributie per {period}': 'Contribution per {period}'
+'Ik heb het <a target="_blank" href="https://roodjongindesp.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.': 'I have read and agree with the <a target="_blank" href="https://roodjongindesp.nl/privacybeleid">privacy policy</a>.'
+'Ik ga ermee akkoord dat ROOD periodiek door middel van automatische incasso mijn contributie int.': 'I agree that ROOD withdraws my periodic contribution via SEPA direct debit mandate.'
+'This page is also available <a href="/steunlid-worden/en">in English</a>.': 'Deze pagina is ook beschikbaar <a href="/steunlid-worden/nl">in het Nederlands</a>.'
+'Betaling mislukt': 'Payment failed'
+'De betaling is helaas mislukt, waardoor je steunlidmaatschap niet afgesloten kon worden.': 'Something went wrong with your payment, this means your supporting membership has not been registered.'
+'Nogmaals proberen': 'Try again'
+Steunlidmaatschap: 'Supporting member'
+'Je steunlidmaatschap is succesvol afgesloten.': 'Your supporting membership has been registered.'
+'De contributie zal in het vervolg automatisch van je bankrekening afgeschreven worden.': 'Your contribution will be automatically withdrawn from your bank account in the future.'
+'Mocht je de frequentie of hoogte van je contributie willen wijzigen, neem dan contact op met het bestuur van ROOD via <a href="mailto:info@roodjongindesp.nl">info@roodjongindesp.nl</a>.': 'If you want to change the frequency or amount of your payments, please get in contact with the ROOD board via <a href="mailto:info@roodjongindesp.nl">info@roodjongindesp.nl</a>.'
+'Betaling verwerken...': 'Your payment is being processed...'
+'Je betaling wordt verwerkt. Gelieve even geduld te hebben.': 'Your payment is being processed. Please keep waiting for a bit.'
+'Er is al een steunlid met dit e-mailadres.': 'A supporing member with this email address already exists.'
+'Steunlidmaatschap ROOD': 'Supporting membership ROOD'

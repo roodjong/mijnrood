@@ -18,9 +18,9 @@
 
             // Values
             const periodNames = {
-                0: 'maand',
-                1: 'kwartaal',
-                2: 'jaar'
+                0: '{% trans %}maand{% endtrans %}',
+                1: '{% trans %}kwartaal{% endtrans %}',
+                2: '{% trans %}jaar{% endtrans %}'
             };
             const minimumContributions = {
                 0: 5,
@@ -62,15 +62,16 @@
 
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
+        <p>{% trans %}This page is also available <a href="/steunlid-worden/en">in English</a>.{% endtrans %}</p>
 
         <img id="logo" src="{{ asset('assets/image/rood-sp.svg') }}" />
 
         <span class="center-form-title">
-            Steunlid worden van <span class="rood">ROOD</span>
+            {% trans %}Steunlid worden van <span class="rood">ROOD</span>{% endtrans %}
         </span>
 
         <p>
-            Als steunlid steun je <span class="rood">ROOD</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.
+            {% trans %}Als steunlid steun je <span class="rood">ROOD</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.{% endtrans %}
         </p>
 
         {% if form.vars.submitted and not form.vars.valid %}
@@ -98,8 +99,8 @@
             {{ form_row(form.contributionPeriod, { row_attr: { style: 'display: none' }, attr: { class: 'text-input' } }) }}
             {{ form_row(form.contributionPerPeriodInEuros, { attr: { class: 'text-input' } }) }}
             <span id="contribution-per-period-minimum">
-                Contributie moet ten minste &euro; <span id="contribution-per-period-minimum-amount"></span> per
-                <span id="contribution-per-period-minimum-period"></span> bedragen.
+                {% trans %}Contributie moet ten minste &euro; <span id="contribution-per-period-minimum-amount"></span> per
+                <span id="contribution-per-period-minimum-period"></span> bedragen.{% endtrans %}
             </span>
 
             <div>
@@ -111,7 +112,7 @@
                 {{ form_label(form.acceptRecurringPayments) }}
             </div>
 
-            <button class="submit-button" type="submit">Naar betaling</button>
+            <button class="submit-button" type="submit">{% trans %}Naar betaling{% endtrans %}</button>
         {{ form_end(form) }}
     </div>
 {% endblock %}

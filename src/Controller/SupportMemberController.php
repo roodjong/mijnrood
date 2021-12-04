@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\{ Request, Response };
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Form\FormError;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 use App\Form\SupportMembershipApplicationType;
 use App\Entity\{ SupportMember, SupportMembershipApplication };
@@ -25,25 +26,25 @@ class SupportMemberController extends AbstractController
         $this->mollieApiClient = $mollieApiClient;
     }
 
-    private function createPayment(/**MollieCustomer*/ $customer, SupportMembershipApplication $supportMembershipApplication)
+    private function createPayment(/**MollieCustomer*/ $customer, SupportMembershipApplication $supportMembershipApplication, TranslatorInterface $translator)
     {
         $payment = $customer->createPayment([
             'amount' => [
                 'currency' => 'EUR',
                 'value' => number_format($supportMembershipApplication->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
-            'description' => 'Steunlidmaatschap ROOD',
+            'description' => $translator->trans('Steunlidmaatschap ROOD'),
             'sequenceType' => 'first',
-            'redirectUrl' => $this->generateUrl('support_member_redirect', ['customerId' => $customer->id], UrlGeneratorInterface::ABSOLUTE_URL),
-            'webhookUrl' => $this->generateUrl('support_member_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            'redirectUrl' => $this->generateUrl('support_member_redirect', ['customerId' => $customer->id, '_locale' => $translator->getLocale()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'webhookUrl' => $this->generateUrl('support_member_webhook', ['_locale' => $translator->getLocale()], UrlGeneratorInterface::ABSOLUTE_URL)
         ]);
         return $payment;
     }
 
     /**
-     * @Route("/steunlid-worden", name="support_member_apply")
+     * @Route("/steunlid-worden/{_locale}", name="support_member_apply", requirements={"_locale": "en|nl"}, defaults={"_locale": "nl"})
      */
-    public function apply(Request $request): Response
+    public function apply(Request $request, TranslatorInterface $translator): Response
     {
         $supportMembershipApplication = new SupportMembershipApplication;
         $form = $this->createForm(SupportMembershipApplicationType::class, $supportMembershipApplication);
@@ -56,7 +57,7 @@ class SupportMemberController extends AbstractController
 
             if ($existingSupportMember !== null)
             {
-                $form->addError(new FormError('Er is al een steunlid met dit e-mailadres.'));
+                $form->addError(new FormError($translator->trans('Er is al een steunlid met dit e-mailadres.')));
             }
             else
             {
@@ -71,7 +72,7 @@ class SupportMemberController extends AbstractController
                 $em->persist($supportMembershipApplication);
                 $em->flush();
 
-                $payment = $this->createPayment($customer, $supportMembershipApplication);
+                $payment = $this->createPayment($customer, $supportMembershipApplication, $translator);
 
                 return $this->redirect($payment->getCheckoutUrl(), 303);
             }
@@ -83,7 +84,7 @@ class SupportMemberController extends AbstractController
     }
 
     /**
-     * @Route("/steunlid-worden/afronden/{customerId}", name="support_member_redirect")
+     * @Route("/steunlid-worden/afronden/{customerId}/{_locale}", name="support_member_redirect", requirements={"_locale": "en|nl"}, defaults={"_locale": "nl"})
      */
     public function handleRedirect(Request $request, string $customerId): Response
     {
@@ -121,7 +122,7 @@ class SupportMemberController extends AbstractController
                     }
 
                     $retryUrl = $this->generateUrl('support_member_retry', [
-                        'customerId' => $customerId
+                        'customerId' => $customerId, '_locale' => $request->locale
                     ]);
 
                     return $this->render('user/support_member/failed.html.twig', [
@@ -140,9 +141,9 @@ class SupportMemberController extends AbstractController
     }
 
     /**
-     * @Route("/steunlid-worden/opnieuw/{customerId}", name="support_member_retry")
+     * @Route("/steunlid-worden/opnieuw/{customerId}/{_locale}", name="support_member_retry", requirements={"_locale": "en|nl"}, defaults={"_locale": "nl"})
      */
-    public function retryPayment(Request $request, string $customerId): Response
+    public function retryPayment(Request $request, string $customerId, TranslatorInterface $translator): Response
     {
         $supportMembershipApplicationRepository = $this->getDoctrine()->getRepository(SupportMembershipApplication::class);
         $supportMembershipApplication = $supportMembershipApplicationRepository->findOneByMollieCustomerId($customerId);
@@ -150,22 +151,22 @@ class SupportMemberController extends AbstractController
         if ($supportMembershipApplication === null)
         {
             return $this->redirectToRoute('support_member_redirect', [
-                'customerId' => $customerId
+                'customerId' => $customerId, '_locale' => $request->locale
             ]);
         }
         else
         {
             $customer = $this->mollieApiClient->customers->get($customerId);
-            $payment = $this->createPayment($customer, $supportMembershipApplication);
+            $payment = $this->createPayment($customer, $supportMembershipApplication, $translator);
 
             return $this->redirect($payment->getCheckoutUrl(), 303);
         }
     }
 
     /**
-     * @Route("/steunlid-worden/webhook", name="support_member_webhook")
+     * @Route("/steunlid-worden/webhook/{_locale}", name="support_member_webhook", requirements={"_locale": "en|nl"}, defaults={"_locale": "nl"})
      */
-    public function webhook(Request $request, Swift_Mailer $mailer): Response
+    public function webhook(Request $request, Swift_Mailer $mailer, TranslatorInterface $translator): Response
     {
         $paymentId = $request->request->get('id');
         $payment = $this->mollieApiClient->payments->get($paymentId);
@@ -200,7 +201,7 @@ class SupportMemberController extends AbstractController
                     'currency' => 'EUR',
                     'value' => number_format($supportMembershipApplication->getContributionPerPeriodInEuros(), 2, '.', '')
                 ],
-                'description' => 'Steunlidmaatschap ROOD',
+                'description' => $translator->trans('Steunlidmaatschap ROOD'),
                 'interval' => $mollieIntervals[$period],
                 'startDate' => $startDate->format('Y-m-d')
             ]);
@@ -214,15 +215,15 @@ class SupportMemberController extends AbstractController
 
             // Send confirmation email
             $message = (new Swift_Message())
-                ->setSubject('Welkom als steunlid bij ROOD, Socialistische Jongeren')
+                ->setSubject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
                 ->setTo([$supportMember->getEmail() => $supportMember->getFirstName() .' '. $supportMember->getLastName()])
                 ->setFrom(['noreply@roodjongindesp.nl' => 'ROOD, Socialisische Jongeren'])
                 ->setBody(
-                    $this->renderView('email/html/welcome_support.html.twig', ['supportMember' => $supportMember]),
+                    $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember]),
                     'text/html'
                 )
                 ->addPart(
-                    $this->renderView('email/text/welcome_support.txt.twig', ['supportMember' => $supportMember]),
+                    $this->renderView('email/text/welcome_support-' . $request->locale . '.txt.twig', ['supportMember' => $supportMember]),
                     'text/plain'
                 );
             $mailer->send($message);

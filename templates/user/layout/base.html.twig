@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{{ pageTitle is defined ? pageTitle ~ ' • ' }}Mijn ROOD</title>
+    <title>{{ pageTitle is defined ? pageTitle | trans ~ ' • ' }}Mijn ROOD</title>
     {% block stylesheets %}
 
     {% endblock %}
