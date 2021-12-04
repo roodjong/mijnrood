@@ -75,13 +75,19 @@ class MemberController extends AbstractController {
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($member);
-            $em->flush();
-
-            return $this->render('user/apply.html.twig', [
-                'success' => true
-            ]);
+            $memberRepository = $this->getDoctrine()->getRepository(Member::class);
+            $existingMember = $memberRepository->findOneByEmail($member->getEmail());
+            if ($existingMember !== null) {
+                $form->addError(new FormError('Er is al een lid met dit e-mailadres.'));
+            } else {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($member);
+                $em->flush();
+    
+                return $this->render('user/apply.html.twig', [
+                    'success' => true
+                ]);
+            }
         }
 
         return $this->render('user/apply.html.twig', [
