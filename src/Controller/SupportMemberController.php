@@ -8,11 +8,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 use App\Form\SupportMembershipApplicationType;
 use App\Entity\{ SupportMember, SupportMembershipApplication };
 use Mollie\Api\MollieApiClient;
-use Swift_Mailer, Swift_Message;
 use DateTime;
 use DateInterval;
 
@@ -166,7 +168,7 @@ class SupportMemberController extends AbstractController
     /**
      * @Route("/steunlid-worden/webhook/{_locale}", name="support_member_webhook", requirements={"_locale": "en|nl"}, defaults={"_locale": "nl"})
      */
-    public function webhook(Request $request, Swift_Mailer $mailer, TranslatorInterface $translator): Response
+    public function webhook(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
     {
         $paymentId = $request->request->get('id');
         $payment = $this->mollieApiClient->payments->get($paymentId);
@@ -214,17 +216,15 @@ class SupportMemberController extends AbstractController
             $em->flush();
 
             // Send confirmation email
-            $message = (new Swift_Message())
-                ->setSubject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
-                ->setTo([$supportMember->getEmail() => $supportMember->getFirstName() .' '. $supportMember->getLastName()])
-                ->setFrom(['noreply@roodjongindesp.nl' => 'ROOD, Socialisische Jongeren'])
-                ->setBody(
-                    $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember]),
-                    'text/html'
+            $message = (new Email())
+                ->subject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
+                ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
+                ->from(new Address('noreply@roodjongindesp.nl', 'ROOD, Socialisische Jongeren'))
+                ->html(
+                    $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
                 )
-                ->addPart(
-                    $this->renderView('email/text/welcome_support-' . $request->locale . '.txt.twig', ['supportMember' => $supportMember]),
-                    'text/plain'
+                ->text(
+                    $this->renderView('email/text/welcome_support-' . $request->locale . '.txt.twig', ['supportMember' => $supportMember])
                 );
             $mailer->send($message);
 

@@ -11,13 +11,15 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Action, Actions };
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-use Swift_Mailer, Swift_Message;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
     private $crudUrlGenerator;
 
-    public function __construct(Swift_Mailer $mailer, AdminUrlGenerator $crudUrlGenerator) {
+    public function __construct(MailerInterface $mailer, AdminUrlGenerator $crudUrlGenerator) {
         $this->mailer = $mailer;
         $this->crudUrlGenerator = $crudUrlGenerator;
     }
@@ -63,17 +65,15 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->remove($application);
         $em->flush();
 
-        $message = (new Swift_Message())
-            ->setSubject('Welkom bij ROOD, Socialistische Jongeren')
-            ->setTo([$member->getEmail() => $member->getFirstName() .' '. $member->getLastName()])
-            ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
-            ->setBody(
-                $this->renderView('email/html/welcome.html.twig', ['member' => $member]),
-                'text/html'
+        $message = (new Email())
+            ->subject('Welkom bij ROOD, Socialistische Jongeren')
+            ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
+            ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+            ->html(
+                $this->renderView('email/html/welcome.html.twig', ['member' => $member])
             )
-            ->addPart(
-                $this->renderView('email/text/welcome.txt.twig', ['member' => $member]),
-                'text/plain'
+            ->text(
+                $this->renderView('email/text/welcome.txt.twig', ['member' => $member])
             );
         $mailer->send($message);
 
@@ -82,21 +82,19 @@ class MembershipApplicationCrud extends AbstractCrudController
         {
             if ($member->getDivision()->getContact() !== null)
             {
-                $message2 = (new Swift_Message())
-                    ->setSubject('Nieuw lid aangesloten bij je groep')
-                    ->setTo([$member->getDivision()->getContact()->getEmail() => $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()])
-                    ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
-                    ->setBody(
+                $message2 = (new Email())
+                    ->subject('Nieuw lid aangesloten bij je groep')
+                    ->to(new Address($member->getDivision()->getContact()->getEmail(), $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()))
+                    ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+                    ->html(
                         $this->renderView('email/html/contact_new_member.html.twig', [
                             'member' => $member,
                         ]),
-                        'text/html'
                     )
-                    ->addPart(
+                    ->text(
                         $this->renderView('email/text/contact_new_member.txt.twig', [
                             'member' => $member,
                         ]),
-                        'text/plain'
                     );
                 $mailer->send($message2);
             }
