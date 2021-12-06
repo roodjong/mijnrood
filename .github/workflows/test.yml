@@ -1,0 +1,50 @@
+name: "Run lints"
+on: [push]
+jobs:
+  migrations:
+    name: "Check if migrations need to be created"
+    runs-on: ubuntu-18.04
+    services:
+      mariadb10-service:
+        image: mariadb:10
+        env:
+          MYSQL_ROOT_PASSWORD: trotzalledem
+        ports:
+          - 3306:3306
+    env:
+      APP_ENV: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        id: setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: 'composer,symfony'
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist
+
+      - name: Create database
+        run: symfony console doctrine:database:create
+      
+      - name: Create schema
+        run: symfony console doctrine:migrations:migrate
+
+      - name: Try to generate migrations
+        # doctrine will fail if it cannot generate migrations, which is good, so we invert the exit code
+        # if this step fails, you need to run symfony console doctrine:migrations:diff and commit the migration
+        run: '! symfony console doctrine:migrations:diff --no-interaction'
