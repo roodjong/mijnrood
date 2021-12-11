@@ -19,7 +19,6 @@ class DashboardController extends AbstractDashboardController
 
     /**
      * @Route("/admin", name="admin_dashboard")
-     * @IsGranted("ROLE_ADMIN")
      */
     public function index(): Response
     {
