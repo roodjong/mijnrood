@@ -16,6 +16,6 @@
 ###< symfony/phpunit-bridge ###
 
 node_modules
-public/build
+public/assets
 public/bundles
 docker/mysql
