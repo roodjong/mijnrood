@@ -1,3 +1,6 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes: ['user/layout/form_theme.html.twig']
+    globals:
+        afdelingsnaam: '%env(AFDELINGSNAAM)%'
+        afdelingsmmail: '%env(AFDELINGSMAIL)%'

@@ -8,7 +8,7 @@
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
 
-        <img id="logo" src="{{ asset('assets/image/rood-jongeren.svg') }}" />
+        <img id="logo" src="{{ asset('assets/image/SU.png') }}" />
 
         <span class="center-form-title">
             {% trans %}Steunlidmaatschap{% endtrans %}
@@ -20,7 +20,7 @@
         </p>
 
         <p>
-            {% trans %}Mocht je de frequentie of hoogte van je contributie willen wijzigen, neem dan contact op met het bestuur van ROOD via <a href="mailto:info@roodjongindesp.nl">info@roodjongindesp.nl</a>.{% endtrans %}
+            {% trans %}Mocht je de frequentie of hoogte van je contributie willen wijzigen, neem dan contact op met het bestuur van ROOD via <a href="mailto:{{ afdelingsmail }}l">{{ afdelingsmail }}l</a>.{% endtrans %}
         </p>
     </div>
 {% endblock %}

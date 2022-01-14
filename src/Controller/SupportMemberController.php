@@ -219,7 +219,7 @@ class SupportMemberController extends AbstractController
             $message = (new Email())
                 ->subject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
                 ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
-                ->from(new Address('noreply@roodjongindesp.nl', 'ROOD, Socialisische Jongeren'))
+                ->from(new Address('administratie@socialistenutrecht.nl', 'ROOD, Socialisische Jongeren'))
                 ->html(
                     $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
                 )
