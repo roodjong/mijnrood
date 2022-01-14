@@ -73,7 +73,7 @@ class SecurityController extends AbstractController
                 $message = (new Email())
                     ->subject('Nieuw wachtwoord voor Ledensysteem %env(AFDELINGSNAAM)%')
                     ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-                    ->from(new Address('administratie@socialistenutrecht.nl', 'Ledensysteem %env(AFDELINGSNAAM)%'))
+                    ->from(new Address('{{ afdelingsmail }}', 'Ledensysteem %env(AFDELINGSNAAM)%'))
                     ->html(
                         $this->renderView('email/html/request_new_password.html.twig', ['member' => $member])
                     )

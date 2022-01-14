@@ -4,3 +4,4 @@ twig:
     globals:
         afdelingsnaam: '%env(AFDELINGSNAAM)%'
         afdelingsmmail: '%env(AFDELINGSMAIL)%'
+        afdelingssite: '%env(AFDELINGSSITE)%'

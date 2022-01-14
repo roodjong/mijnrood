@@ -66,9 +66,9 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->flush();
 
         $message = (new Email())
-            ->subject('Welkom bij ROOD, Socialistische Jongeren')
+            ->subject('Welkom bij {{ afdelingssite }}')
             ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-            ->from(new Address('administratie@socialistenutrecht.nl', 'Ledensysteem %env(AFDELINGSNAAM)%'))
+            ->from(new Address('{{ afdelingsmail }}', 'Ledensysteem %env(AFDELINGSNAAM)%'))
             ->html(
                 $this->renderView('email/html/welcome.html.twig', ['member' => $member])
             )
@@ -85,7 +85,7 @@ class MembershipApplicationCrud extends AbstractCrudController
                 $message2 = (new Email())
                     ->subject('Nieuw lid aangesloten bij je groep')
                     ->to(new Address($member->getDivision()->getContact()->getEmail(), $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()))
-                    ->from(new Address('administratie@socialistenutrecht.nl', 'Ledensysteem %env(AFDELINGSNAAM)%'))
+                    ->from(new Address('{{ afdelingsmail }}', 'Ledensysteem %env(AFDELINGSNAAM)%'))
                     ->html(
                         $this->renderView('email/html/contact_new_member.html.twig', [
                             'member' => $member,

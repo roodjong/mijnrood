@@ -217,9 +217,9 @@ class SupportMemberController extends AbstractController
 
             // Send confirmation email
             $message = (new Email())
-                ->subject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
+                ->subject($translator->trans('Welkom als steunlid bij {{ afdelingssite }}'))
                 ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
-                ->from(new Address('administratie@socialistenutrecht.nl', 'ROOD, Socialisische Jongeren'))
+                ->from(new Address('{{ afdelingsmail }}', '{{ afdelingsnaam}}}'))
                 ->html(
                     $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
                 )
