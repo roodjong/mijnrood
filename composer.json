@@ -98,7 +98,6 @@
         "symfony/symfony": "*"
     },
     "extra": {
-        "public-dir": {"public"},
         "symfony": {
             "allow-contrib": false,
             "require": "5.4.*"
