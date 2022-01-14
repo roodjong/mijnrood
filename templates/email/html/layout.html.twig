@@ -14,13 +14,13 @@
 </style>
 </head>
 <body style="font-family: 'HelveticaNeueLTStd'">
-    <img style="width: 200px; display: block; margin: 0 auto" src="{{ absolute_url(asset('assets/image/SU.png')) }}" />
+    <img style="width: 200px; display: block; margin: 0 auto" src="{{ absolute_url(asset('assets/image/logo.png')) }}" />
 
     {% block content %}{% endblock %}
 
     <div style="color: #444">
         Deze e-mail werd automatisch verstuurd door het ledenadministratiesysteem van {{ afdelingsnaam }}.
-        Mocht je vragen hebben, neem dan contact op met {{ afdelingsnaam }} via <a href="mailto:administratie@Socialisten010.nl">administratie@Socialisten010.nl</a>.
+        Mocht je vragen hebben, neem dan contact op met {{ afdelingsnaam }} via <a href="mailto:{{ afdelingsmail }}">{{ afdelingsmail }}</a>.
     </div>
 </body>
 </html>
