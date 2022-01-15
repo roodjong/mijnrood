@@ -129,6 +129,9 @@
             "config/routes/fos_js_routing.yaml"
         ]
     },
+    "graham-campbell/result-type": {
+        "version": "v1.0.4"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.5.5"
     },
@@ -182,6 +185,9 @@
     },
     "phpoffice/phpspreadsheet": {
         "version": "1.18.0"
+    },
+    "phpoption/phpoption": {
+        "version": "1.8.1"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -651,6 +657,9 @@
     },
     "twig/twig": {
         "version": "v3.1.1"
+    },
+    "vlucas/phpdotenv": {
+        "version": "v5.4.1"
     },
     "webimpress/safe-writer": {
         "version": "2.1.0"

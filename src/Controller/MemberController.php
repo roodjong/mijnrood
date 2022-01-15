@@ -22,7 +22,7 @@ class MemberController extends AbstractController {
         $member = $this->getUser();
         $form = $this->createFormBuilder($member)
             ->add('acceptUsePersonalInformation', null, [
-                'label' => 'Ik ga ermee akkoord dat ROOD mijn persoonsgegevens opslaat in haar ledenadministratie, zoals beschreven in het <a href="https://roodjongeren.nl/privacybeleid">privacybeleid</a>.',
+                'label' => 'Ik ga ermee akkoord dat de organisatie mijn persoonsgegevens opslaat in haar ledenadministratie, zoals beschreven in het <a href="/privacybeleid">privacybeleid</a>.',
                 'label_html' => true,
                 'required' => true,
                 'error_bubbling' => true,

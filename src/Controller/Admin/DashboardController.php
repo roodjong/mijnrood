@@ -9,7 +9,11 @@ use App\Entity\{ Member, SupportMember, MembershipApplication, Division, Email, 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Asset\Packages;
-
+use Symfony\Component\Dotenv\Dotenv;
+$dotenv = new Dotenv();
+// loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
+$dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env');
+$mailadres=$_ENV['AFDELINGSMAIL'];
 class DashboardController extends AbstractDashboardController
 {
 

@@ -16,7 +16,7 @@
 
         {% if success %}
             <div class="error">
-                Je aanmelding is succesvol verwerkt. Binnenkort zul je een e-mail ontvangen van ROOD met meer informatie.
+                Je aanmelding is succesvol verwerkt. Binnenkort zul je een e-mail ontvangen van {{ afdelingsnaam }} met meer informatie.
             </div>
         {% else %}
             {% if form.vars.submitted and not form.vars.valid %}

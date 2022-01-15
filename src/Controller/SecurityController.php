@@ -14,6 +14,14 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Dotenv\Dotenv;
+$dotenv = new Dotenv();
+// loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
+$dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env.local');
+$mailadres=$_ENV['AFDELINGSMAIL'];
+$orgnaam=$_ENV['AFDELINGSNAAM'];
+
+
 
 class SecurityController extends AbstractController
 {
@@ -53,7 +61,8 @@ class SecurityController extends AbstractController
             ->getForm([
                 'username' => $lastUsername
             ]);
-
+        $orgnaam = $_ENV['AFDELINGSNAAM'];
+        $noreply = $_ENV['NOREPLY'];
         $form->handleRequest($request);
         $success = false;
         if ($form->isSubmitted() && $form->isValid()) {
@@ -71,9 +80,9 @@ class SecurityController extends AbstractController
                 $this->getDoctrine()->getManager()->flush();
 
                 $message = (new Email())
-                    ->subject('Nieuw wachtwoord voor Mijn ROOD')
+                    ->subject('Aanvraag nieuw wachtwoord')
                     ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-                    ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+                    ->from(new Address($noreply, $orgnaam))
                     ->html(
                         $this->renderView('email/html/request_new_password.html.twig', ['member' => $member])
                     )

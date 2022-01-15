@@ -52,7 +52,7 @@ class SupportMembershipApplicationType extends AbstractType
                 'error_bubbling' => true
             ])
             ->add('acceptPrivacy', CheckboxType::class, [
-                'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
+                'label' => 'Ik heb het <a target="_blank" href="/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,
                 'mapped' => false,
                 'required' => true,

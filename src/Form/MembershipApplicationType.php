@@ -11,11 +11,16 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use App\Validator\Age;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Dotenv\Dotenv;
 
+$dotenv = new Dotenv();
+// loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
+$dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env');
+$siteurl=$_ENV['AFDELINGSSITE'];
 class MembershipApplicationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    {   
         $builder
             ->add('firstName', null, ['label' => 'Voornaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('lastName', null, ['label' => 'Achternaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
@@ -25,7 +30,7 @@ class MembershipApplicationType extends AbstractType
                 'label' => 'Geboortedatum',
                 'required' => true,
                 'widget' => 'single_text',
-                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 27, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van ROOD.'])],
+                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 109, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van de afdeling.'])],
                 'error_bubbling' => true
             ])
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])
@@ -42,7 +47,7 @@ class MembershipApplicationType extends AbstractType
                 // 'placeholder' => 'Geen voorkeur'
             ])
             ->add('accept', CheckboxType::class, [
-                'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
+                'label' => 'Ik heb het <a target="_blank" href="/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,
                 'mapped' => false,
                 'required' => true,

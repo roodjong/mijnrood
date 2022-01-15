@@ -14,7 +14,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Dotenv\Dotenv;
 
+$dotenv = new Dotenv();
+// loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
+$dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env.local');
+$mailadres=$_ENV['AFDELINGSMAIL'];
+$orgnaam=$_ENV['AFDELINGSNAAM'];
 class MembershipApplicationCrud extends AbstractCrudController
 {
     private $crudUrlGenerator;
@@ -54,6 +60,8 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function acceptApplication(AdminContext $context)
     {
+        $noreply=$_ENV['NOREPLY'];
+        $orgnaam=$_ENV['AFDELINGSNAAM'];
         $mailer = $this->mailer;
 
         $application = $context->getEntity()->getInstance();
@@ -66,9 +74,9 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->flush();
 
         $message = (new Email())
-            ->subject('Welkom bij ROOD, Socialistische Jongeren')
+            ->subject('Welkom bij de vereniging!')
             ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-            ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+            ->from(new Address($noreply,$organisatie =$orgnaam))
             ->html(
                 $this->renderView('email/html/welcome.html.twig', ['member' => $member])
             )
@@ -85,7 +93,7 @@ class MembershipApplicationCrud extends AbstractCrudController
                 $message2 = (new Email())
                     ->subject('Nieuw lid aangesloten bij je groep')
                     ->to(new Address($member->getDivision()->getContact()->getEmail(), $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()))
-                    ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+                    ->from(new Address($mail = $noreply, $orgnaam))
                     ->html(
                         $this->renderView('email/html/contact_new_member.html.twig', [
                             'member' => $member,
