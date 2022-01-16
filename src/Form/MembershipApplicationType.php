@@ -30,7 +30,7 @@ class MembershipApplicationType extends AbstractType
                 'label' => 'Geboortedatum',
                 'required' => true,
                 'widget' => 'single_text',
-                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 109, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van de afdeling.'])],
+                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 109, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van de organisatie.'])],
                 'error_bubbling' => true
             ])
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])
@@ -62,5 +62,5 @@ class MembershipApplicationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
         ]);
-    }
+    r
 }
