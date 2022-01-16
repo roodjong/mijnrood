@@ -19,7 +19,7 @@ $dotenv = new Dotenv();
 // loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
 $dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env.local');
 $mailadres=$_ENV['AFDELINGSMAIL'];
-$orgnaam=$_ENV['AFDELINGSNAAM'];
+$ORGNAAM=$_ENV['ORGNAAM'];
 
 
 
@@ -61,7 +61,7 @@ class SecurityController extends AbstractController
             ->getForm([
                 'username' => $lastUsername
             ]);
-        $orgnaam = $_ENV['AFDELINGSNAAM'];
+        $ORGNAAM = $_ENV['ORGNAAM'];
         $noreply = $_ENV['NOREPLY'];
         $form->handleRequest($request);
         $success = false;
@@ -82,7 +82,7 @@ class SecurityController extends AbstractController
                 $message = (new Email())
                     ->subject('Aanvraag nieuw wachtwoord')
                     ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-                    ->from(new Address($noreply, $orgnaam))
+                    ->from(new Address($noreply, $ORGNAAM))
                     ->html(
                         $this->renderView('email/html/request_new_password.html.twig', ['member' => $member])
                     )

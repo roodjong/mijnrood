@@ -26,7 +26,7 @@
                             - {{ event.timeEnd|format_date('medium') }}
                         {% endif %}
                     </span>
-                    <span class="event-division">Georganiseerd door {{ event.division is null ? '$env(AFDELINGSNAAM)' : event.division.name }}</span>
+                    <span class="event-division">Georganiseerd door {{ event.division is null ? '$env(ORGNAAM)' : event.division.name }}</span>
                     <span class="event-description">{{ event.description|raw }}</span>
                     {# <a href="{{ url('member_event') }}">Lees meer</a> #}
                 </div>
