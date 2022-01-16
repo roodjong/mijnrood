@@ -5,4 +5,5 @@ twig:
         organisatienaam: '%env(ORGNAAM)%'
         organisatiemail: '%env(ORGMAIL)%'
         forumlink: '%env(FORUMLINK)%'
+        orgnaamkort: '%env(ORGNAAMKORT)'
         organisatiewebsite: '%env(ORGURL)%'
