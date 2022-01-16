@@ -3,6 +3,6 @@ twig:
     form_themes: ['user/layout/form_theme.html.twig']
     globals:
         afdelingsnaam: '%env(ORGNAAM)%'
-        afdelingsmail: '%env(AFDELINGSMAIL)%'
+        afdelingsmail: '%env(ORGMAIL)%'
         forumlink: '%env(FORUMLINK)%'
-        afdelingssite: '%env(AFDELINGSSITE)%'
+        afdelingssite: '%env(ORGURL)%'

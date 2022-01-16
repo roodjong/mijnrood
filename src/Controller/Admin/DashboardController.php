@@ -13,7 +13,7 @@ use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 // loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
 $dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env');
-$mailadres=$_ENV['AFDELINGSMAIL'];
+$mailadres=$_ENV['ORGMAIL'];
 class DashboardController extends AbstractDashboardController
 {
 

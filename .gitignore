@@ -1,4 +1,4 @@
-###> symfony/framework-bundle ###
+r##> symfony/framework-bundle ###
 /
 /.env.local
 /.env.local.php
@@ -7,6 +7,7 @@
 /public/bundles/
 /var/
 /vendor/
+/composer.lock
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###

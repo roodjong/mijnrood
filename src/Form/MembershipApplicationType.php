@@ -16,7 +16,7 @@ use Symfony\Component\Dotenv\Dotenv;
 $dotenv = new Dotenv();
 // loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
 $dotenv->loadEnv('/home/u8184p5640/domains/socialistenrotterdam.nl/ledenadmin/.env');
-$siteurl=$_ENV['AFDELINGSSITE'];
+$siteurl=$_ENV['ORGURL'];
 class MembershipApplicationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
