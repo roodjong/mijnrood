@@ -2,7 +2,7 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes: ['user/layout/form_theme.html.twig']
     globals:
-        afdelingsnaam: '%env(ORGNAAM)%'
-        afdelingsmail: '%env(ORGMAIL)%'
+        organisatienaam: '%env(ORGNAAM)%'
+        organisatiemail: '%env(ORGMAIL)%'
         forumlink: '%env(FORUMLINK)%'
-        afdelingssite: '%env(ORGURL)%'
+        organisatiewebsite: '%env(ORGURL)%'

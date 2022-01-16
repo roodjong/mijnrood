@@ -11,7 +11,7 @@
         <img id="logo" src="{{ asset('assets/image/logo.png') }}" />
 
         <span class="center-form-title">
-            Inloggen op Ledensysteem <span class="rood">{{ afdelingsnaam }}</span>
+            Inloggen op Ledensysteem <span class="rood">{{ organisatienaam }}</span>
         </span>
 
         {% if error %}
@@ -31,7 +31,7 @@
 
         <a class="form-link" href="{{ url('request_new_password') }}">Wachtwoord vergeten?</a>
 
-        <a class="form-link" href="https://{{ afdelingssite }}">Terug naar de website</a>
+        <a class="form-link" href="https://{{ organisatiewebsite }}">Terug naar de website</a>
 
     </div>
 {% endblock %}

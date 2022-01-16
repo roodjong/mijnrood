@@ -11,12 +11,12 @@
         <img id="logo" src="{{ asset('assets/image/logo.png') }}" />
 
         <span class="center-form-title">
-            Inschrijven bij <span class="rood">{{ afdelingsnaam }}</span>
+            Inschrijven bij <span class="rood">{{ organisatienaam }}</span>
         </span>
 
         {% if success %}
             <div class="error">
-                Je aanmelding is succesvol verwerkt. Binnenkort zul je een e-mail ontvangen van {{ afdelingsnaam }} met meer informatie.
+                Je aanmelding is succesvol verwerkt. Binnenkort zul je een e-mail ontvangen van {{ organisatienaam }} met meer informatie.
             </div>
         {% else %}
             {% if form.vars.submitted and not form.vars.valid %}
