@@ -62,5 +62,5 @@ class MembershipApplicationType extends AbstractType
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
         ]);
-    r
-}
+    
+}}
