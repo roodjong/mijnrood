@@ -1,4 +1,4 @@
-{% extends 'email/text/layout.txt.twig' %}
+r% extends 'email/text/layout.txt.twig' %}
 {% set url = url('division', { division: member.division.name }) %}
 {% block content %}
 Beste {{ member.division.contact.firstName }} {{ member.division.contact.lastName }},
@@ -11,5 +11,5 @@ Hun gegevens zijn toegevoegd aan het ledenoverzicht in het ledenadministratiesys
 
 Met vriendelijke groet,
 
-{{ organisatienaam }}, jong in de SP
+{{ organisatienaam }}
 {% endblock %}
