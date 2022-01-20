@@ -1,7 +1,22 @@
 {% extends 'user/layout/members.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}">
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/automatic-contribution.less') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        const otherAmountInput = document.getElementById("contribution_income_otherAmount");
+        const otherAmountRadio = document.getElementById("form_contributionAmount_{{ form.contributionAmount.vars.choices | length }}");
+        otherAmountInput.disabled = !otherAmountRadio.checked;
+
+        for (var i = 1; i <= {{ form.contributionAmount.vars.choices | length }}; i++) {
+            document.getElementById("form_contributionAmount_" + i).addEventListener("input", (event) => {
+                otherAmountInput.disabled = !otherAmountRadio.checked;
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -18,10 +33,58 @@
             <a href="{{ url('member_contribution_automatic_collection_disable') }}" class="button">Automatische incasso stopzetten</a>
         {% else %}
             <p>
-                Momenteel moet je je contributie {{ { 0: 'elke maand', 1: 'elk kwartaal', 2: 'elk jaar' }[app.user.contributionPeriod] }} handmatig betalen.
-                Wil je je contributie automatisch over laten maken met een automatische incasso? Klik dan op deze knop.
+                Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso. 
+                Hoeveel je hierbij betaalt hangt af van je inkomen:
             </p>
-            <a href="{{ url('member_contribution_automatic_collection_enable') }}" class="button">Automatische incasso instellen</a>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Maandinkomen</th>
+                        <th>Contributie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tot en met €2000</td>
+                        <td>€7,50 per kwartaal (€30 per jaar)</td>
+                    </tr>
+                    <tr>
+                        <td>€2000-€3499</td>
+                        <td>€15,00 per kwartaal (€60 per jaar)</td>
+                    </tr>
+                    <tr>
+                        <td>€3500 en daarboven</td>
+                        <td>€22,50 per kwartaal (€90 per jaar)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {% if form.vars.submitted and not form.vars.valid %}
+                <div class="error">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
+            <p>
+                Selecteer wat er voor jou van toepassing is:
+            </p>
+            {{ form_start(form, { attr: { class: 'incomes' }}) }}  
+                {{ form_row(form._token) }}
+
+                {{ form_label(form.contributionAmount) }}
+                <div class="options">
+                {% for choice in form.contributionAmount.vars.choices %}
+                <label for="form_contributionAmount_{{ loop.index }}" class="required option">
+                    <input type="radio" id="form_contributionAmount_{{ loop.index }}" name="contribution_income[contributionAmount]" required="required" value="{{ choice.value }}" {% if choice.value == form.contributionAmount.vars.data %}checked="checked"{% endif %}>
+                    {{ choice.label }}
+                </label>
+                {% endfor %}
+                </div>
+
+                <div class="other-amount">{{ form_row(form.otherAmount) }} per kwartaal</div>
+                
+                <button type="submit" class="button submit-button">Automatische incasso instellen</button>
+                {{ form_end(form, {render_rest: false}) }}
         {% endif %}
     </div>
 {% endblock %}

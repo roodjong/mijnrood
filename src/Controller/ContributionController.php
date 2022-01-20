@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
@@ -9,9 +10,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
-use App\Form\Contribution\{ PreferencesType };
-use App\Entity\{ ContributionPayment, Member };
+use App\Form\Contribution\{ PreferencesType, ContributionIncomeType };
+use App\Entity\{ ContributionPayment, Member, ChosenContribution };
 use DateTime;
+use DateInterval;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ContributionController extends AbstractController
@@ -151,8 +153,27 @@ class ContributionController extends AbstractController
     /**
      * @Route("/automatische-incasso", name="member_contribution_automatic_collection")
      */
-    public function automaticCollection(Request $request): Response {
-        return $this->render('user/contribution/automatic-collection.html.twig');
+    public function automaticCollection(Request $request, LoggerInterface $logger): Response {
+        $chosenContribution = new ChosenContribution();
+        $chosenContribution->setContributionAmount(750);
+        $form = $this->createForm(ContributionIncomeType::class, $chosenContribution);
+
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $member = $this->getUser();
+            $member->setContributionPerPeriodInCents($chosenContribution->getChosenAmount());
+            $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
+            $em->flush();
+
+            return $this->redirectToRoute('member_contribution_automatic_collection_enable');
+        }
+
+        return $this->render('user/contribution/automatic-collection.html.twig', [
+            'success' => false,
+            'form' => $form->createView()
+        ]);
     }
 
     /**
@@ -279,7 +300,7 @@ class ContributionController extends AbstractController
         {
             $subscription = $mollieApiClient->subscriptions->getFor($customer, $request->query->get('subscriptionId'));
             $html .= '<h3>'.htmlentities($subscription->description).'</h3>';
-            $html .= 'Status: '.$subscription->status.'<br />';
+            $html .= 'Status: '.json_encode($subscription).'<br />';
 
             if (!$request->query->has('action'))
             {
@@ -416,13 +437,16 @@ class ContributionController extends AbstractController
     }
 
     private function setupSubscription(Member $member, $customer) {
-        $startDate = new DateTime('next year 1 january');
+        $startDate = new DateTime();
+        $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
+        $startDate->add(new DateInterval('P3M'));
+
         $subscription = $customer->createSubscription([
             'amount' => [
                 'currency' => 'EUR',
                 'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
-            'interval' => '12 months',
+            'interval' => '3 months',
             'description' => $this->getParameter('mollie_payment_description'),
             'startDate' => $startDate->format('Y-m-d'),
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
