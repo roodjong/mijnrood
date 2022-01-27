@@ -18,7 +18,6 @@ class MemberDetailsType extends AbstractType
             ->add('lastName')
             ->add('email')
             ->add('phone')
-            ->add('iban', null, ['required' => false])
             ->add('address')
             ->add('city')
             ->add('postCode')
