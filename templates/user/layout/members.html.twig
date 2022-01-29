@@ -6,6 +6,11 @@
 {% endblock %}
 
 {% block body %}
+    {% if not app.user.contributionPaidAutomatically %}
+    <div id="nagbar">
+        <span>Je hebt nog geen automatisch incasso ingesteld! Stel dit in op de <a href="{{ url('member_details') }}">gegevens</a> pagina.</span>
+    </div>
+    {% endif %}
     <div id="header">
         <div id="header-content-wrapper">
             <div id="header-content">
