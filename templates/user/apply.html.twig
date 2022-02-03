@@ -45,6 +45,21 @@
                 {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
 
+                <p>
+                    Selecteer wat er voor jou van toepassing is:
+                </p>
+                {{ form_label(form.contribution.contributionAmount) }}
+                <div class="options">
+                {% for choice in form.contribution.contributionAmount.vars.choices %}
+                <label for="form_contributionAmount_{{ loop.index }}" class="required option">
+                    <input type="radio" id="form_contributionAmount_{{ loop.index }}" name="contribution_income[contributionAmount]" required="required" value="{{ choice.value }}" {% if choice.value == form.contribution.contributionAmount.vars.data %}checked="checked"{% endif %}>
+                    {{ choice.label }}
+                </label>
+                {% endfor %}
+                </div>
+
+                <div class="other-amount">{{ form_row(form.contribution.otherAmount) }} per kwartaal</div>
+
                 <div>
                     {{ form_widget(form.accept) }}
                     {{ form_label(form.accept) }}

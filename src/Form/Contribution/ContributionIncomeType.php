@@ -28,7 +28,7 @@ class ContributionIncomeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'entity_class' => ChosenContribution::class
+            'data_class' => ChosenContribution::class
         ]);
     }
 }

@@ -87,6 +87,11 @@ class MembershipApplication {
     private int $contributionPeriod = Member::PERIOD_MONTHLY;
 
     /**
+     * @Assert\Valid
+     */
+    private ?ChosenContribution $contribution = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Division")
      */
     private ?Division $preferredDivision = null;
@@ -98,6 +103,7 @@ class MembershipApplication {
 
     public function __construct() {
         $this->registrationTime = new DateTime();
+        $this->contribution = new ChosenContribution();
     }
 
     public function __toString() {
@@ -164,6 +170,9 @@ class MembershipApplication {
 
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
+
+    public function getContribution(): ChosenContribution { return $this->contribution; }
+    public function setContribution(ChosenContribution $contribution): void { $this->contribution = $contribution; }
 
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }
