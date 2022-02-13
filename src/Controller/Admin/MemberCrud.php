@@ -133,7 +133,7 @@ class MemberCrud extends AbstractCrudController
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'Export MijnROOD Ledendatabase.xlsx'
+            'Export Ledendatabase.xlsx'
         );
         return $response;
     }
