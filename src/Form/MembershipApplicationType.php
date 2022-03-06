@@ -18,6 +18,7 @@ class MembershipApplicationType extends AbstractType
     {
         $builder
             ->add('firstName', null, ['label' => 'Voornaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
+            ->add('middleName', null, ['label' => 'Tussenvoegsel', 'error_bubbling' => true])
             ->add('lastName', null, ['label' => 'Achternaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('email', null, ['label' => 'E-mailadres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('phone', null, ['label' => 'Telefoonnummer', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
@@ -25,7 +26,7 @@ class MembershipApplicationType extends AbstractType
                 'label' => 'Geboortedatum',
                 'required' => true,
                 'widget' => 'single_text',
-                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 27, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van ROOD.'])],
+                'constraints' => [new NotBlank()],
                 'error_bubbling' => true
             ])
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])

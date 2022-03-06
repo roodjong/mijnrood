@@ -32,6 +32,11 @@ class Member implements UserInterface {
     private string $firstName = '';
 
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private string $middleName = null;
+
+    /**
      * @ORM\Column(type="string", length=100)
      */
     private string $lastName = '';
@@ -173,11 +178,17 @@ class Member implements UserInterface {
     public function getFirstName(): string { return $this->firstName; }
     public function setFirstName(string $firstName): void { $this->firstName = $firstName; }
 
+    public function getMiddleName(): ?string { return $this->middleName; }
+    public function setMiddleName(?string $middleName): void { $this->middleName = $middleName; }
+
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
 
     public function getFullName(): string {
-        return $this->firstName. ' ' . $this->lastName;
+        if ($this->middleName === null) {
+            return $this->firstName. ' ' . $this->lastName;
+        }
+        return $this->firstName . ' ' . $this->middleName . ' ' . $this->lastName;
     }
 
     public function getAddress(): string { return $this->address; }
