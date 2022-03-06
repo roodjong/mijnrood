@@ -41,7 +41,10 @@ class MembershipApplicationType extends AbstractType
                 },
                 // 'placeholder' => 'Geen voorkeur'
             ])
-            ->add('contribution', ContributionIncomeType::class)
+            ->add('contributionPerPeriodInCents', ContributionIncomeType::class, [
+                'label' => 'Contributiebedrag',
+                'error_bubbling' => true
+            ])
             ->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,

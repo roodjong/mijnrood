@@ -5,6 +5,33 @@
     <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
 {% endblock %}
 
+{% block scripts %}
+    <script>
+        function updateContribution() {
+            let other = document.querySelector('.other-amount');
+            if (document.querySelector('.choice :checked').value !== 0) {
+                other.value = '';
+            }
+        }
+        function updateOtherAmount() {
+            let other = document.querySelector('.other-amount');
+            if (other.value != '')
+            {
+                document.querySelector('.choice [value="0"]').checked = true;
+            }
+        }
+        document.addEventListener('change', e => {
+            if (e.target.closest) {
+                if (e.target.closest('.other-amount')) {
+                    updateOtherAmount();
+                } else if (e.target.closest('.choices')) {
+                    updateContribution();
+                }
+            }
+        })
+    </script>
+{% endblock %}
+
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
 
@@ -37,9 +64,6 @@
                 {{ form_row(form.email, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.phone, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.dateOfBirth, { attr: { class: 'text-input' } }) }}
-
-                {# {{ form_row(form.iban, { attr: { class: 'text-input' } }) }} #}
-
                 {{ form_row(form.address, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.city, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
@@ -48,19 +72,22 @@
                 <p>
                     Selecteer wat er voor jou van toepassing is:
                 </p>
-                {{ form_label(form.contribution.contributionAmount) }}
-                <div class="options">
-                {% for choice in form.contribution.contributionAmount.vars.choices %}
-                <label for="form_contributionAmount_{{ loop.index }}" class="required option">
-                    <input type="radio" id="form_contributionAmount_{{ loop.index }}" name="contribution_income[contributionAmount]" required="required" value="{{ choice.value }}" {% if choice.value == form.contribution.contributionAmount.vars.data %}checked="checked"{% endif %}>
-                    {{ choice.label }}
-                </label>
-                {% endfor %}
+                <div class="choices">
+                    {% for option in form.contributionPerPeriodInCents.contributionAmount %}
+                        <div class="choice">
+                            {{ form_widget(option) }}
+                            <div class="choice-text">
+                                {{ form_label(option, null, { required: false }) }}
+                                {% if option.vars.value == 0 %}
+                                    <br />
+                                    {{ form_widget(form.contributionPerPeriodInCents.otherAmount, { attr: { class: 'other-amount' } }) }} per kwartaal
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <div class="other-amount">{{ form_row(form.contribution.otherAmount) }} per kwartaal</div>
-
-                <div>
+                <div class="checkbox">
                     {{ form_widget(form.accept) }}
                     {{ form_label(form.accept) }}
                 </div>
