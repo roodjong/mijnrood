@@ -146,6 +146,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam'),
+            TextField::new('middleName', 'Tussenvoegsel'),
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
