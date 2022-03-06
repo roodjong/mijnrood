@@ -29,7 +29,7 @@ class MembershipApplication {
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
      */
-    private string $middleName = null;
+    private ?string $middleName = null;
 
     /**
      * @ORM\Column(type="string", length=100)
