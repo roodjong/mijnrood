@@ -8,14 +8,7 @@
     {{ parent() }}
     <script>
         const otherAmountInput = document.getElementById("contribution_income_otherAmount");
-        const otherAmountRadio = document.getElementById("form_contributionAmount_{{ form.contributionAmount.vars.choices | length }}");
         otherAmountInput.disabled = !otherAmountRadio.checked;
-
-        for (var i = 1; i <= {{ form.contributionAmount.vars.choices | length }}; i++) {
-            document.getElementById("form_contributionAmount_" + i).addEventListener("input", (event) => {
-                otherAmountInput.disabled = !otherAmountRadio.checked;
-            });
-        }
     </script>
 {% endblock %}
 
@@ -45,16 +38,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Tot en met €2000</td>
-                        <td>€7,50 per kwartaal (€2,50 per maand)</td>
+                        <td>Studenten en werklozen</td>
+                        <td>€6 per kwartaal</td>
                     </tr>
                     <tr>
-                        <td>€2000-€3499</td>
-                        <td>€15,00 per kwartaal (€5 per maand)</td>
-                    </tr>
-                    <tr>
-                        <td>€3500 en daarboven</td>
-                        <td>€22,50 per kwartaal (€7,50 per maand)</td>
+                        <td>Werkenden</td>
+                        <td>0,5% van het inkomen (minimaal €12 per kwartaal)</td>
                     </tr>
                 </tbody>
             </table>
@@ -71,18 +60,8 @@
             {{ form_start(form, { attr: { class: 'incomes' }}) }}  
                 {{ form_row(form._token) }}
 
-                {{ form_label(form.contributionAmount) }}
-                <div class="options">
-                {% for choice in form.contributionAmount.vars.choices %}
-                <label for="form_contributionAmount_{{ loop.index }}" class="required option">
-                    <input type="radio" id="form_contributionAmount_{{ loop.index }}" name="contribution_income[contributionAmount]" required="required" value="{{ choice.value }}" {% if choice.value == form.contributionAmount.vars.data %}checked="checked"{% endif %}>
-                    {{ choice.label }}
-                </label>
-                {% endfor %}
-                </div>
-
-                <div class="other-amount">{{ form_row(form.otherAmount) }} per kwartaal</div>
-                
+                {{ form_row(form.contributionAmount) }}
+            
                 <button type="submit" class="button submit-button">Automatische incasso instellen</button>
                 {{ form_end(form, {render_rest: false}) }}
         {% endif %}
