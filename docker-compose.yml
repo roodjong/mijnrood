@@ -57,8 +57,6 @@ services:
     working_dir: /var/www/project
     networks:
       - mijnrood
-    environment:
-      NODE_OPTIONS: --openssl-legacy-provider
     command: "npm run watch"
 
   mailcatcher:
