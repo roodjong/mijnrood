@@ -15,6 +15,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
+
 class SecurityController extends AbstractController
 {
     /** @Route("/logout", name="logout") */
@@ -53,7 +54,8 @@ class SecurityController extends AbstractController
             ->getForm([
                 'username' => $lastUsername
             ]);
-
+        $orgName = $this->getParameter('app.organizationName');
+        $noreply = $this->getParameter('app.noReplyAddress');
         $form->handleRequest($request);
         $success = false;
         if ($form->isSubmitted() && $form->isValid()) {
@@ -71,9 +73,9 @@ class SecurityController extends AbstractController
                 $this->getDoctrine()->getManager()->flush();
 
                 $message = (new Email())
-                    ->subject('Nieuw wachtwoord voor Mijn ROOD')
+                    ->subject('Aanvraag nieuw wachtwoord')
                     ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
-                    ->from(new Address('noreply@roodjongindesp.nl', 'Mijn ROOD'))
+                    ->from(new Address($noreply, $orgName))
                     ->html(
                         $this->renderView('email/html/request_new_password.html.twig', ['member' => $member])
                     )

@@ -8,10 +8,10 @@
 {% block body %}
     <div id="center-form-wrapper">
 
-        <img id="logo" src="{{ asset('assets/image/mijn-rood-jongeren.svg') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
-            Inloggen op Mijn <span class="rood">ROOD</span>
+            Inloggen op Ledensysteem <span class="rood">{{ organisatienaam }}</span>
         </span>
 
         {% if error %}
@@ -31,7 +31,7 @@
 
         <a class="form-link" href="{{ url('request_new_password') }}">Wachtwoord vergeten?</a>
 
-        <a class="form-link" href="https://roodjongeren.nl">Terug naar de website</a>
+        <a class="form-link" href="https://{{ organisatiewebsite }}">Terug naar de website</a>
 
     </div>
 {% endblock %}

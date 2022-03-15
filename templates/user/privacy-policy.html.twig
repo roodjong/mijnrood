@@ -8,7 +8,7 @@
 {% block body %}
     <div id="center-form-wrapper">
 
-        <img id="logo" src="{{ asset('assets/image/mijn-rood-jongeren.svg') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
             Privacybeleid
@@ -28,7 +28,7 @@
             </button>
         {{ form_end(form) }}
 
-        <a class="form-link" href="https://roodjongeren.nl">Terug naar de website</a>
+        <a class="form-link" href="https://{{ organisatiewebsite }}">Terug naar de website</a>
 
     </div>
 {% endblock %}

@@ -20,9 +20,11 @@ class MemberController extends AbstractController {
 
     public function memberAcceptPersonalDetails(Request $request): Response {
         $member = $this->getUser();
+        $orgName = $this->getParameter('app.organizationName');
+        $privacyPolicyUrl = $this->getParameter('app.privacyPolicyUrl');
         $form = $this->createFormBuilder($member)
             ->add('acceptUsePersonalInformation', null, [
-                'label' => 'Ik ga ermee akkoord dat ROOD mijn persoonsgegevens opslaat in haar ledenadministratie, zoals beschreven in het <a href="https://roodjongeren.nl/privacybeleid">privacybeleid</a>.',
+                'label' => "Ik ga ermee akkoord dat $orgName mijn persoonsgegevens opslaat in haar ledenadministratie, zoals beschreven in het <a href='$privacyPolicyUrl'>privacybeleid</a>.",
                 'label_html' => true,
                 'required' => true,
                 'error_bubbling' => true,

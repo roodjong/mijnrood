@@ -27,9 +27,11 @@ class DashboardController extends AbstractDashboardController
 
     public function configureDashboard(): Dashboard
     {
+        $logoPath = $this->getParameter('app.orgLogo');
+        $orgName = $this->getParameter('app.organizationName');
         return Dashboard::new()
             // the name visible to end users
-            ->setTitle('<img style="width: 100px" src="'.$this->packages->getUrl('assets/image/rood-jongeren.svg').'" alt="ROOD" />')
+            ->setTitle('<img style="width: 100px" src="'.$this->packages->getUrl($logoPath).'" alt="' . $orgName . '" />')
 
             // // the path defined in this method is passed to the Twig asset() function
             // ->setFaviconPath('favicon.svg')

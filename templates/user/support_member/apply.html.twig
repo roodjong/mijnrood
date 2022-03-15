@@ -64,14 +64,14 @@
     <div id="center-form-wrapper" class="big-form">
         <p>{% trans %}This page is also available <a href="/steunlid-worden/en">in English</a>.{% endtrans %}</p>
 
-        <img id="logo" src="{{ asset('assets/image/rood-jongeren.svg') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
-            {% trans %}Steunlid worden van <span class="rood">ROOD</span>{% endtrans %}
+            {% trans %}Steunlid worden van <span class="rood">{{ organisatienaam }}</span>{% endtrans %}
         </span>
 
         <p>
-            {% trans %}Als steunlid steun je <span class="rood">ROOD</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.{% endtrans %}
+            {% trans %}Als steunlid steun je <span class="rood">{{ organisatienaam }}</span> met een maandelijks geldbedrag. Het bedrag wordt door middel van automatische incasso van je rekening afgeschreven.{% endtrans %}
         </p>
 
         {% if form.vars.submitted and not form.vars.valid %}

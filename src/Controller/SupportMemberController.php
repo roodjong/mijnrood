@@ -214,12 +214,13 @@ class SupportMemberController extends AbstractController
             $em->persist($supportMember);
             $em->remove($supportMembershipApplication);
             $em->flush();
+            $noReplyMail = $this->getParameter('app.noReplyAddress');
 
             // Send confirmation email
             $message = (new Email())
                 ->subject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
                 ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
-                ->from(new Address('noreply@roodjongindesp.nl', 'ROOD, Socialistische Jongeren'))
+                ->from(new Address($noReplyMail, 'ROOD, Socialistische Jongeren'))
                 ->html(
                     $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
                 )
