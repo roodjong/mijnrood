@@ -37,7 +37,7 @@ class Member implements UserInterface {
     private string $lastName = '';
 
     /**
-     * @ORM\Column(type="string", length=200, nullable=true)
+     * @ORM\Column(type="string", length=200, nullable=true, unique=true)
      * @Assert\Email
      */
     private ?string $email = null;
