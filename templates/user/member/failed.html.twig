@@ -1,0 +1,25 @@
+{% set pageTitle = 'Steunlid worden' %}
+{% extends 'user/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset('assets/image/rood-jongeren.svg') }}" />
+
+        <span class="center-form-title">
+            {% trans %}Betaling mislukt{% endtrans %}
+        </span>
+
+        <p>
+            {% trans %}De betaling is helaas mislukt, waardoor je lidmaatschap niet afgesloten kon worden.{% endtrans %}
+        </p>
+
+        <a href="{{ retryUrl }}" class="submit-button">
+            {% trans %}Nogmaals proberen{% endtrans %}
+        </a>
+    </div>
+{% endblock %}

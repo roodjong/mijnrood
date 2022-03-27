@@ -96,6 +96,12 @@ class MembershipApplication {
      */
     private int $contributionPerPeriodInCents = 750;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $mollieCustomerId = null;
+
+
     public function __construct() {
         $this->registrationTime = new DateTime();
     }
@@ -104,7 +110,7 @@ class MembershipApplication {
         return $this->lastName .', '. $this->firstName;
     }
 
-    public function createMember(): Member {
+    public function createMember(string $subscriptionId): Member {
         $member = new Member();
         $member->setFirstName($this->getFirstName());
         $member->setLastName($this->getLastName());
@@ -120,6 +126,8 @@ class MembershipApplication {
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
+        $member->setMollieCustomerId($this->getMollieCustomerId());
+        $member->setMollieSubscriptionId($subscriptionId);
         return $member;
     }
 
@@ -164,6 +172,9 @@ class MembershipApplication {
 
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
+
+    public function getMollieCustomerId(): ?string { return $this->mollieCustomerId; }
+    public function setMollieCustomerId(?string $mollieCustomerId): void { $this->mollieCustomerId = $mollieCustomerId; }
 
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }

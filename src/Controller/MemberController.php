@@ -6,17 +6,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
 use App\Form\{ MemberDetailsType, ChangePasswordType };
 use DateTime;
+use DateInterval;
 use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
 use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
 
 class MemberController extends AbstractController {
+
+    private MollieApiClient $mollieApiClient;
+
+    public function __construct(MollieApiClient $mollieApiClient)
+    {
+        $this->mollieApiClient = $mollieApiClient;
+    }
 
     public function memberAcceptPersonalDetails(Request $request): Response {
         $member = $this->getUser();
@@ -81,15 +90,180 @@ class MemberController extends AbstractController {
             $em->persist($member);
             $em->flush();
 
-            return $this->render('user/apply.html.twig', [
-                'success' => true
-            ]);
+            $memberRepository = $this->getDoctrine()->getRepository(Member::class);
+            $existingMember = $memberRepository->findOneByEmail($form['email']->getData());
+
+            if ($existingMember !== null)
+            {
+                $form->addError(new FormError('Er is al een lid met dit e-mailadres.'));
+            }
+            else
+            {
+                $customer = $this->mollieApiClient->customers->create([
+                    'name' => $member->getFirstName() . ' ' . $member->getLastName(),
+                    'email' => $member->getEmail()
+                ]);
+
+                $member->setMollieCustomerId($customer->id);
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($member);
+                $em->flush();
+
+                $payment = $this->createPayment($customer, $member->getContributionPerPeriodInEuros());
+
+                return $this->redirect($payment->getCheckoutUrl(), 303);
+            }
         }
 
-        return $this->render('user/apply.html.twig', [
+        return $this->render('user/member/apply.html.twig', [
             'success' => false,
             'form' => $form->createView()
         ]);
+    }
+
+    private function createPayment(/**MollieCustomer*/ $customer, float $contributionAmount) {
+        $payment = $customer->createPayment([
+            'amount' => [
+                'currency' => 'EUR',
+                'value' => number_format($contributionAmount, 2, '.', '')
+            ],
+            'sequenceType' => 'first',
+            'locale' => 'nl_NL',
+            'description' => $this->getParameter('mollie_payment_description'),
+            'redirectUrl' => $this->generateUrl('member_redirect', ['customerId' => $customer->id], UrlGeneratorInterface::ABSOLUTE_URL),
+            'webhookUrl' => $this->generateUrl('member_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+        ]);
+        return $payment;
+    }
+
+    /**
+     * @Route("/aanmelden/afronden/{customerId}", name="member_redirect")
+     */
+    public function handleRedirect(Request $request, string $customerId): Response
+    {
+        $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+        $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customerId);
+
+        if ($membershipApplication === null)
+        {
+            $memberRepository = $this->getDoctrine()->getRepository(Member::class);
+            $member = $memberRepository->findOneByMollieCustomerId($customerId);
+
+            if ($member === null)
+            {
+                throw $this->createNotFoundException();
+            }
+
+            if ($request->query->has('check'))
+            {
+                return $this->json(['success' => true]);
+            }
+
+            return $this->render('user/member/finished.html.twig');
+        }
+        else
+        {
+            $payments = $this->mollieApiClient->customerPayments->listForId($customerId);
+            $failedNoSuccess = false;
+            foreach ($payments as $payment)
+            {
+                if ($payment->isCanceled() || $payment->isExpired())
+                {
+                    if ($request->query->has('check'))
+                    {
+                        return $this->json(['success' => true]);
+                    }
+
+                    $retryUrl = $this->generateUrl('member_retry', [
+                        'customerId' => $customerId
+                    ]);
+
+                    return $this->render('user/member/failed.html.twig', [
+                        'retryUrl' => $retryUrl
+                    ]);
+                }
+            }
+
+            if ($request->query->has('check'))
+            {
+                return $this->json(['success' => false]);
+            }
+
+            return $this->render('user/member/processing.html.twig');
+        }
+    }
+
+    /**
+     * @Route("/aanmelden/opnieuw/{customerId}", name="member_retry")
+     */
+    public function retryPayment(Request $request, string $customerId): Response
+    {
+        $supportMembershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+        $supportMembershipApplication = $supportMembershipApplicationRepository->findOneByMollieCustomerId($customerId);
+
+        if ($supportMembershipApplication === null)
+        {
+            return $this->redirectToRoute('member_redirect', [
+                'customerId' => $customerId
+            ]);
+        }
+        else
+        {
+            $customer = $this->mollieApiClient->customers->get($customerId);
+            $payment = $this->createPayment($customer, $supportMembershipApplication, $translator);
+
+            return $this->redirect($payment->getCheckoutUrl(), 303);
+        }
+    }
+
+    /**
+     * @Route("/aanmelden/webhook", name="member_webhook")
+     */
+    public function webhook(Request $request): Response
+    {
+        $paymentId = $request->request->get('id');
+        $payment = $this->mollieApiClient->payments->get($paymentId);
+
+        if ($payment->isPaid())
+        {
+            $customer = $this->mollieApiClient->customers->get($payment->customerId);
+
+            $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+            $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customer->id);
+            if ($membershipApplication === null)
+            {
+                return $this->json(['success' => false], 404);
+            }
+
+            $startDate = new DateTime();
+            $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
+            $startDate->add(new DateInterval('P3M'));
+
+            $subscription = $customer->createSubscription([
+                'amount' => [
+                    'currency' => 'EUR',
+                    'value' => number_format($membershipApplication->getContributionPerPeriodInEuros(), 2, '.', '')
+                ],
+                'interval' => '3 months',
+                'description' => $this->getParameter('mollie_payment_description'),
+                'startDate' => $startDate->format('Y-m-d'),
+                'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ]);
+
+            $supportMember = $membershipApplication->createMember($subscription->id);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($supportMember);
+            $em->remove($membershipApplication);
+            $em->flush();
+
+            return $this->json(['success' => true]);
+        }
+        else
+        {
+            return $this->json(['success' => false]);
+        }
     }
 
     /**
