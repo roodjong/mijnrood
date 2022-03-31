@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Customer;
 use App\Form\{ MemberDetailsType, ChangePasswordType };
 use DateTime;
 use DateInterval;
@@ -122,7 +123,7 @@ class MemberController extends AbstractController {
         ]);
     }
 
-    private function createPayment(/**MollieCustomer*/ $customer, float $contributionAmount) {
+    private function createPayment(Customer $customer, float $contributionAmount) {
         $payment = $customer->createPayment([
             'amount' => [
                 'currency' => 'EUR',
