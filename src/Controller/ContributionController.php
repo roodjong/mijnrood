@@ -444,7 +444,11 @@ class ContributionController extends AbstractController
                 'currency' => 'EUR',
                 'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
-            'interval' => '3 months',
+            'interval' => [
+                Member::PERIOD_MONTHLY => '1 month',
+                Member::PERIOD_QUARTERLY => '3 months',
+                Member::PERIOD_ANNUALLY => '1 year'
+            ][$member->getContributionPeriod()],
             'description' => $this->getParameter('mollie_payment_description'),
             'startDate' => $startDate->format('Y-m-d'),
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
