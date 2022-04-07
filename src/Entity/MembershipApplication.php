@@ -14,6 +14,7 @@ use App\Repository\MemberRepository;
  * @ORM\Table("admin_membership_application")
  */
 class MembershipApplication {
+
     /**
      * @ORM\Column(type="integer", options={ "unsigned": false })
      * @ORM\Id
@@ -101,6 +102,10 @@ class MembershipApplication {
      */
     private ?string $mollieCustomerId = null;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private ?bool $paid = false;
 
     public function __construct() {
         $this->registrationTime = new DateTime();
@@ -110,7 +115,7 @@ class MembershipApplication {
         return $this->lastName .', '. $this->firstName;
     }
 
-    public function createMember(string $subscriptionId): Member {
+    public function createMember(string $mollieSubscriptionId): Member {
         $member = new Member();
         $member->setFirstName($this->getFirstName());
         $member->setLastName($this->getLastName());
@@ -127,7 +132,7 @@ class MembershipApplication {
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
         $member->setMollieCustomerId($this->getMollieCustomerId());
-        $member->setMollieSubscriptionId($subscriptionId);
+        $member->setMollieSubscriptionId($mollieSubscriptionId);
         return $member;
     }
 
@@ -176,6 +181,9 @@ class MembershipApplication {
     public function getMollieCustomerId(): ?string { return $this->mollieCustomerId; }
     public function setMollieCustomerId(?string $mollieCustomerId): void { $this->mollieCustomerId = $mollieCustomerId; }
 
+    public function getPaid(): bool { return $this->paid; }
+    public function setPaid(bool $paid): void { $this->paid = $paid; }
+
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }
 
@@ -185,5 +193,5 @@ class MembershipApplication {
             throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
         $this->contributionPeriod = $contributionPeriod;
     }
-    
+
 }

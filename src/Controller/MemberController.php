@@ -2,6 +2,14 @@
 
 namespace App\Controller;
 
+use App\Form\{ MembershipApplicationType, MemberDetailsType, ChangePasswordType };
+use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
+
+use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Customer;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
@@ -9,15 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Mollie\Api\MollieApiClient;
-use Mollie\Api\Resources\Customer;
-use App\Form\{ MemberDetailsType, ChangePasswordType };
-use DateTime;
-use DateInterval;
-use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
-use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
+
+use DateTime;
+use DateInterval;
 
 class MemberController extends AbstractController {
 
@@ -83,7 +87,7 @@ class MemberController extends AbstractController {
     public function apply(Request $request): Response {
         $member = new MembershipApplication();
         $member->setRegistrationTime(new \DateTime());
-        $member->setContributionPeriod(Membership::PERIOD_MONTHLY);
+        $member->setContributionPeriod(Member::PERIOD_MONTHLY);
         $form = $this->createForm(MembershipApplicationType::class, $member);
 
         $form->handleRequest($request);
@@ -222,7 +226,7 @@ class MemberController extends AbstractController {
     /**
      * @Route("/aanmelden/webhook", name="member_webhook")
      */
-    public function webhook(Request $request): Response
+    public function webhook(Request $request, EntityManagerInterface $entityManager): Response
     {
         $paymentId = $request->request->get('id');
         $payment = $this->mollieApiClient->payments->get($paymentId);
@@ -238,31 +242,9 @@ class MemberController extends AbstractController {
                 return $this->json(['success' => false], 404);
             }
 
-            $startDate = new DateTime();
-            $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
-            $startDate->add(new DateInterval('P3M'));
+            $membershipApplication->setPaid($true);
 
-            $subscription = $customer->createSubscription([
-                'amount' => [
-                    'currency' => 'EUR',
-                    'value' => number_format($membershipApplication->getContributionPerPeriodInEuros(), 2, '.', '')
-                ],
-                'interval' => [
-                    Member::PERIOD_MONTHLY => '1 month',
-                    Member::PERIOD_QUARTERLY => '3 months',
-                    Member::PERIOD_ANNUALLY => '1 year'
-                ][$membershipApplication->getContributionPeriod()],
-                'description' => $this->getParameter('mollie_payment_description'),
-                'startDate' => $startDate->format('Y-m-d'),
-                'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
-            ]);
-
-            $supportMember = $membershipApplication->createMember($subscription->id);
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($supportMember);
-            $em->remove($membershipApplication);
-            $em->flush();
+            $entityManager->flush();
 
             return $this->json(['success' => true]);
         }
