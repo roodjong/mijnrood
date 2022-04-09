@@ -87,7 +87,7 @@ class MemberController extends AbstractController {
     public function apply(Request $request): Response {
         $member = new MembershipApplication();
         $member->setRegistrationTime(new \DateTime());
-        $member->setContributionPeriod(Member::PERIOD_MONTHLY);
+        $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
         $form = $this->createForm(MembershipApplicationType::class, $member);
 
         $form->handleRequest($request);
