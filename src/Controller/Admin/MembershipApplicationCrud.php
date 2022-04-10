@@ -138,7 +138,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             }
         }
 
-        $url = $this->conatiner->get(AdminUrlGenerator::class)
+        $url = $this->container->get(AdminUrlGenerator::class)
             ->setController(MemberCrud::class)
             ->setAction(Action::DETAIL)
             ->setEntityId($member->getId())
