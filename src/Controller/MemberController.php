@@ -2,21 +2,35 @@
 
 namespace App\Controller;
 
+use App\Form\{ MembershipApplicationType, MemberDetailsType, ChangePasswordType };
+use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
+
+use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Customer;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Mollie\Api\MollieApiClient;
-use App\Form\{ MemberDetailsType, ChangePasswordType };
-use DateTime;
-use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
-use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
 
+use DateTime;
+use DateInterval;
+
 class MemberController extends AbstractController {
+
+    private MollieApiClient $mollieApiClient;
+
+    public function __construct(MollieApiClient $mollieApiClient)
+    {
+        $this->mollieApiClient = $mollieApiClient;
+    }
 
     public function memberAcceptPersonalDetails(Request $request): Response {
         $member = $this->getUser();
@@ -71,25 +85,165 @@ class MemberController extends AbstractController {
      * @Route("/aanmelden", name="member_apply")
      */
     public function apply(Request $request): Response {
-        $member = new MembershipApplication();
-        $member->setRegistrationTime(new \DateTime());
-        $form = $this->createForm(MembershipApplicationType::class, $member);
+        $membershipApplication = new MembershipApplication();
+        $membershipApplication->setRegistrationTime(new \DateTime());
+        $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
+        $form = $this->createForm(MembershipApplicationType::class, $membershipApplication);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($member);
+            $em->persist($membershipApplication);
             $em->flush();
 
-            return $this->render('user/apply.html.twig', [
-                'success' => true
-            ]);
+            $memberRepository = $this->getDoctrine()->getRepository(Member::class);
+            $existingMember = $memberRepository->findOneByEmail($form['email']->getData());
+
+            if ($existingMember !== null)
+            {
+                $form->addError(new FormError('Er is al een lid met dit e-mailadres.'));
+            }
+            else
+            {
+                $customer = $this->mollieApiClient->customers->create([
+                    'name' => $membershipApplication->getFirstName() . ' ' . $membershipApplication->getLastName(),
+                    'email' => $membershipApplication->getEmail()
+                ]);
+
+                $membershipApplication->setMollieCustomerId($customer->id);
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($membershipApplication);
+                $em->flush();
+
+                $payment = $this->createPayment($customer, $membershipApplication->getContributionPerPeriodInEuros());
+
+                return $this->redirect($payment->getCheckoutUrl(), 303);
+            }
         }
 
-        return $this->render('user/apply.html.twig', [
+        return $this->render('user/member/apply.html.twig', [
             'success' => false,
             'form' => $form->createView()
         ]);
+    }
+
+    private function createPayment(Customer $customer, float $contributionAmount) {
+        $payment = $customer->createPayment([
+            'amount' => [
+                'currency' => 'EUR',
+                'value' => number_format($contributionAmount, 2, '.', '')
+            ],
+            'sequenceType' => 'first',
+            'locale' => 'nl_NL',
+            'description' => $this->getParameter('mollie_payment_description'),
+            'redirectUrl' => $this->generateUrl('member_redirect', ['customerId' => $customer->id], UrlGeneratorInterface::ABSOLUTE_URL),
+            'webhookUrl' => $this->generateUrl('member_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+        ]);
+        return $payment;
+    }
+
+    /**
+     * @Route("/aanmelden/afronden/{customerId}", name="member_redirect")
+     */
+    public function handleRedirect(Request $request, string $customerId): Response
+    {
+        $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+        $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customerId);
+
+        if ($membershipApplication !== null && $membershipApplication->getPaid())
+        {
+            if ($request->query->has('check'))
+            {
+                return $this->json(['success' => true]);
+            }
+
+            return $this->render('user/member/finished.html.twig');
+        }
+        else
+        {
+            $payments = $this->mollieApiClient->customerPayments->listForId($customerId);
+            $failedNoSuccess = false;
+            foreach ($payments as $payment)
+            {
+                if ($payment->isCanceled() || $payment->isExpired())
+                {
+                    if ($request->query->has('check'))
+                    {
+                        return $this->json(['success' => true]);
+                    }
+
+                    $retryUrl = $this->generateUrl('member_retry', [
+                        'customerId' => $customerId
+                    ]);
+
+                    return $this->render('user/member/failed.html.twig', [
+                        'retryUrl' => $retryUrl
+                    ]);
+                }
+            }
+
+            if ($request->query->has('check'))
+            {
+                return $this->json(['success' => false]);
+            }
+
+            return $this->render('user/member/processing.html.twig');
+        }
+    }
+
+    /**
+     * @Route("/aanmelden/opnieuw/{customerId}", name="member_retry")
+     */
+    public function retryPayment(Request $request, string $customerId): Response
+    {
+        $supportMembershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+        $supportMembershipApplication = $supportMembershipApplicationRepository->findOneByMollieCustomerId($customerId);
+
+        if ($supportMembershipApplication === null)
+        {
+            return $this->redirectToRoute('member_redirect', [
+                'customerId' => $customerId
+            ]);
+        }
+        else
+        {
+            $customer = $this->mollieApiClient->customers->get($customerId);
+            $payment = $this->createPayment($customer, $supportMembershipApplication, $translator);
+
+            return $this->redirect($payment->getCheckoutUrl(), 303);
+        }
+    }
+
+    /**
+     * @Route("/aanmelden/webhook", name="member_webhook")
+     */
+    public function webhook(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $paymentId = $request->request->get('id');
+        $payment = $this->mollieApiClient->payments->get($paymentId);
+
+        if ($payment->isPaid())
+        {
+            $customer = $this->mollieApiClient->customers->get($payment->customerId);
+
+            $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+            $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customer->id);
+            if ($membershipApplication === null)
+            {
+                return $this->json(['success' => false], 404);
+            }
+
+            $membershipApplication->setPaid(true);
+
+            $entityManager->flush();
+
+            return $this->json(['success' => true]);
+        }
+        else
+        {
+            return $this->json(['success' => false]);
+        }
     }
 
     /**

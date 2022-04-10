@@ -15,7 +15,7 @@ class DivisionController extends AbstractController
 {
 
     /**
-     * @Route("/groep/{division<\w+>}", name="division")
+     * @Route("/groep/{division}", name="division")
      */
     public function divisionController(Request $requset, $division): Response {
         $member = $this->getUser();

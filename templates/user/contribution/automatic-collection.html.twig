@@ -1,9 +1,5 @@
 {% extends 'user/layout/members.html.twig' %}
 
-{% block stylesheets %}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/automatic-contribution.less') }}">
-{% endblock %}
-
 {% block scripts %}
     {{ parent() }}
     <script>
@@ -33,7 +29,7 @@
             <a href="{{ url('member_contribution_automatic_collection_disable') }}" class="button">Automatische incasso stopzetten</a>
         {% else %}
             <p>
-                Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso. 
+                Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso.
                 Hoeveel je hierbij betaalt hangt af van je inkomen:
             </p>
             <table class="table">
@@ -68,21 +64,24 @@
             <p>
                 Selecteer wat er voor jou van toepassing is:
             </p>
-            {{ form_start(form, { attr: { class: 'incomes' }}) }}  
+            {{ form_start(form, { attr: { class: 'incomes' }}) }}
                 {{ form_row(form._token) }}
 
-                {{ form_label(form.contributionAmount) }}
-                <div class="options">
-                {% for choice in form.contributionAmount.vars.choices %}
-                <label for="form_contributionAmount_{{ loop.index }}" class="required option">
-                    <input type="radio" id="form_contributionAmount_{{ loop.index }}" name="contribution_income[contributionAmount]" required="required" value="{{ choice.value }}" {% if choice.value == form.contributionAmount.vars.data %}checked="checked"{% endif %}>
-                    {{ choice.label }}
-                </label>
-                {% endfor %}
+                <div class="choices">
+                    {% for option in form.contributionAmount %}
+                        <div class="choice">
+                            {{ form_widget(option) }}
+                            <div class="choice-text">
+                                {{ form_label(option, null, { required: false }) }}
+                                {% if option.vars.value == 0 %}
+                                    <br />
+                                    {{ form_widget(form.otherAmount, { attr: { class: 'other-amount' } }) }} per kwartaal
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <div class="other-amount">{{ form_row(form.otherAmount) }} per kwartaal</div>
-                
                 <button type="submit" class="button submit-button">Automatische incasso instellen</button>
                 {{ form_end(form, {render_rest: false}) }}
         {% endif %}

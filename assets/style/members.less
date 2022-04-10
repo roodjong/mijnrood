@@ -60,6 +60,7 @@ h1, h2, h3 {
 .table {
     border-collapse: collapse;
     width: 100%;
+    margin-bottom: 20px;
 
     th {
         background: #eee;
@@ -84,5 +85,26 @@ h1, h2, h3 {
     }
     a, a:hover, a:active, a:visited {
         color: white;
+    }
+}
+
+#main-content-details {
+    @media @desktop, @tablet {
+        display: flex;
+
+        .details {
+            flex: 1 1 auto;
+        }
+
+        .contributions {
+            margin-left: 50px;
+            flex: 0 0 400px;
+        }
+    }
+
+    @media @mobile {
+        .contributions {
+            margin-top: 20px;
+        }
     }
 }

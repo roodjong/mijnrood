@@ -14,14 +14,21 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Mollie\Api\MollieApiClient;
+
+use DateTime;
+use DateInterval;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
-    private $crudUrlGenerator;
+    private MailerInterface $mailer;
+    private MollieApiClient $mollieApiClient;
 
-    public function __construct(MailerInterface $mailer, AdminUrlGenerator $crudUrlGenerator) {
+    public function __construct(MailerInterface $mailer, MollieApiClient $mollieApiClient)
+    {
         $this->mailer = $mailer;
-        $this->crudUrlGenerator = $crudUrlGenerator;
+        $this->mollieApiClient = $mollieApiClient;
     }
 
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
@@ -59,7 +66,36 @@ class MembershipApplicationCrud extends AbstractCrudController
         $mailer = $this->mailer;
 
         $application = $context->getEntity()->getInstance();
-        $member = $application->createMember();
+
+        $mollieIntervals = [
+            Member::PERIOD_MONTHLY => '1 month',
+            Member::PERIOD_QUARTERLY => '3 months',
+            Member::PERIOD_ANNUALLY => '1 year'
+        ];
+        $dateTimeIntervals = [
+            Member::PERIOD_MONTHLY => 'P1M',
+            Member::PERIOD_QUARTERLY => 'P3M',
+            Member::PERIOD_ANNUALLY => 'P1Y'
+        ];
+
+        $startDate = new DateTime();
+        $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
+        $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
+
+        $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
+
+        $subscription = $customer->createSubscription([
+            'amount' => [
+                'currency' => 'EUR',
+                'value' => number_format($application->getContributionPerPeriodInEuros(), 2, '.', '')
+            ],
+            'interval' => $mollieIntervals[$application->getContributionPeriod()],
+            'description' => $this->getParameter('mollie_payment_description'),
+            'startDate' => $startDate->format('Y-m-d'),
+            'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+        ]);
+
+        $member = $application->createMember($subscription->id);
         $member->setNewPasswordToken(sha1($member->getEmail().time()));
 
         $em = $this->getDoctrine()->getManager();
@@ -102,7 +138,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             }
         }
 
-        $url = $this->crudUrlGenerator
+        $url = $this->container->get(AdminUrlGenerator::class)
             ->setController(MemberCrud::class)
             ->setAction(Action::DETAIL)
             ->setEntityId($member->getId())
@@ -145,7 +181,9 @@ class MembershipApplicationCrud extends AbstractCrudController
                 ->hideOnIndex(),
             MoneyField::new('contributionPerPeriodInCents', 'Bedrag')
                 ->setCurrency('EUR')
-                ->hideOnIndex()
+                ->hideOnIndex(),
+
+            BooleanField::new('paid', 'Eerste contributie betaald')
         ];
     }
 

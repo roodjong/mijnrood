@@ -186,14 +186,14 @@ class SupportMemberController extends AbstractController
 
             $period = $supportMembershipApplication->getContributionPeriod();
             $mollieIntervals = [
-                0 => '1 month',
-                1 => '3 months',
-                2 => '1 year'
+                SupportMembershipApplication::PERIOD_MONTHLY => '1 month',
+                SupportMembershipApplication::PERIOD_QUARTERLY => '3 months',
+                SupportMembershipApplication::PERIOD_ANNUALLY => '1 year'
             ];
             $dateTimeIntervals = [
-                0 => 'P1M',
-                1 => 'P3M',
-                2 => 'P1Y'
+                SupportMembershipApplication::PERIOD_MONTHLY => 'P1M',
+                SupportMembershipApplication::PERIOD_QUARTERLY => 'P3M',
+                SupportMembershipApplication::PERIOD_ANNUALLY => 'P1Y'
             ];
 
             $startDate = (new DateTime)->add(new DateInterval($dateTimeIntervals[$period]));

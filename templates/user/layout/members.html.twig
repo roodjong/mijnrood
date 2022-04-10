@@ -2,7 +2,12 @@
 
 {% block scripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/script/vendor/jquery.min.js') }}"></script>
+    {{ encore_entry_script_tags('members') }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('members') }}
 {% endblock %}
 
 {% block body %}

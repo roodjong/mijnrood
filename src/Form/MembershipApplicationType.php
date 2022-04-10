@@ -6,7 +6,7 @@ use App\Entity\MembershipApplication;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Form\Contribution\ContributionPeriodType;
+use App\Form\Contribution\ContributionIncomeType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use App\Validator\Age;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -40,6 +40,10 @@ class MembershipApplicationType extends AbstractType
                     ;
                 },
                 // 'placeholder' => 'Geen voorkeur'
+            ])
+            ->add('contributionPerPeriodInCents', ContributionIncomeType::class, [
+                'label' => 'Contributiebedrag',
+                'error_bubbling' => true
             ])
             ->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',

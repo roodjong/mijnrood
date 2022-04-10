@@ -154,16 +154,14 @@ class ContributionController extends AbstractController
      * @Route("/automatische-incasso", name="member_contribution_automatic_collection")
      */
     public function automaticCollection(Request $request, LoggerInterface $logger): Response {
-        $chosenContribution = new ChosenContribution();
-        $chosenContribution->setContributionAmount(750);
-        $form = $this->createForm(ContributionIncomeType::class, $chosenContribution);
-
+        $form = $this->createForm(ContributionIncomeType::class);
+        $form->setData(750);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $member = $this->getUser();
-            $member->setContributionPerPeriodInCents($chosenContribution->getChosenAmount());
+            $member->setContributionPerPeriodInCents($form->getData());
             $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
             $em->flush();
 
@@ -446,7 +444,11 @@ class ContributionController extends AbstractController
                 'currency' => 'EUR',
                 'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
-            'interval' => '3 months',
+            'interval' => [
+                Member::PERIOD_MONTHLY => '1 month',
+                Member::PERIOD_QUARTERLY => '3 months',
+                Member::PERIOD_ANNUALLY => '1 year'
+            ][$member->getContributionPeriod()],
             'description' => $this->getParameter('mollie_payment_description'),
             'startDate' => $startDate->format('Y-m-d'),
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
