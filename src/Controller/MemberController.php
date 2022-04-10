@@ -85,15 +85,15 @@ class MemberController extends AbstractController {
      * @Route("/aanmelden", name="member_apply")
      */
     public function apply(Request $request): Response {
-        $member = new MembershipApplication();
-        $member->setRegistrationTime(new \DateTime());
-        $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
-        $form = $this->createForm(MembershipApplicationType::class, $member);
+        $membershipApplication = new MembershipApplication();
+        $membershipApplication->setRegistrationTime(new \DateTime());
+        $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
+        $form = $this->createForm(MembershipApplicationType::class, $membershipApplication);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($member);
+            $em->persist($membershipApplication);
             $em->flush();
 
             $memberRepository = $this->getDoctrine()->getRepository(Member::class);
@@ -106,17 +106,17 @@ class MemberController extends AbstractController {
             else
             {
                 $customer = $this->mollieApiClient->customers->create([
-                    'name' => $member->getFirstName() . ' ' . $member->getLastName(),
-                    'email' => $member->getEmail()
+                    'name' => $membershipApplication->getFirstName() . ' ' . $membershipApplication->getLastName(),
+                    'email' => $membershipApplication->getEmail()
                 ]);
 
-                $member->setMollieCustomerId($customer->id);
+                $membershipApplication->setMollieCustomerId($customer->id);
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($member);
+                $em->persist($membershipApplication);
                 $em->flush();
 
-                $payment = $this->createPayment($customer, $member->getContributionPerPeriodInEuros());
+                $payment = $this->createPayment($customer, $membershipApplication->getContributionPerPeriodInEuros());
 
                 return $this->redirect($payment->getCheckoutUrl(), 303);
             }
@@ -151,16 +151,8 @@ class MemberController extends AbstractController {
         $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
         $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customerId);
 
-        if ($membershipApplication === null)
+        if ($membershipApplication !== null && $membershipApplication->getPaid())
         {
-            $memberRepository = $this->getDoctrine()->getRepository(Member::class);
-            $member = $memberRepository->findOneByMollieCustomerId($customerId);
-
-            if ($member === null)
-            {
-                throw $this->createNotFoundException();
-            }
-
             if ($request->query->has('check'))
             {
                 return $this->json(['success' => true]);
@@ -242,7 +234,7 @@ class MemberController extends AbstractController {
                 return $this->json(['success' => false], 404);
             }
 
-            $membershipApplication->setPaid($true);
+            $membershipApplication->setPaid(true);
 
             $entityManager->flush();
 

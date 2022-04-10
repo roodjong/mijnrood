@@ -14,14 +14,21 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Mollie\Api\MollieApiClient;
+
+use DateTime;
+use DateInterval;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
-    private $crudUrlGenerator;
+    private MailerInterface $mailer;
+    private MollieApiClient $mollieApiClient;
 
-    public function __construct(MailerInterface $mailer, AdminUrlGenerator $crudUrlGenerator) {
+    public function __construct(MailerInterface $mailer, MollieApiClient $mollieApiClient)
+    {
         $this->mailer = $mailer;
-        $this->crudUrlGenerator = $crudUrlGenerator;
+        $this->mollieApiClient = $mollieApiClient;
     }
 
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
@@ -74,6 +81,8 @@ class MembershipApplicationCrud extends AbstractCrudController
         $startDate = new DateTime();
         $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
         $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
+
+        $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
 
         $subscription = $customer->createSubscription([
             'amount' => [
@@ -129,7 +138,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             }
         }
 
-        $url = $this->crudUrlGenerator
+        $url = $this->conatiner->get(AdminUrlGenerator::class)
             ->setController(MemberCrud::class)
             ->setAction(Action::DETAIL)
             ->setEntityId($member->getId())
