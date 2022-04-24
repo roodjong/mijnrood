@@ -91,6 +91,12 @@ class Member implements UserInterface {
      */
     private ?Division $division = null;
 
+
+    /**
+     * @ORM\ManyToMany(targetEntity="WorkGroup", inversedBy="members")
+     */
+    private Collection $workGroups;
+
     /**
      * @ORM\Column(type="date", nullable=true)
      */
@@ -217,6 +223,9 @@ class Member implements UserInterface {
 
     public function getDivision(): ?Division { return $this->division; }
     public function setDivision(?Division $division): void { $this->division = $division; }
+
+    public function getWorkGroups(): ?Collection { return $this->workGroups; }
+    public function setWorkGroups(?Collection $workGroups): void { $this->workGroups = $workGroups; }
 
     public function getRegistrationTime(): ?DateTime { return $this->registrationTime; }
     public function setRegistrationTime(?DateTime $registrationTime): void { $this->registrationTime = $registrationTime; }

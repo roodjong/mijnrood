@@ -8,9 +8,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Form\Contribution\ContributionPeriodType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Validator\Age;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class MembershipApplicationType extends AbstractType
 {
@@ -32,14 +34,27 @@ class MembershipApplicationType extends AbstractType
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])
             ->add('address', null, ['label' => 'Adres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('city', null, ['label' => 'Plaats', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('preferredDivision', null, [
+            ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]]);
+        if ($options['show_groups']) {
+            $builder->add('preferredDivision', null, [
                 'label' => 'Bij welke groep wil je je aansluiten',
                 'query_builder' => function($repo) {
                     return $repo->createQueryBuilder('d')
                         ->where('d.canBeSelectedOnApplication = true')
                     ;
                 },
+                // 'placeholder' => 'Geen voorkeur'
+            ]);
+        }
+            $builder->add('preferredWorkGroups', null, [
+                'label' => 'Bij welke werkgroep wil je je aansluiten',
+                'query_builder' => function($repo) {
+                    return $repo->createQueryBuilder('d')
+                        ->where('d.canBeSelectedOnApplication = true')
+                    ;
+                },
+                'multiple' => true,
+                'expanded' => true,
                 // 'placeholder' => 'Geen voorkeur'
             ])
             ->add('accept', CheckboxType::class, [
@@ -57,6 +72,7 @@ class MembershipApplicationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
+            'show_groups' => true,
         ]);
     }
 }

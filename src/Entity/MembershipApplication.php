@@ -97,6 +97,11 @@ class MembershipApplication {
     private ?Division $preferredDivision = null;
 
     /**
+     * @ORM\ManyToMany(targetEntity="WorkGroup")
+     */
+    private Collection $preferredWorkGroups;
+
+    /**
      * @ORM\Column(type="integer", options={"default": 0})
      */
     private int $contributionPerPeriodInCents = 0;
@@ -126,6 +131,7 @@ class MembershipApplication {
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
+        $member->setPreferredWorkGroups($this->getPreferredWorkGroups());
         return $member;
     }
 
@@ -176,6 +182,9 @@ class MembershipApplication {
 
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }
+
+    public function getPreferredWorkGroups(): ?Collection { return $this->preferredWorkGroups; }
+    public function setPreferredWorkGroups(?Collection $preferredWorkGroups): void { $this->preferredWorkGroups = $preferredWorkGroups; }
 
     public function getContributionPeriod(): int { return $this->contributionPeriod; }
     public function setContributionPeriod(int $contributionPeriod): void {
