@@ -172,6 +172,7 @@ class Member implements UserInterface {
         $this->contributionPayments = new ArrayCollection;
         $this->detailRevisions = new ArrayCollection;
         $this->managingEmails = new ArrayCollection;
+        $this->workGroups = new Collection();
     }
 
     public function __toString() {
@@ -226,6 +227,18 @@ class Member implements UserInterface {
 
     public function getWorkGroups(): ?Collection { return $this->workGroups; }
     public function setWorkGroups(?Collection $workGroups): void { $this->workGroups = $workGroups; }
+    public function addWorkGroup(WorkGroup $workGroup): self {
+        if (!$this->workGroups->contains($workGroup)) {
+            $this->workGroups[] = $workGroup;
+        }
+        return $this;
+    }
+    public function removeWorkGroup(WorkGroup $workGroup): self {
+        if ($this->workGroups->contains($workGroup)) {
+            $this->workGroups->removeElement($workGroup);
+        }
+        return $this;
+    }
 
     public function getRegistrationTime(): ?DateTime { return $this->registrationTime; }
     public function setRegistrationTime(?DateTime $registrationTime): void { $this->registrationTime = $registrationTime; }

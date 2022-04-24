@@ -62,6 +62,19 @@ class WorkGroup {
 
     public function getMembers(): Collection { return $this->members; }
 
+    public function addMember(Member $member): self {
+        if (!$this->members->contains($member)) {
+            $this->members[] = $member;
+        }
+        return $this;
+    }
+    public function removeMember(Member $member): self {
+        if ($this->members->contains($member)) {
+            $this->members->removeElement($member);
+        }
+        return $this;
+    }
+
     public function getContact(): ?Member { return $this->contact; }
     public function setContact(?Member $contact): void { $this->contact = $contact; }
 

@@ -154,6 +154,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             AssociationField::new('division', 'Groep'),
+            AssociationField::new('workGroups', 'Werkgroepen'),
             BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex(),
 
