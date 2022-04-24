@@ -71,7 +71,7 @@ class MembershipApplicationType extends AbstractType
     }
 
     public function configureOptions(OptionsResolver $resolver)
-    
+    {
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
             'show_groups' => true,
