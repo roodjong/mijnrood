@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
 use App\Form\{ MemberDetailsType, ChangePasswordType };
 use DateTime;
-use App\Entity\{ Division, Member, MembershipApplication, MemberDetailsRevision, Event};
+use App\Entity\{ Division, WorkGroup, Member, MembershipApplication, MemberDetailsRevision, Event};
 use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
@@ -77,12 +77,22 @@ class MemberController extends AbstractController {
                            ->where('d.canBeSelectedOnApplication = true')
                            ->getQuery()
                            ->getResult();
+
+        $workGroupCount = $this->getDoctrine()->getRepository(WorkGroup::class)->createQueryBuilder('d')
+                           ->where('d.canBeSelectedOnApplication = true')
+                           ->getQuery()
+                           ->getResult();
         $showGroups = true;
+        $showWorkGroups = true;
         if (count($groupCount) === 0) {
             $showGroups = false;
         }
+        if (count($workGroupCount) === 0) {
+            $showWorkGroups = false;
+        }
         $form = $this->createForm(MembershipApplicationType::class, $member, [
             'show_groups' => $showGroups,
+            'show_work_groups' => $showWorkGroups,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

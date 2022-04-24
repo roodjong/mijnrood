@@ -46,6 +46,7 @@ class MembershipApplicationType extends AbstractType
                 // 'placeholder' => 'Geen voorkeur'
             ]);
         }
+        if ($options['show_work_groups']) {
             $builder->add('preferredWorkGroups', null, [
                 'label' => 'Bij welke werkgroep wil je je aansluiten',
                 'query_builder' => function($repo) {
@@ -56,8 +57,9 @@ class MembershipApplicationType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 // 'placeholder' => 'Geen voorkeur'
-            ])
-            ->add('accept', CheckboxType::class, [
+            ]);
+        }
+            $builder->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,
                 'mapped' => false,
@@ -69,10 +71,11 @@ class MembershipApplicationType extends AbstractType
     }
 
     public function configureOptions(OptionsResolver $resolver)
-    {
+    
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
             'show_groups' => true,
+            'show_work_groups' => true,
         ]);
     }
 }

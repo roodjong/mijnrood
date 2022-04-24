@@ -47,8 +47,9 @@
                 {% if form.preferredDivision is defined %}
                   {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
                 {% endif %}
-                {{ form_row(form.preferredWorkGroups, { attr: { class: 'text-input' } }) }}
-
+                {% if form.preferredWorkGroups is defined %}
+                  {{ form_row(form.preferredWorkGroups, { attr: { class: 'text-input' } }) }}
+                {% endif %}
                 <div>
                     {{ form_widget(form.accept) }}
                     {{ form_label(form.accept) }}
