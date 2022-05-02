@@ -79,7 +79,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         ];
 
         $startDate = new DateTime();
-        $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
+        $startDate->setDate(date('Y'), floor(date('m') / 3) * 3, 1);
         $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
 
         $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
@@ -96,7 +96,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         ]);
 
         $member = $application->createMember($subscription->id);
-        $member->setNewPasswordToken(sha1($member->getEmail().time()));
+        $member->setNewPasswordToken(sha1($member->getEmail() . time()));
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($member);
