@@ -131,7 +131,7 @@ class MembershipApplication {
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
-        $member->setPreferredWorkGroups($this->getPreferredWorkGroups());
+        $member->setWorkGroups($this->getPreferredWorkGroups());
         return $member;
     }
 
