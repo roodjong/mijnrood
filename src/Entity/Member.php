@@ -172,7 +172,7 @@ class Member implements UserInterface {
         $this->contributionPayments = new ArrayCollection;
         $this->detailRevisions = new ArrayCollection;
         $this->managingEmails = new ArrayCollection;
-        $this->workGroups = new Collection();
+        $this->workGroups = new ArrayCollection();
     }
 
     public function __toString() {
