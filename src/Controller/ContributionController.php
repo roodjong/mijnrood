@@ -439,9 +439,7 @@ class ContributionController extends AbstractController
     }
 
     private function setupSubscription(Member $member, $customer) {
-        $startDate = new DateTime();
-        $startDate->setDate(date('Y'), floor(date('m') / 3) + 1, 1);
-        $startDate->add(new DateInterval('P3M'));
+        $startDate = DateTime::createFromFormat('Y-m-d', date('Y-'). (ceil(date('m') / 3) * 3 + 1). '-1');
 
         $subscription = $customer->createSubscription([
             'amount' => [
