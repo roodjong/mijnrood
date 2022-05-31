@@ -22,7 +22,13 @@ class DivisionController extends AbstractController
         $division = $this->getDoctrine()->getRepository(Division::class)->findOneBy([
             'name' => $division
         ]);
-        if ($division->getContact()->getId() !== $member->getId() && !$this->getUser()->isAdmin()) {
+        $isContact = false;
+        foreach ($division->getContacts() as $contact) {
+            if ($contact->getId() === $member->getId()) {
+                $isContact = true;
+            }
+        }
+        if (!$isContact && !$this->getUser()->isAdmin()) {
             throw $this->createAccessDeniedException("Geen toegang!");
         }
 
