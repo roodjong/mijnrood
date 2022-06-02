@@ -24,10 +24,11 @@ class Division {
      */
     private string $name = '';
 
-    /** @ORM\ManyToOne(targetEntity="Member")
-     *  @ORM\JoinColumn(nullable=true)
+    /**
+     * @ORM\ManyToMany(targetEntity="Member")
+     * @ORM\JoinTable(name="division_member")
      */
-    private ?Member $contact = null;
+    private Collection $contacts;
 
     /**
      * @ORM\OneToMany(targetEntity="Member", mappedBy="division")
@@ -92,6 +93,7 @@ class Division {
     public function __construct() {
         $this->members = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     public function __toString() {
@@ -108,8 +110,18 @@ class Division {
 
     public function getMembers(): Collection { return $this->members; }
 
-    public function getContact(): ?Member { return $this->contact; }
-    public function setContact(?Member $contact): void { $this->contact = $contact; }
+    public function getContacts(): Collection { return $this->contacts; }
+    public function addContact(Member $contact) : self {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+        }
+        return $this;
+    }
+
+    public function removeContact(Member $contact): self {
+        $this->contacts->removeElement($contact);
+        return $this;
+    }
 
     public function getPostCode(): ?string { return $this->postCode; }
     public function setPostCode(?string $postCode): void { $this->postCode = $postCode; }

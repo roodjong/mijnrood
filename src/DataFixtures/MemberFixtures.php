@@ -38,7 +38,7 @@ class MemberFixtures extends Fixture
         $contact->setPasswordHash(password_hash("contact", PASSWORD_DEFAULT));
         $contact->setDivision($division);
         $contact->setRegistrationTime(new DateTime('2021-06-01T15:21:01.012345Z'));
-        $division->setContact($contact);
+        $division->addContact($contact);
 
         $newMember = new Member();
         $newMember->setId(1339);

@@ -118,11 +118,11 @@ class MembershipApplicationCrud extends AbstractCrudController
         // Email naar de contactpersoon
         if ($member->getDivision() !== null)
         {
-            if ($member->getDivision()->getContact() !== null)
+            foreach ($member->getDivision()->getContacts() as $contact)
             {
                 $message2 = (new Email())
                     ->subject('Nieuw lid aangesloten bij je groep')
-                    ->to(new Address($member->getDivision()->getContact()->getEmail(), $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()))
+                    ->to(new Address($contact->getEmail(), $contact->getFirstName() .' '. $contact->getLastName()))
                     ->from(new Address($noreply, $organizationName))
                     ->html(
                         $this->renderView('email/html/contact_new_member.html.twig', [
