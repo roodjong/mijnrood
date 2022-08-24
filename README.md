@@ -40,3 +40,9 @@ Go to `http://localhost:8080/` and you should be greeted by the MijnRood login p
 
 You can log in with `admindebaas@localhost` as email, and `admin` as password.
 Look at `src/DataFixtures/` to see an overview of all test data, including other accounts.
+
+## License
+
+This project is licensed under the EUPL, the license text in English can be found in the `LICENSE` file.
+
+For more information about the EUPL and the license text in other languages, see their website: https://www.eupl.eu
