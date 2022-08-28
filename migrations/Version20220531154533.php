@@ -25,7 +25,7 @@ final class Version20220531154533 extends AbstractMigration
         $this->addSql('ALTER TABLE division_member ADD CONSTRAINT FK_66CF3FA8A76ED395 FOREIGN KEY (member_id) REFERENCES admin_member (id) ON DELETE CASCADE');
 
         // migrate the existing data
-        $this->addSql('INSERT INTO division_member (division_id, member_id) SELECT id as division_id, contact_id as member_id FROM admin_division');
+        $this->addSql('INSERT INTO division_member (division_id, member_id) SELECT id as division_id, contact_id as member_id FROM admin_division WHERE contact_id IS NOT NULL');
 
         // drop the previous data
         $this->addSql('ALTER TABLE admin_division DROP FOREIGN KEY FK_84B74012E7A1254A');
