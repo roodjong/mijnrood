@@ -59,6 +59,11 @@
                 {{ form_widget(form.postCode, { attr: { class: 'text-input' }}) }}
             </div>
 
+            <div class="form-row">
+                {{ form_label(form.division, 'Afdeling') }}
+                {{ form_widget(form.division, { attr: { class: 'text-input' }}) }}
+            </div>
+
             <button type="submit" class="button">Opslaan</button>
 
             {{ form_end(form) }}
