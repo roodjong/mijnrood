@@ -146,6 +146,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam'),
+            TextField::new('middleName', 'Tussenvoegsel'),
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
@@ -153,6 +154,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             AssociationField::new('division', 'Groep'),
+            AssociationField::new('workGroups', 'Werkgroepen'),
             BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex(),
 

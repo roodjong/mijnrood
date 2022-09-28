@@ -17,6 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Mollie\Api\MollieApiClient;
+use App\Form\{ MemberDetailsType, ChangePasswordType };
+use DateTime;
+use App\Entity\{ Division, WorkGroup, Member, MembershipApplication, MemberDetailsRevision, Event};
+use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
 
@@ -91,6 +96,22 @@ class MemberController extends AbstractController {
         $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
         $form = $this->createForm(MembershipApplicationType::class, $membershipApplication);
 
+        $workGroupCount = $this->getDoctrine()->getRepository(WorkGroup::class)->createQueryBuilder('d')
+                           ->where('d.canBeSelectedOnApplication = true')
+                           ->getQuery()
+                           ->getResult();
+        $showGroups = true;
+        $showWorkGroups = true;
+        if (count($groupCount) === 0) {
+            $showGroups = false;
+        }
+        if (count($workGroupCount) === 0) {
+            $showWorkGroups = false;
+        }
+        $form = $this->createForm(MembershipApplicationType::class, $member, [
+            'show_groups' => $showGroups,
+            'show_work_groups' => $showWorkGroups,
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -125,7 +146,8 @@ class MemberController extends AbstractController {
 
         return $this->render('user/member/apply.html.twig', [
             'success' => false,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'showGroups' => $showGroups,
         ]);
     }
 
