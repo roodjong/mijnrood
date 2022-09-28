@@ -1,0 +1,62 @@
+{% set pageTitle = 'Inschrijven' %}
+{% extends 'user/layout/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset(orgLogo) }}" />
+
+        <span class="center-form-title">
+            Inschrijven bij <span class="rood">{{ organisatienaam }}</span>
+        </span>
+
+        {% if success %}
+            <div class="error">
+                Je aanmelding is succesvol verwerkt. Binnenkort zul je een e-mail ontvangen van {{ organisatienaam }} met meer informatie.
+            </div>
+        {% else %}
+            {% if form.vars.submitted and not form.vars.valid %}
+                <div class="error">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+
+            {{ form_start(form) }}
+                <div class="form-row">
+                    {{ form_label(form.firstName, 'Naam') }}
+                    <div class="form-field-group">
+                        {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' } }) }}
+                        {{ form_widget(form.middleName, { attr: { class: 'text-input', placeholder: 'Tussenvoegsel' } }) }}
+                        {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' } }) }}
+                    </div>
+                </div>
+
+                {{ form_row(form.email, { attr: { class: 'text-input' } }) }}
+                {{ form_row(form.phone, { attr: { class: 'text-input' } }) }}
+                {{ form_row(form.dateOfBirth, { attr: { class: 'text-input' } }) }}
+
+                {# {{ form_row(form.iban, { attr: { class: 'text-input' } }) }} #}
+
+                {{ form_row(form.address, { attr: { class: 'text-input' } }) }}
+                {{ form_row(form.city, { attr: { class: 'text-input' } }) }}
+                {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
+                {% if form.preferredDivision is defined %}
+                  {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
+                {% endif %}
+                {% if form.preferredWorkGroups is defined %}
+                  {{ form_row(form.preferredWorkGroups, { attr: { class: 'text-input' } }) }}
+                {% endif %}
+                <div>
+                    {{ form_widget(form.accept) }}
+                    {{ form_label(form.accept) }}
+                </div>
+
+                <button class="submit-button" type="submit">Inschrijven</button>
+            {{ form_end(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

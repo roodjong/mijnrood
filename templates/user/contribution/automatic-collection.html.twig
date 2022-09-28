@@ -4,14 +4,7 @@
     {{ parent() }}
     <script>
         const otherAmountInput = document.getElementById("contribution_income_otherAmount");
-        const otherAmountRadio = document.getElementById("form_contributionAmount_{{ form.contributionAmount.vars.choices | length }}");
         otherAmountInput.disabled = !otherAmountRadio.checked;
-
-        for (var i = 1; i <= {{ form.contributionAmount.vars.choices | length }}; i++) {
-            document.getElementById("form_contributionAmount_" + i).addEventListener("input", (event) => {
-                otherAmountInput.disabled = !otherAmountRadio.checked;
-            });
-        }
     </script>
 {% endblock %}
 
@@ -41,16 +34,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Tot en met €2000</td>
-                        <td>€7,50 per kwartaal (€2,50 per maand)</td>
+                        <td>Studenten en werklozen</td>
+                        <td>€6 per kwartaal</td>
                     </tr>
                     <tr>
-                        <td>€2000-€3499</td>
-                        <td>€15,00 per kwartaal (€5 per maand)</td>
-                    </tr>
-                    <tr>
-                        <td>€3500 en daarboven</td>
-                        <td>€22,50 per kwartaal (€7,50 per maand)</td>
+                        <td>Werkenden</td>
+                        <td>0,5% van het inkomen (minimaal €12 per kwartaal)</td>
                     </tr>
                 </tbody>
             </table>
@@ -67,20 +56,7 @@
             {{ form_start(form, { attr: { class: 'incomes' }}) }}
                 {{ form_row(form._token) }}
 
-                <div class="choices">
-                    {% for option in form.contributionAmount %}
-                        <div class="choice">
-                            {{ form_widget(option) }}
-                            <div class="choice-text">
-                                {{ form_label(option, null, { required: false }) }}
-                                {% if option.vars.value == 0 %}
-                                    <br />
-                                    {{ form_widget(form.otherAmount, { attr: { class: 'other-amount' } }) }} per kwartaal
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                {{ form_row(form.contributionAmount) }}
 
                 <button type="submit" class="button submit-button">Automatische incasso instellen</button>
                 {{ form_end(form, {render_rest: false}) }}
