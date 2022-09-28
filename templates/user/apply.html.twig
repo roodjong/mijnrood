@@ -30,6 +30,7 @@
                     {{ form_label(form.firstName, 'Naam') }}
                     <div class="form-field-group">
                         {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' } }) }}
+                        {{ form_widget(form.middleName, { attr: { class: 'text-input', placeholder: 'Tussenvoegsel' } }) }}
                         {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' } }) }}
                     </div>
                 </div>
@@ -43,8 +44,12 @@
                 {{ form_row(form.address, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.city, { attr: { class: 'text-input' } }) }}
                 {{ form_row(form.postCode, { attr: { class: 'text-input' } }) }}
-                {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
-
+                {% if form.preferredDivision is defined %}
+                  {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
+                {% endif %}
+                {% if form.preferredWorkGroups is defined %}
+                  {{ form_row(form.preferredWorkGroups, { attr: { class: 'text-input' } }) }}
+                {% endif %}
                 <div>
                     {{ form_widget(form.accept) }}
                     {{ form_label(form.accept) }}
