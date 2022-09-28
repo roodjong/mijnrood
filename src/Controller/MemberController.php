@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
 use App\Form\{ MemberDetailsType, ChangePasswordType };
 use DateTime;
-use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
+use App\Entity\{ Division, WorkGroup, Member, MembershipApplication, MemberDetailsRevision, Event};
 use App\Form\MembershipApplicationType;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
@@ -73,8 +73,27 @@ class MemberController extends AbstractController {
     public function apply(Request $request): Response {
         $member = new MembershipApplication();
         $member->setRegistrationTime(new \DateTime());
-        $form = $this->createForm(MembershipApplicationType::class, $member);
+        $groupCount = $this->getDoctrine()->getRepository(Division::class)->createQueryBuilder('d')
+                           ->where('d.canBeSelectedOnApplication = true')
+                           ->getQuery()
+                           ->getResult();
 
+        $workGroupCount = $this->getDoctrine()->getRepository(WorkGroup::class)->createQueryBuilder('d')
+                           ->where('d.canBeSelectedOnApplication = true')
+                           ->getQuery()
+                           ->getResult();
+        $showGroups = true;
+        $showWorkGroups = true;
+        if (count($groupCount) === 0) {
+            $showGroups = false;
+        }
+        if (count($workGroupCount) === 0) {
+            $showWorkGroups = false;
+        }
+        $form = $this->createForm(MembershipApplicationType::class, $member, [
+            'show_groups' => $showGroups,
+            'show_work_groups' => $showWorkGroups,
+        ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -88,7 +107,8 @@ class MemberController extends AbstractController {
 
         return $this->render('user/apply.html.twig', [
             'success' => false,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'showGroups' => $showGroups,
         ]);
     }
 

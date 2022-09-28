@@ -8,9 +8,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Form\Contribution\ContributionPeriodType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Validator\Age;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class MembershipApplicationType extends AbstractType
 {
@@ -18,6 +20,7 @@ class MembershipApplicationType extends AbstractType
     {
         $builder
             ->add('firstName', null, ['label' => 'Voornaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
+            ->add('middleName', null, ['label' => 'Tussenvoegsel', 'error_bubbling' => true])
             ->add('lastName', null, ['label' => 'Achternaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('email', null, ['label' => 'E-mailadres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('phone', null, ['label' => 'Telefoonnummer', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
@@ -25,14 +28,15 @@ class MembershipApplicationType extends AbstractType
                 'label' => 'Geboortedatum',
                 'required' => true,
                 'widget' => 'single_text',
-                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 27, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van ROOD.'])],
+                'constraints' => [new NotBlank()],
                 'error_bubbling' => true
             ])
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])
             ->add('address', null, ['label' => 'Adres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('city', null, ['label' => 'Plaats', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('preferredDivision', null, [
+            ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]]);
+        if ($options['show_groups']) {
+            $builder->add('preferredDivision', null, [
                 'label' => 'Bij welke groep wil je je aansluiten',
                 'query_builder' => function($repo) {
                     return $repo->createQueryBuilder('d')
@@ -40,8 +44,22 @@ class MembershipApplicationType extends AbstractType
                     ;
                 },
                 // 'placeholder' => 'Geen voorkeur'
-            ])
-            ->add('accept', CheckboxType::class, [
+            ]);
+        }
+        if ($options['show_work_groups']) {
+            $builder->add('preferredWorkGroups', null, [
+                'label' => 'Bij welke werkgroep wil je je aansluiten',
+                'query_builder' => function($repo) {
+                    return $repo->createQueryBuilder('d')
+                        ->where('d.canBeSelectedOnApplication = true')
+                    ;
+                },
+                'multiple' => true,
+                'expanded' => true,
+                // 'placeholder' => 'Geen voorkeur'
+            ]);
+        }
+            $builder->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="https://roodjongeren.nl/privacybeleid">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
                 'label_html' => true,
                 'mapped' => false,
@@ -56,6 +74,8 @@ class MembershipApplicationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MembershipApplication::class,
+            'show_groups' => true,
+            'show_work_groups' => true,
         ]);
     }
 }

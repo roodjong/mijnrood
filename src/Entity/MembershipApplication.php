@@ -27,6 +27,11 @@ class MembershipApplication {
     private string $firstName = '';
 
     /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private ?string $middleName = null;
+
+    /**
      * @ORM\Column(type="string", length=100)
      */
     private string $lastName = '';
@@ -92,6 +97,11 @@ class MembershipApplication {
     private ?Division $preferredDivision = null;
 
     /**
+     * @ORM\ManyToMany(targetEntity="WorkGroup")
+     */
+    private Collection $preferredWorkGroups;
+
+    /**
      * @ORM\Column(type="integer", options={"default": 0})
      */
     private int $contributionPerPeriodInCents = 0;
@@ -107,6 +117,7 @@ class MembershipApplication {
     public function createMember(): Member {
         $member = new Member();
         $member->setFirstName($this->getFirstName());
+        $member->setMiddleName($this->getMiddleName());
         $member->setLastName($this->getLastName());
         $member->setAddress($this->getAddress());
         $member->setCity($this->getCity());
@@ -120,6 +131,7 @@ class MembershipApplication {
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
+        $member->setWorkGroups($this->getPreferredWorkGroups());
         return $member;
     }
 
@@ -128,6 +140,9 @@ class MembershipApplication {
 
     public function getFirstName(): string { return $this->firstName; }
     public function setFirstName(string $firstName): void { $this->firstName = $firstName; }
+
+    public function getMiddleName(): ?string { return $this->middleName; }
+    public function setMiddleName(?string $middleName): void { $this->middleName = $middleName; }
 
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
@@ -167,6 +182,9 @@ class MembershipApplication {
 
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }
+
+    public function getPreferredWorkGroups(): ?Collection { return $this->preferredWorkGroups; }
+    public function setPreferredWorkGroups(?Collection $preferredWorkGroups): void { $this->preferredWorkGroups = $preferredWorkGroups; }
 
     public function getContributionPeriod(): int { return $this->contributionPeriod; }
     public function setContributionPeriod(int $contributionPeriod): void {
