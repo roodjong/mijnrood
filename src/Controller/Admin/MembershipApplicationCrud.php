@@ -105,7 +105,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         }
 
         $member = $application->createMember($subscriptionId);
-        $member->setNewPasswordToken(hash("sha256", $member->getEmail() . random_bytes(64)));
+        $member->generateNewPasswordToken();
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($member);
