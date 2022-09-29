@@ -69,7 +69,7 @@ class SecurityController extends AbstractController
             ;
 
             if ($member !== null) {
-                $member->setNewPasswordToken(sha1($member->getEmail().time()));
+                $member->generateNewPasswordToken();
                 $this->getDoctrine()->getManager()->flush();
 
                 $message = (new Email())
