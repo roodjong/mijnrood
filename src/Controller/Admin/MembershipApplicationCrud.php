@@ -16,6 +16,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Mollie\Api\MollieApiClient;
+use Mollie\Api\Exceptions\ApiException;
 
 use DateTime;
 use DateInterval;
@@ -81,21 +82,29 @@ class MembershipApplicationCrud extends AbstractCrudController
         $startDate = new DateTime();
         $startDate->setDate(date('Y'), floor(date('m') / 3) * 3, 1);
         $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
+        $subscriptionId = null;
 
-        $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
+        try {
+            $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
 
-        $subscription = $customer->createSubscription([
-            'amount' => [
-                'currency' => 'EUR',
-                'value' => number_format($application->getContributionPerPeriodInEuros(), 2, '.', '')
-            ],
-            'interval' => $mollieIntervals[$application->getContributionPeriod()],
-            'description' => $this->getParameter('mollie_payment_description'),
-            'startDate' => $startDate->format('Y-m-d'),
-            'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
-        ]);
+            $subscription = $customer->createSubscription([
+                'amount' => [
+                    'currency' => 'EUR',
+                    'value' => number_format($application->getContributionPerPeriodInEuros(), 2, '.', '')
+                ],
+                'interval' => $mollieIntervals[$application->getContributionPeriod()],
+                'description' => $this->getParameter('mollie_payment_description'),
+                'startDate' => $startDate->format('Y-m-d'),
+                'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ]);
+            $subscriptionId = $subscription->id;
 
-        $member = $application->createMember($subscription->id);
+        } catch (ApiException $e) {
+            // De subscription moet later nog gedaan worden door het lid zelf
+            $this->addFlash("warning", "Het net geaccepteerde lid heeft nog geen automatisch incasso. Het nieuwe lid kan dit alleen zelf instellen.");
+        }
+
+        $member = $application->createMember($subscriptionId);
         $member->setNewPasswordToken(sha1($member->getEmail() . time()));
 
         $em = $this->getDoctrine()->getManager();

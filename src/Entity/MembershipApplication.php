@@ -115,7 +115,7 @@ class MembershipApplication {
         return $this->lastName .', '. $this->firstName;
     }
 
-    public function createMember(string $mollieSubscriptionId): Member {
+    public function createMember(?string $mollieSubscriptionId): Member {
         $member = new Member();
         $member->setFirstName($this->getFirstName());
         $member->setLastName($this->getLastName());
