@@ -57,6 +57,9 @@ COPY src /var/www/project/src
 COPY templates /var/www/project/templates
 COPY translations /var/www/project/translations
 COPY .env composer.json /var/www/project/
+COPY docker/prod/php-fpm-entrypoint.sh /var/www/project/
+
+CMD [ "/var/www/project/php-fpm-entrypoint.sh" ]
 
 FROM nginx:1.23.1 as mijnrood_nginx
 
