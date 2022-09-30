@@ -317,7 +317,7 @@ class Member implements UserInterface {
     public function generateNewPasswordToken() {
         // Urlsafe base64 encode some random bytes as token
         $this->newPasswordToken = rtrim(strtr(base64_encode(random_bytes(36)), '+/', '-_'), '=');
-        $this->newPasswordTokenGeneratedTime = $newPasswordToken === null ? null : new DateTime();
+        $this->newPasswordTokenGeneratedTime = new DateTime();
     }
     public function getNewPasswordTokenGeneratedTime(): ?DateTime { return $this->newPasswordTokenGeneratedTime; }
 }
