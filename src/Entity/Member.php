@@ -314,6 +314,10 @@ class Member implements UserInterface {
     public function eraseCredentials() { }
 
     public function getNewPasswordToken(): ?string { return $this->newPasswordToken; }
+    public function setNewPasswordToken(?string $newPasswordToken): void {
+        $this->newPasswordToken = $newPasswordToken;
+        $this->newPasswordTokenGeneratedTime = $newPasswordToken === null ? null : new DateTime();
+    }
     public function generateNewPasswordToken() {
         // Urlsafe base64 encode some random bytes as token
         $this->newPasswordToken = rtrim(strtr(base64_encode(random_bytes(36)), '+/', '-_'), '=');
