@@ -11,6 +11,8 @@ parameters:
     app.homepageUrl: '%env(HOMEPAGE)%'
     app.orgLogo: '%env(ORG_LOGO)%'
     app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
+    router.request_context.scheme: '%env(SECURE_SCHEME)%'
+    asset.request_context.secure: true
 
 services:
     # default configuration for services in *this* file
