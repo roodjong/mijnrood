@@ -34,7 +34,7 @@ class EventCrud extends AbstractCrudController
             TextEditorField::new('description', 'Omschrijving'),
             DateTimeField::new('timeStart', 'Aanvang')->renderAsChoice(),
             DateTimeField::new('timeEnd', 'Afloop')->renderAsChoice(),
-            AssociationField::new('division', 'Groep')
+            AssociationField::new('division', 'Afdeling')
         ];
     }
 
