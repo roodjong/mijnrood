@@ -18,8 +18,8 @@ class DivisionCrud extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('groep')
-            ->setEntityLabelInPlural('Groepen')
+            ->setEntityLabelInSingular('Afdeling')
+            ->setEntityLabelInPlural('Afdelingen')
         ;
     }
 
@@ -27,9 +27,11 @@ class DivisionCrud extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
-            TextField::new('name', 'Groepsnaam'),
-            AssociationField::new('contacts', 'Contactpersonen'),
-            BooleanField::new('canBeSelectedOnApplication', 'Kan als gewenste groep worden geselecteerd bij aanmelding')
+
+            TextField::new('name', 'Afdelingsnaam'),
+            AssociationField::new('contact', 'Voorzitter'),
+            BooleanField::new('canBeSelectedOnApplication', 'Kan als gewenste afdeling worden geselecteerd bij aanmelding')
+
                 ->hideOnIndex(),
 
             FormField::addPanel('Contactinformatie'),

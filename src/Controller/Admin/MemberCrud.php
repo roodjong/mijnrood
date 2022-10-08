@@ -63,7 +63,7 @@ class MemberCrud extends AbstractCrudController
         $sheet->setCellValue('C1', 'Achternaam');
         $sheet->setCellValue('D1', 'Geboortedatum');
         $sheet->setCellValue('E1', 'Inschrijfdataum');
-        $sheet->setCellValue('F1', 'Groep');
+        $sheet->setCellValue('F1', 'Afdeling');
         $sheet->setCellValue('G1', 'E-mailadres');
         $sheet->setCellValue('H1', 'Telefoonnr.');
         $sheet->setCellValue('I1', 'Adres');
@@ -153,7 +153,7 @@ class MemberCrud extends AbstractCrudController
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
-            AssociationField::new('division', 'Groep'),
+            AssociationField::new('division', 'Afdeling'),
             AssociationField::new('workGroups', 'Werkgroepen'),
             BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex(),

@@ -61,7 +61,7 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Leden', 'fa fa-users', Member::class),
             MenuItem::linkToCrud('Steunleden', 'fa fa-users', SupportMember::class),
             MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class),
-            MenuItem::linkToCrud('Groepen', 'fa fa-building', Division::class),
+            MenuItem::linkToCrud('Afdelingen', 'fa fa-building', Division::class),
             MenuItem::linkToCrud('Werkgroepen', 'fa fa-building', WorkGroup::class),
 
             MenuItem::section('Technisch'),
