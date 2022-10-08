@@ -37,7 +37,7 @@ class MembershipApplicationType extends AbstractType
             ->add('postCode', null, ['label' => 'Postcode', 'error_bubbling' => true, 'constraints' => [new NotBlank()]]);
         if ($options['show_groups']) {
             $builder->add('preferredDivision', null, [
-                'label' => 'Bij welke groep wil je je aansluiten',
+                'label' => 'Bij welke afdeling wil je je aansluiten',
                 'query_builder' => function($repo) {
                     return $repo->createQueryBuilder('d')
                         ->where('d.canBeSelectedOnApplication = true')
