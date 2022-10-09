@@ -41,5 +41,5 @@ security:
         - { path: ^/wachtwoord-instellen/.+$, roles: IS_ANONYMOUS }
         - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
         - { path: ^/api/.+$, roles: IS_ANONYMOUS }
-        - { path: ^/admin$, roles: ROLE_ADMIN }
+        - { path: ^/admin$, roles: [ROLE_ADMIN, ROLE_DIVISION_CONTACT] }
         - { path: '^', roles: ROLE_USER }

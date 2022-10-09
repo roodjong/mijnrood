@@ -51,23 +51,23 @@ class DashboardController extends AbstractDashboardController
         return [
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
-            MenuItem::section('Website'),
-            MenuItem::linkToCrud('Evenementen', 'fa fa-calendar', Event::class),
+            MenuItem::section('Website')->setPermission('ROLE_ADMIN'),
+            MenuItem::linkToCrud('Evenementen', 'fa fa-calendar', Event::class)->setPermission('ROLE_ADMIN'),
 
             MenuItem::section('Administratie'),
             MenuItem::linkToCrud('Leden', 'fa fa-users', Member::class),
-            MenuItem::linkToCrud('Steunleden', 'fa fa-users', SupportMember::class),
+            MenuItem::linkToCrud('Steunleden', 'fa fa-users', SupportMember::class)->setPermission('ROLE_ADMIN'),
             MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class),
-            MenuItem::linkToCrud('Afdelingen', 'fa fa-building', Division::class),
-            MenuItem::linkToCrud('Werkgroepen', 'fa fa-building', WorkGroup::class),
+            MenuItem::linkToCrud('Afdelingen', 'fa fa-building', Division::class)->setPermission('ROLE_ADMIN'),
+            MenuItem::linkToCrud('Werkgroepen', 'fa fa-building', WorkGroup::class)->setPermission('ROLE_ADMIN'),
 
-            MenuItem::section('Technisch'),
-            MenuItem::linkToCrud('E-mailadressen', 'fa fa-at', Email::class),
-            MenuItem::linkToCrud('E-maildomeinen', 'fa fa-globe', EmailDomain::class),
+            MenuItem::section('Technisch')->setPermission('ROLE_ADMIN'),
+            MenuItem::linkToCrud('E-mailadressen', 'fa fa-at', Email::class)->setPermission('ROLE_ADMIN'),
+            MenuItem::linkToCrud('E-maildomeinen', 'fa fa-globe', EmailDomain::class)->setPermission('ROLE_ADMIN'),
 
             MenuItem::section(''),
             MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
-            MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics'),
+            MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics')->setPermission('ROLE_ADMIN'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
         ];
     }

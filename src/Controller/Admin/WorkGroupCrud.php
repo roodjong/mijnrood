@@ -20,6 +20,7 @@ class WorkGroupCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('werkgroep')
             ->setEntityLabelInPlural('Werkgroepen')
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 
