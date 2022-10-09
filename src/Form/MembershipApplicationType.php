@@ -43,6 +43,7 @@ class MembershipApplicationType extends AbstractType
                         ->where('d.canBeSelectedOnApplication = true')
                     ;
                 },
+                'required' => true
                 // 'placeholder' => 'Geen voorkeur'
             ]);
         }
