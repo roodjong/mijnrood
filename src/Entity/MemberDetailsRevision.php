@@ -82,6 +82,8 @@ class MemberDetailsRevision {
     }
 
     public function hasChanged(Member $member) {
+        $dateOfBirthRevision = $this->getDateOfBirth() ? $this->getDateOfBirth()->format('Ymd') : null;
+        $dateOfBirthMember = $member->getDateOfBirth('Ymd');
         return
             $this->getMember()->getId() !== $member->getId()
          || $this->getFirstName() !== $member->getFirstName()
@@ -93,7 +95,7 @@ class MemberDetailsRevision {
          || $this->getEmail() !== $member->getEmail()
          || $this->getPostCode() !== $member->getPostCode()
          || $this->getCountry() !== $member->getCountry()
-         || $this->getDateOfBirth()->format('Ymd') !== $member->getDateOfBirth('Ymd');
+         || $dateOfBirthRevision !== $dateOfBirthMember;
     }
 
     public function getId(): ?int { return $this->id; }
