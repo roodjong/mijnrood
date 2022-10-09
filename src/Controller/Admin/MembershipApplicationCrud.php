@@ -4,13 +4,21 @@ namespace App\Controller\Admin;
 
 use App\Controller\Admin\MemberCrud;
 use App\Entity\{ Member, MembershipApplication };
+
+use Doctrine\ORM\QueryBuilder;
+
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use App\Form\Admin\ContributionPaymentType;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Action, Actions };
+use EasyCorp\Bundle\EasyAdminBundle\Dto\{EntityDto, SearchDto};
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
+
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
@@ -30,6 +38,18 @@ class MembershipApplicationCrud extends AbstractCrudController
     {
         $this->mailer = $mailer;
         $this->mollieApiClient = $mollieApiClient;
+    }
+
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            return $response;
+        }
+        $division = $this->getUser()->getDivision();
+        $response->andWhere('entity.preferredDivision = :division')->setParameter('division', $division);
+        return $response;
     }
 
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity

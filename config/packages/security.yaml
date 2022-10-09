@@ -35,13 +35,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login$, roles: IS_ANONYMOUS }
-        - { path: ^/steunlid-worden(/|$), roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/wachtwoord-opvragen$, roles: IS_ANONYMOUS }
-        - { path: ^/wachtwoord-instellen/.+$, roles: IS_ANONYMOUS }
-        - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: ^/aanmelden/.*$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: ^/api/.+$, roles: IS_ANONYMOUS }
-        - { path: ^/admin$, roles: ROLE_ADMIN }
-        - { path: '^/auth/check_admin'}
-        - { path: '^', roles: ROLE_USER }
+        - { path: ^/login$, roles: IS_ANONYMOUS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/steunlid-worden(/|$), roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/wachtwoord-opvragen$, roles: IS_ANONYMOUS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/wachtwoord-instellen/.+$, roles: IS_ANONYMOUS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY], requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/api/.+$, roles: IS_ANONYMOUS, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: ^/admin$, roles: [ROLE_ADMIN, ROLE_DIVISION_CONTACT], requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: '^/auth/check_admin', requires_channel: '%env(SECURE_SCHEME)%'}
+        - { path: '^', roles: ROLE_USER, requires_channel: '%env(SECURE_SCHEME)%' }

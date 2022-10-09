@@ -44,6 +44,7 @@ class SupportMemberCrud extends AbstractCrudController
             ->setEntityLabelInSingular('Steunlid')
             ->setEntityLabelInPlural('Steunleden')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 

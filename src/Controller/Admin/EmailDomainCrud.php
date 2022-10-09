@@ -21,6 +21,7 @@ class EmailDomainCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('e-maildomein')
             ->setEntityLabelInPlural('E-maildomeinen')
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 

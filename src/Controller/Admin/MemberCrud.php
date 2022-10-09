@@ -6,11 +6,18 @@ use App\Entity\Member;
 use App\Form\Admin\ContributionPaymentType;
 use App\Form\Contribution\ContributionPeriodType;
 
+
+use Doctrine\ORM\QueryBuilder;
+
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\{EntityDto, SearchDto};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Actions, Action };
 use EasyCorp\Bundle\EasyAdminBundle\Filter\{ ChoiceFilter, EntityFilter };
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,6 +29,16 @@ use DateTime;
 
 class MemberCrud extends AbstractCrudController
 {
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            return $response;
+        }
+        $division = $this->getUser()->getDivision();
+        $response->andWhere('entity.division = :division')->setParameter('division', $division);
+        return $response;
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -84,7 +101,12 @@ class MemberCrud extends AbstractCrudController
             Member::PERIOD_ANNUALLY => 'Jaarlijks'
         ];
         $now = new DateTime;
-        $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
+        }
+        else {
+            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $this->getUser()->getDivision()]);
+        }
 
         $i = 2;
         foreach ($members as $member)
@@ -146,7 +168,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam'),
-            TextField::new('middleName', 'Tussenvoegsel'),
+            TextField::new('middleName', 'Tussenvoegsel')->setRequired(false),
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),

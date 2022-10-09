@@ -20,6 +20,7 @@ class DivisionCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Afdeling')
             ->setEntityLabelInPlural('Afdelingen')
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 
