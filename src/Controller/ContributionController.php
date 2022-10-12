@@ -154,14 +154,18 @@ class ContributionController extends AbstractController
      * @Route("/automatische-incasso", name="member_contribution_automatic_collection")
      */
     public function automaticCollection(Request $request, LoggerInterface $logger): Response {
-        $form = $this->createForm(ContributionIncomeType::class);
-        $form->setData(750);
+        $chosenContribution = new ChosenContribution();
+        $chosenContribution->setContributionAmount(750);
+        $member = $this->getUser();
+        $form = $this->createForm(ContributionIncomeType::class,
+                                  $chosenContribution,
+                                  ['division' => $member->getDivision()]);
+
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $member = $this->getUser();
-            $member->setContributionPerPeriodInCents($form->getData());
+            $member->setContributionPerPeriodInCents($chosenContribution->getChosenAmount());
             $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
             $em->flush();
 
