@@ -156,13 +156,15 @@ class ContributionController extends AbstractController
     public function automaticCollection(Request $request, LoggerInterface $logger): Response {
         $chosenContribution = new ChosenContribution();
         $chosenContribution->setContributionAmount(750);
-        $form = $this->createForm(ContributionIncomeType::class, $chosenContribution);
+        $member = $this->getUser();
+        $form = $this->createForm(ContributionIncomeType::class,
+                                  $chosenContribution,
+                                  ['division' => $member->getDivision()]);
 
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $member = $this->getUser();
             $member->setContributionPerPeriodInCents($chosenContribution->getChosenAmount());
             $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
             $em->flush();

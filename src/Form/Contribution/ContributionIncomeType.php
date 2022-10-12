@@ -13,14 +13,31 @@ class ContributionIncomeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $division = $options['division'];
+        $divisionName = $division->getName();
+        // Developer disclaimer for this ugly conditional:
+        // normally I would add a new attribute to the division
+        // for the preferred contribution, but it is likely that we will
+        // have one big national contribution very soon, so this will be
+        // redundant.
+        $minimumContribution = 6; // default contribution based on Utrecht
+        $divisionContribution = [
+            'Noord' => 7.50,
+            'Overijssel' => 7.50,
+            'Oost-Brabant' => 3,
+            'Amsterdam' => 15
+        ];
+        if (isset($divisionContribution[$divisionName])) {
+            $minimumContribution = $divisionContribution[$divisionName];
+        }
         $builder
             ->add('contributionAmount', MoneyType::class, [
                 'label' => 'Contributie:',
                 'divisor' => 100,
                 'constraints' => [
                     new GreaterThanOrEqual([
-                        'value' => 600,
-                        'message' => 'Er is iets verkeerd gegaan. Heeft u minimaal een contributie hoger dan 6 euro per kwartaal ingesteld?',
+                        'value' => $minimumContribution * 100,
+                        'message' => "Er is iets verkeerd gegaan. Heeft u minimaal een contributie hoger dan $minimumContribution euro per kwartaal ingesteld?",
                     ])
                 ],
             ]);
@@ -29,7 +46,8 @@ class ContributionIncomeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'entity_class' => ChosenContribution::class
+            'entity_class' => ChosenContribution::class,
+            'division' => null,
         ]);
     }
 }
