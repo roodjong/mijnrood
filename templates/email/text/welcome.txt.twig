@@ -1,24 +1,55 @@
 {% extends 'email/text/layout.txt.twig' %}
-{% set url = url('set_new_password', { token: member.newPasswordToken })
- %}
+{% set url = url('set_new_password', { token: member.newPasswordToken }) %}
+{% set division = member.division.name %}
 {% block content %}
 Beste {{ member.firstName }},
 
-Recentelijk heb je het aanmeldingsformulier Socialisten ingevuld. Via deze mail heten wij je namens het Socialisten bestuur hartelijk welkom in onze organisatie. Wij zijn erg blij om
-te horen dat je je wil aansluiten bij het eenheidsinitiatief van Socialisten. Je lidnummer is {{ member.id }}.
+Recentelijk heb je het aanmeldingsformulier op https://mijn.socialisten.org/aanmelden/ ingevuld. Dit formulier geeft iedereen de mogelijkheid om lid te worden van onze organisatie.
+Via deze mail heten wij je namens het landelijke Socialisten-bestuur hartelijk welkom in onze beweging. Wij zijn erg blij om te horen dat je je wil aansluiten bij één van de verenigingen of werkgroepen van Socialisten.
+Je lidnummer is {{ member.id }}.
 
-Als lokale socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk subsidie. Het is onze missie om alle socialisten een plek te bieden. We zijn helemaal blij als je ook actief wil worden voor Socialisten. Dat kan op de volgende manier:
+Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen.
+Omdat we nu formeel nog geen landelijke vereniging zijn heeft elke lokale vereniging of werkgroep zijn eigen contributieregeling. Jouw contributie gaat dan ook naar {{ division }}.
+Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen. Op termijn zullen we, in overleg met de
+plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
 
-- Kijk op de pagina https://socialisten.org/netwerken/, meldt je aan voor een netwerk. We nemen sowieso contact met je op om je beter te leren kennen.
+De contributieregeling voor jouw vereniging/werkgroep is:
 
-- Neem deel aan het landelijke forum van Socialisten.org. Via deze link krijg je een uitnodigingsmail voor het forum: https://forum.socialisten.org/invites/xGWGENEeYz
- 
-Je kunt een wachtwoord instellen voor Mijn Socialisten, de ledenwebsite van Socialisten, door op deze link te klikken:
-{{ url }}
+{% if division == "Utrecht" %}
+- Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.
+
+- Werklozen/studenten 6 euro per kwartaal.
+
+{% elseif division == "Amsterdam" %}
+
+- 15 euro per kwartaal (optioneel meer)
+
+{% elseif division in ["Nijmegen", "Arnhem", "West-Brabant", "Rotterdam", "Wageningen", "Zuid-Holland-West"] %}
+
+- Nog geen contributieregeling, in Utrecht hebben ze deze contributieregeling:
+
+- Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.
+
+- Werklozen/studenten 6 euro per kwartaal.
+
+
+{% elseif division in ["Noord", "Overijssel"] %}
+- Minimaal 7,50 euro per kwartaal
+
+{% elseif division == "Oost-Brabant" %}
+- 3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.
+{% endif %}
+
+Het ledenbestand en de financiën wordt momenteel beheerd door de vereniging Socialisten Utrecht. We sturen wel een cc: van dit bericht naar {{ member.division.name }}@socialisten.org zodat ze contact met je kunnen opnemen.
+
+Onze nieuwe beweging heeft actieve leden nodig. Geef het aan als je actief wilt worden.
+
+- Kijk op de pagina https://socialisten.org/mee-doen/ en vul de ledenenquête in. De lokale vereniging/werkgroep neemt sowieso contact met je op om je beter te leren kennen.
+- Neem deel aan het landelijke forum van Socialisten.org. Via deze link krijg je een uitnodigingsmail voor het forum: {{url}}??? Waar kan ik deze vinden?
+
+Je kunt een wachtwoord instellen voor mijn.socialisten.org, de ledenwebsite van de Socialisten, door op deze link te klikken: {{ url }}
 
 Kameraadschappelijke groet,
 
-Het Socialisten bestuur
-
-{% endblock %}
+Het Socialisten-bestuur
 

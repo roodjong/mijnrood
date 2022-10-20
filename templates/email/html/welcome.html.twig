@@ -1,25 +1,63 @@
 {% extends 'email/html/layout.html.twig' %}
 {% set url = url('set_new_password', { token: member.newPasswordToken }) %}
+{% set division = member.division.name %}
 {% block content %}
     <p>
         Beste {{ member.firstName }},
     </p>
     <p>
-Recentelijk heb je het aanmeldingsformulier Socialisten Utrecht ingevuld. Via deze mail heten wij je namens het Socialisten Utrecht-bestuur hartelijk welkom in onze organisatie. Wij zijn erg blij om 
-te horen dat je je wil aansluiten bij het eenheidsinitiatief van Socialisten in Utrecht. Je lidnummer is {{ member.id }}.
+Recentelijk heb je het aanmeldingsformulier op https://mijn.socialisten.org/aanmelden/ ingevuld. Dit formulier geeft iedereen de mogelijkheid om lid te worden van onze organisatie.
+Via deze mail heten wij je namens het landelijke Socialisten-bestuur hartelijk welkom in onze beweging. Wij zijn erg blij om te horen dat je je wil aansluiten bij één van de verenigingen of werkgroepen van Socialisten.
+Je lidnummer is {{ member.id }}.
     </p>
     <p>
-Als lokale socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk subsidie. Het is onze missie om alle socialisten in Utrecht een plek te bieden. We zijn helemaal blij als je ook actief wil worden voor Socialisten Utrecht. Dat kan op de volgende manier:
+Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen.
+Omdat we nu formeel nog geen landelijke vereniging zijn heeft elke lokale vereniging of werkgroep zijn eigen contributieregeling. Jouw contributie gaat dan ook naar {{ division }}.
+Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen. Op termijn zullen we, in overleg met de
+plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
+    </p>
+<p>
+De contributieregeling voor jouw vereniging/werkgroep is:
     </p>
     <ul>
-        <li>Word actief bij een van onze lokale afdelingen. Bij het inschrijven kiest ieder lid een lokale afdeling, in deze lokale afdeling worden wekelijks vergaderingen gehouden om acties te plannen en politiek te bespreken. Om actief te worden in deze afdelingen is het niet vereist in deze specifieke gemeente te wonen. Leden die bijvoorbeeld in de buurt van één van deze steden wonen zijn meer dan welkom. Wanneer jij tijdens het invullen van het aanmeldingsformulier een woonplaats hebt doorgegeven, zal het bestuur ervoor zorgen dat de desbetreffende afdeling contact opneemt met jou. Mocht dit niet het geval zijn maar wil jij wel actief worden bij één van deze afdelingen, stuur dan vooral een mailtje terug! Een overzicht van alle bestaande afdelingen kun je vinden op: <a href="https://socialisten.org/lokaal/">socialisten.org/lokaal</a></li>
-        <li>Voor leden zijn er naast de lokale afdelingen nog genoeg andere mogelijkheden om actief te zijn voor ROOD. Zo zijn er gethematiseerde netwerken waarbij nieuwe, enthousiaste leden altijd welkom zijn. Een overzicht van de verschillende netwerken en wie je daarvoor moet benaderen kun je hier vinden: <a href="https://socialisten.org/netwerken/">socialisten.org/netwerken</a>.
-        <li>Neem deel aan het landelijke forum van Socialisten.org. Via deze link krijg je een uitnodigingsmail voor het forum: https://forum.socialisten.org/invites/xGWGENEeYz
-        </li>
+
+{% if division == "Utrecht" %}
+<li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
+
+<li>Werklozen/studenten 6 euro per kwartaal.</li>
+
+{% elseif division == "Amsterdam" %}
+
+<li>15 euro per kwartaal (optioneel meer)</li>
+
+{% elseif division in ["Nijmegen", "Arnhem", "West-Brabant", "Rotterdam", "Wageningen", "Zuid-Holland-West"] %}
+
+<li>Nog geen contributieregeling, in Utrecht hebben ze deze contributieregeling:</li>
+
+<li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
+
+<li>Werklozen/studenten 6 euro per kwartaal.</li>
+
+
+{% elseif division in ["Noord", "Overijssel"] %}
+<li>Minimaal 7,50 euro per kwartaal</li>
+
+{% elseif division == "Oost-Brabant" %}
+<li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
+{% endif %}
     </ul>
     <p>
-Je kunt een wachtwoord instellen voor Mijn Socialisten Utrecht, de ledenwebsite van Socialisten Utrecht, door op deze link te klikken: <a href="{{ url }}">{{ url }}</a>
+      Het ledenbestand en de financiën wordt momenteel beheerd door de vereniging Socialisten Utrecht. We sturen wel een cc: van dit bericht naar {{ member.division.name }}@socialisten.org zodat ze contact met je kunnen opnemen.
     </p>
+    <p>
+Onze nieuwe beweging heeft actieve leden nodig. Geef het aan als je actief wilt worden.
+    </p>
+    <ul>
+<li>Kijk op de pagina https://socialisten.org/mee-doen/ en vul de ledenenquête in. De lokale vereniging/werkgroep neemt sowieso contact met je op om je beter te leren kennen.</li>
+<li>Neem deel aan het landelijke forum van Socialisten.org. Via deze link krijg je een uitnodigingsmail voor het forum: {{url}}??? Waar kan ik deze vinden?</li>
+    </ul>
+    <p>
+Je kunt een wachtwoord instellen voor mijn.socialisten.org, de ledenwebsite van de Socialisten, door op deze link te klikken: {{ url }}    </p>
     <p>
         Kameraadschappelijke groet,
     </p>

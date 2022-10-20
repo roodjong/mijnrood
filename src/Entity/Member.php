@@ -330,7 +330,7 @@ class Member implements UserInterface {
     public function getRoles(): array {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-        if ($this->getDivision()->getContact()->getId() === $this->getId()) {
+        if ($this->getDivision() !== null && $this->getDivision()->getContact() !== null && $this->getDivision()->getContact()->getId() === $this->getId()) {
             $roles[] = 'ROLE_DIVISION_CONTACT';
         }
         return array_unique($roles);

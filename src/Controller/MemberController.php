@@ -13,6 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -35,6 +38,9 @@ class MemberController extends AbstractController {
     public function __construct(MollieApiClient $mollieApiClient)
     {
         $this->mollieApiClient = $mollieApiClient;
+
+    public function __construct(MailerInterface $mailer) {
+        $this->mailer = $mailer;
     }
 
     public function memberAcceptPersonalDetails(Request $request): Response {
@@ -118,6 +124,7 @@ class MemberController extends AbstractController {
             $em->persist($membershipApplication);
             $em->flush();
 
+<<<<<<< HEAD
             $memberRepository = $this->getDoctrine()->getRepository(Member::class);
             $existingMember = $memberRepository->findOneByEmail($form['email']->getData());
 
@@ -142,6 +149,25 @@ class MemberController extends AbstractController {
 
                 return $this->redirect($payment->getCheckoutUrl(), 303);
             }
+=======
+            $noreply = $this->getParameter('app.noReplyAddress');
+            $organizationName = $this->getParameter('app.organizationName');
+            $message = (new Email())
+            ->subject("Bedankt voor je aanmelding bij $organizationName!")
+            ->to(new Address($member->getEmail(), $member->getFullName()))
+            ->from(new Address($noreply, $organizationName))
+            ->html(
+                $this->renderView('email/html/apply.html.twig', ['member' => $member])
+            )
+            ->text(
+                $this->renderView('email/text/apply.txt.twig', ['member' => $member])
+            );
+            $this->mailer->send($message);
+
+            return $this->render('user/apply.html.twig', [
+                'success' => true
+            ]);
+>>>>>>> 8ffa3dd (Set email on first registration)
         }
 
         return $this->render('user/member/apply.html.twig', [
