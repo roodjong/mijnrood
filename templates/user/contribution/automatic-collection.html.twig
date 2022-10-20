@@ -1,4 +1,5 @@
 {% extends 'user/layout/members.html.twig' %}
+{% set division = app.user.division.name %}
 
 {% block scripts %}
     {{ parent() }}
@@ -25,6 +26,8 @@
                 Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso.
                 Hoeveel je hierbij betaalt hangt af van je inkomen:
             </p>
+
+            {% if division in ["Utrecht", "Nijmegen", "Arnhem", "West-Brabant", "Zuid-Holland-West", "Arnhem", "Wageningen"] %}
             <table class="table">
                 <thead>
                     <tr>
@@ -43,7 +46,19 @@
                     </tr>
                 </tbody>
             </table>
-
+            {% elseif division == "Amsterdam" %}
+            <ul>
+              <li>15 euro per kwartaal (optioneel meer)</li>
+            </ul>
+            {% elseif division in ["Noord", "Overijssel"] %}
+            <ul>
+              <li>Minimaal 7,50 euro per kwartaal</li>
+            </ul>
+            {% elseif division == "Oost-Brabant" %}
+            <ul>
+              <li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
+            </ul>
+            {% endif %}
             {% if form.vars.submitted and not form.vars.valid %}
                 <div class="error">
                     {{ form_errors(form) }}
