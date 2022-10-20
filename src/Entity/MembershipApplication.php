@@ -147,6 +147,13 @@ class MembershipApplication {
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
 
+    public function getFullName(): string {
+        if ($this->middleName === null) {
+            return $this->firstName. ' ' . $this->lastName;
+        }
+        return $this->firstName . ' ' . $this->middleName . ' ' . $this->lastName;
+    }
+
     public function getAddress(): string { return $this->address; }
     public function setAddress(string $address): void { $this->address = $address; }
 

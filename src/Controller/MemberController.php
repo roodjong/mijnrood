@@ -5,6 +5,9 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -17,6 +20,10 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
 
 class MemberController extends AbstractController {
+
+    public function __construct(MailerInterface $mailer) {
+        $this->mailer = $mailer;
+    }
 
     public function memberAcceptPersonalDetails(Request $request): Response {
         $member = $this->getUser();
@@ -99,6 +106,20 @@ class MemberController extends AbstractController {
             $em = $this->getDoctrine()->getManager();
             $em->persist($member);
             $em->flush();
+
+            $noreply = $this->getParameter('app.noReplyAddress');
+            $organizationName = $this->getParameter('app.organizationName');
+            $message = (new Email())
+            ->subject("Bedankt voor je aanmelding bij $organizationName!")
+            ->to(new Address($member->getEmail(), $member->getFullName()))
+            ->from(new Address($noreply, $organizationName))
+            ->html(
+                $this->renderView('email/html/apply.html.twig', ['member' => $member])
+            )
+            ->text(
+                $this->renderView('email/text/apply.txt.twig', ['member' => $member])
+            );
+            $this->mailer->send($message);
 
             return $this->render('user/apply.html.twig', [
                 'success' => true

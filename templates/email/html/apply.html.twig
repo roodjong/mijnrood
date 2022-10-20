@@ -1,0 +1,16 @@
+{% extends 'email/html/layout.html.twig' %}
+{% set url = url('set_new_password', { token: member.newPasswordToken }) %}
+{% block content %}
+    <p>
+        Beste {{ member.firstName }},
+    </p>
+    <p>
+Bedankt voor het aanmelden bij Socialisten. De afdeling zal je aanmelding verwerken waarna u nog een bevestigingsmail zult ontvangen.
+    </p>
+    <p>
+        Kameraadschappelijke groet,
+    </p>
+    <p>
+        Het Socialisten bestuur
+    </p>
+{% endblock %}
