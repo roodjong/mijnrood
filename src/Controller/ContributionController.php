@@ -74,7 +74,8 @@ class ContributionController extends AbstractController
             $member->setCreateSubscriptionAfterPayment(true);
         }
 
-        // Create mollie payment
+	// Create mollie payment
+	// TODO: Remove hardcoded description
         $molliePayment = $customer->createPayment([
             'amount' => [
                 'currency' => 'EUR',
@@ -82,7 +83,7 @@ class ContributionController extends AbstractController
             ],
             'sequenceType' => 'first',
             'locale' => 'nl_NL',
-            'description' => $this->getParameter('mollie_payment_description'),
+            'description' => "Contributie Socialisten " . $member->getDivision()->getName(),
             'redirectUrl' => $redirectUrl,
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
         ]);
@@ -447,7 +448,7 @@ class ContributionController extends AbstractController
                 'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
             'interval' => '3 months',
-            'description' => $this->getParameter('mollie_payment_description'),
+            'description' => "Contributie Socialisten " . $member->getDivision()->getName(),
             'startDate' => $startDate->format('Y-m-d'),
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
         ]);
