@@ -11,6 +11,7 @@ parameters:
     app.homepageUrl: '%env(HOMEPAGE)%'
     app.orgLogo: '%env(ORG_LOGO)%'
     app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
+    app.forumUrl: '%env(FORUM_URL)%'
 
 services:
     # default configuration for services in *this* file
