@@ -14,6 +14,7 @@ parameters:
     app.listmonkUrl: '%env(string:LISTMONK_URL)%'
     router.request_context.scheme: '%env(SECURE_SCHEME)%'
     asset.request_context.secure: true
+    app.forumUrl: '%env(FORUM_URL)%'
 
 services:
     # default configuration for services in *this* file
