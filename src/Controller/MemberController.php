@@ -120,7 +120,7 @@ class MemberController extends AbstractController {
             ->text(
                 $this->renderView('email/text/apply.txt.twig', ['member' => $member])
             );
-            if ($divisionEmail == null) {
+            if ($divisionEmail != null) {
                 $message->addCc(new Address($divisionEmail, $member->getPreferredDivision()->getName());
             }
             $this->mailer->send($message);
