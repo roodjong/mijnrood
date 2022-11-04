@@ -152,6 +152,7 @@ class MemberController extends AbstractController {
 =======
             $noreply = $this->getParameter('app.noReplyAddress');
             $organizationName = $this->getParameter('app.organizationName');
+            $divisionEmail = $member->getPreferredDivision()->getEmail();
             $message = (new Email())
             ->subject("Bedankt voor je aanmelding bij $organizationName!")
             ->to(new Address($member->getEmail(), $member->getFullName()))
@@ -162,6 +163,9 @@ class MemberController extends AbstractController {
             ->text(
                 $this->renderView('email/text/apply.txt.twig', ['member' => $member])
             );
+            if ($divisionEmail != null) {
+                $message->addCc(new Address($divisionEmail, $member->getPreferredDivision()->getName()));
+            }
             $this->mailer->send($message);
 
             return $this->render('user/apply.html.twig', [
