@@ -31,7 +31,10 @@
                 Hoeveel je hierbij betaalt hangt af van je inkomen:
             </p>
 
-            {% if division in ["Utrecht", "Nijmegen", "Arnhem", "West-Brabant", "Zuid-Holland-West", "Arnhem", "Wageningen"] %}
+            {% if division in ["Utrecht", "Nijmegen", "Arnhem", "West-Brabant", "Zuid-Holland-West", "Arnhem", "Wageningen", "Rotterdam"] %}
+            {% if division != "Utrecht" %}
+                <p>Je afdeling heeft nog geen contributieregeling. De contributieregeling van Utrecht is:</p>
+            {% endif }
             <table class="table">
                 <tbody>
                     <tr>
