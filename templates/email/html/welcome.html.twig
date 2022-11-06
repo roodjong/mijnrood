@@ -22,33 +22,35 @@ plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We
 <p>
 De contributieregeling voor jouw vereniging/werkgroep is:
     </p>
-    <ul>
 {% if division == "Utrecht" %}
+<ul>
 <li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
 
-<li>Werklozen/studenten 6 euro per kwartaal.</li>
+<li>Werklozen/studenten minimaal 6 euro per kwartaal.</li>
+</ul>
 
 {% elseif division == "Amsterdam" %}
-
+<ul>
 <li>15 euro per kwartaal (optioneel meer)</li>
-
+</ul>
 {% elseif division in ["Nijmegen", "Arnhem", "West-Brabant", "Rotterdam", "Wageningen", "Zuid-Holland-West"] %}
-
 <p>Nog geen contributieregeling, in Utrecht hebben ze deze contributieregeling:</p>
 <br>
-
+<ul>
 <li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
 
-<li>Werklozen/studenten 6 euro per kwartaal.</li>
-
+<li>Werklozen/studenten minimaal 6 euro per kwartaal.</li>
+</ul>
 
 {% elseif division in ["Noord", "Overijssel"] %}
+<ul>
 <li>Minimaal 7,50 euro per kwartaal</li>
-
+</ul>
 {% elseif division == "Oost-Brabant" %}
-<li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
+<ul>
+  <li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
+</ul>
 {% endif %}
-    </ul>
     <p>
       Het ledenbestand en de financiën wordt momenteel beheerd door de vereniging Socialisten Utrecht. We sturen wel een cc: van dit bericht naar {{ member.division.email }} zodat ze contact met je kunnen opnemen.
     </p>
