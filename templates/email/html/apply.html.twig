@@ -1,5 +1,4 @@
 {% extends 'email/html/layout.html.twig' %}
-{% set url = url('set_new_password', { token: member.newPasswordToken }) %}
 {% block content %}
     <p>
         Beste {{ member.firstName }},
