@@ -214,11 +214,12 @@ class SupportMemberCrud extends AbstractCrudController
     public function deleteEntity(EntityManagerInterface $em, $entity): void
     {
         $mollieApi = $this->get(MollieApiClient::class);
-        $subscription = $mollieApi->subscriptions->getForId($entity->getMollieCustomerId(), $entity->getMollieSubscriptionId());
+        if ($entity->getMollieCustomerId() !== null) {
+            $subscription = $mollieApi->subscriptions->getForId($entity->getMollieCustomerId(), $entity->getMollieSubscriptionId());
 
-        if ($subscription)
-        {
-            $subscription->cancel();
+            if ($subscription) {
+                $subscription->cancel();
+            }
         }
         parent::deleteEntity($em, $entity);
     }
