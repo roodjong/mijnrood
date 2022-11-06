@@ -87,7 +87,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->remove($application);
         $em->flush();
 
-        $forumUrl = $this->getParameter('app.organizationName');
+        $forumUrl = $this->getParameter('app.forumUrl');
 
         $message = (new Email())
             ->subject("Welkom bij $organizationName!")
@@ -100,29 +100,6 @@ class MembershipApplicationCrud extends AbstractCrudController
                 $this->renderView('email/text/welcome.txt.twig', ['member' => $member, 'forumUrl' => $forumUrl])
             );
         $mailer->send($message);
-
-        // Email naar de contactpersoon
-        if ($member->getDivision() !== null)
-        {
-            if ($member->getDivision()->getContact() !== null)
-            {
-                $message2 = (new Email())
-                    ->subject('Nieuw lid aangesloten bij je groep')
-                    ->to(new Address($member->getDivision()->getContact()->getEmail(), $member->getDivision()->getContact()->getFirstName() .' '. $member->getDivision()->getContact()->getLastName()))
-                    ->from(new Address($noreply, $organizationName))
-                    ->html(
-                        $this->renderView('email/html/contact_new_member.html.twig', [
-                            'member' => $member,
-                        ]),
-                    )
-                    ->text(
-                        $this->renderView('email/text/contact_new_member.txt.twig', [
-                            'member' => $member,
-                        ]),
-                    );
-                $mailer->send($message2);
-            }
-        }
 
         $url = $this->crudUrlGenerator
             ->setController(MemberCrud::class)
