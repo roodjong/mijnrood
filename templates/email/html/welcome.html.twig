@@ -16,17 +16,20 @@ Je kunt een wachtwoord instellen voor mijn.socialisten.org, de ledenwebsite van 
     <p>
 Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen.
 Omdat we nu formeel nog geen landelijke vereniging zijn heeft elke lokale vereniging of werkgroep zijn eigen contributieregeling. Jouw contributie gaat dan ook naar {{ division }}.
-Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen. Op termijn zullen we, in overleg met de
-plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
+Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen.
+
+{% if division not in ["Utrecht", "Oost-Brabant", "Noord"] %}
+Op termijn zullen we, in overleg met de plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
+{% endif %}
     </p>
 <p>
 De contributieregeling voor jouw vereniging/werkgroep is:
     </p>
-{% if division == "Utrecht" %}
+{% if division in ["Utrecht", "Oost-Brabant", "Noord"] %}
 <ul>
-<li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
+<li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 15 euro per kwartaal.</li>
 
-<li>Werklozen/studenten minimaal 6 euro per kwartaal.</li>
+<li>Werklozen/studenten minimaal 9 euro per kwartaal.</li>
 </ul>
 
 {% elseif division == "Amsterdam" %}
@@ -47,13 +50,9 @@ De contributieregeling voor jouw vereniging/werkgroep is:
 <li>Werklozen/studenten minimaal 6 euro per kwartaal.</li>
 </ul>
 
-{% elseif division in ["Noord", "Overijssel"] %}
+{% elseif division == "Overijssel" %}
 <ul>
 <li>Minimaal 7,50 euro per kwartaal</li>
-</ul>
-{% elseif division == "Oost-Brabant" %}
-<ul>
-  <li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
 </ul>
 {% endif %}
     <p>
