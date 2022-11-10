@@ -20,12 +20,13 @@ class ContributionIncomeType extends AbstractType
         // for the preferred contribution, but it is likely that we will
         // have one big national contribution very soon, so this will be
         // redundant.
-        $minimumContribution = 3; // default contribution based on Utrecht
+        $minimumContribution = 3; // default contribution
         $divisionContribution = [
             'Amsterdam' => 15,
+            'Utrecht' => 9,
+            'Oost-Brabant' => 9,
+            'Noord' => 9,
             'Overijssel' => 7.50,
-            'Noord' => 7.50,
-            'Utrecht' => 6,
         ];
         if (isset($divisionContribution[$divisionName])) {
             $minimumContribution = $divisionContribution[$divisionName];

@@ -32,18 +32,18 @@
             </p>
 
             {% if division in ["Utrecht", "Nijmegen", "Arnhem", "West-Brabant", "Zuid-Holland-West", "Arnhem", "Wageningen"] %}
-            {% if division != "Utrecht" %}
+            {% if division not in ["Utrecht", "Oost-Brabant", "Noord"] %}
                 <p>Je afdeling heeft nog geen contributieregeling. De contributieregeling van Utrecht is:</p>
             {% endif %}
             <table class="table">
                 <tbody>
                     <tr>
                         <td>Studenten en werklozen</td>
-                        <td>€6 per kwartaal</td>
+                        <td>Minimaal €9 per kwartaal</td>
                     </tr>
                     <tr>
                         <td>Werkenden</td>
-                        <td>0,5% van het inkomen (minimaal €12 per kwartaal)</td>
+                        <td>0,5% van het inkomen (minimaal €15 per kwartaal)</td>
                     </tr>
                 </tbody>
             </table>
