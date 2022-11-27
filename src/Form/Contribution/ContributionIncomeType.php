@@ -27,6 +27,7 @@ class ContributionIncomeType extends AbstractType
         $divisionContribution = [
             'Amsterdam' => 15,
             'Utrecht' => 9,
+            'Nijmegen' => 9,
             'Oost-Brabant' => 9,
             'Noord' => 9,
             'Overijssel' => 7.50,
