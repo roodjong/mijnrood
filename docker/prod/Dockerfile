@@ -1,11 +1,3 @@
-FROM node:18.8.0 as node_builder
-
-COPY package.json yarn.lock ./
-RUN yarn install
-COPY assets ./assets
-COPY webpack.config.js ./
-RUN npm run build
-
 FROM php:7.4-fpm as php_builder
 
 RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzip-dev libgd3 libgd-dev zip \
@@ -29,6 +21,17 @@ COPY src /var/www/project/src
 COPY composer.json composer.lock symfony.lock .env /var/www/project/
 RUN mkdir /var/www/project/public
 RUN composer install
+
+RUN bin/console assets:install public
+
+FROM node:18.8.0 as node_builder
+
+COPY package.json yarn.lock ./
+COPY --from=php_builder /var/www/project/vendor ./vendor
+RUN yarn install
+COPY assets ./assets
+COPY webpack.config.js ./
+RUN npm run build
 
 FROM php:7.4-fpm as mijnrood_php
 
