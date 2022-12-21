@@ -9,7 +9,8 @@ framework:
     session:
         handler_id: null
         cookie_secure: auto
-        cookie_samesite: lax
+        cookie_samesite: strict
+        cookie_domain: '%env(COOKIE_DOMAIN)%'
 
     #esi: true
     #fragments: true

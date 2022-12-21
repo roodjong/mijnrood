@@ -48,7 +48,10 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        return [
+        $listmonkUrl = $this->getParameter('app.listmonkUrl');
+        $listmonkItem = $listmonkUrl ? [MenuItem::linkToUrl('Listmonk', 'fa fa-mail-bulk', $listmonkUrl)] : [];
+
+        return array_merge([
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
             MenuItem::section('Website'),
@@ -63,11 +66,11 @@ class DashboardController extends AbstractDashboardController
             MenuItem::section('Technisch'),
             MenuItem::linkToCrud('E-mailadressen', 'fa fa-at', Email::class),
             MenuItem::linkToCrud('E-maildomeinen', 'fa fa-globe', EmailDomain::class),
-
+        ], $listmonkItem, [
             MenuItem::section(''),
             MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
             MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
-        ];
+        ]);
     }
 }
