@@ -74,68 +74,6 @@ class MemberController extends AbstractController {
         ]);
     }
 
-    /**
-     * @Route("/aanmelden", name="member_apply")
-     */
-    public function apply(Request $request): Response {
-        $member = new MembershipApplication();
-        $member->setRegistrationTime(new \DateTime());
-        $groupCount = $this->getDoctrine()->getRepository(Division::class)->createQueryBuilder('d')
-                           ->where('d.canBeSelectedOnApplication = true')
-                           ->getQuery()
-                           ->getResult();
-
-        $workGroupCount = $this->getDoctrine()->getRepository(WorkGroup::class)->createQueryBuilder('d')
-                           ->where('d.canBeSelectedOnApplication = true')
-                           ->getQuery()
-                           ->getResult();
-        $showGroups = true;
-        $showWorkGroups = true;
-        if (count($groupCount) === 0) {
-            $showGroups = false;
-        }
-        if (count($workGroupCount) === 0) {
-            $showWorkGroups = false;
-        }
-        $form = $this->createForm(MembershipApplicationType::class, $member, [
-            'show_groups' => $showGroups,
-            'show_work_groups' => $showWorkGroups,
-        ]);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($member);
-            $em->flush();
-
-            $noreply = $this->getParameter('app.noReplyAddress');
-            $organizationName = $this->getParameter('app.organizationName');
-            $divisionEmail = $member->getPreferredDivision()->getEmail();
-            $message = (new Email())
-            ->subject("Bedankt voor je aanmelding bij $organizationName!")
-            ->to(new Address($member->getEmail(), $member->getFullName()))
-            ->from(new Address($noreply, $organizationName))
-            ->html(
-                $this->renderView('email/html/apply.html.twig', ['member' => $member])
-            )
-            ->text(
-                $this->renderView('email/text/apply.txt.twig', ['member' => $member])
-            );
-            if ($divisionEmail != null) {
-                $message->addCc(new Address($divisionEmail, $member->getPreferredDivision()->getName()));
-            }
-            $this->mailer->send($message);
-
-            return $this->render('user/apply.html.twig', [
-                'success' => true
-            ]);
-        }
-
-        return $this->render('user/apply.html.twig', [
-            'success' => false,
-            'form' => $form->createView(),
-            'showGroups' => $showGroups,
-        ]);
-    }
 
     /**
      * @Route("/gegevens", name="member_details")
