@@ -176,7 +176,10 @@ class Member implements UserInterface {
     }
 
     public function __toString() {
-        return $this->lastName .', '. $this->firstName;
+        if ($this->middleName === null) {
+            return $this->lastName .', '. $this->firstName;
+        }
+        return $this->lastName .', '. $this->firstName . ' ' . $this->middleName;
     }
 
     public function getId(): ?int { return $this->id; }
