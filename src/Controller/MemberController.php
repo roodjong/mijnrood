@@ -73,6 +73,7 @@ class MemberController extends AbstractController {
             ->andWhere('e.timeEnd > ?2')
             ->setParameter(1, $member->getDivision())
             ->setParameter(2, new DateTime())
+            ->orderBy('e.timeStart', 'ASC')
             ->getQuery()
             ->getResult();
 
