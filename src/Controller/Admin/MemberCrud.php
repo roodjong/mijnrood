@@ -50,7 +50,7 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus'])
         ;
     }
 
@@ -58,6 +58,7 @@ class MemberCrud extends AbstractCrudController
     {
         return $filters
             ->add(EntityFilter::new('division'))
+            ->add(EntityFilter::new('currentMembershipStatus'))
         ;
     }
 
@@ -175,6 +176,7 @@ class MemberCrud extends AbstractCrudController
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
+            AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype'),
             AssociationField::new('division', 'Afdeling'),
             AssociationField::new('workGroups', 'Werkgroepen'),
             BooleanField::new('isAdmin', 'Toegang tot administratie')

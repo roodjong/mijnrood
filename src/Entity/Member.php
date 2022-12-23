@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Membership\MembershipStatus;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\{ ArrayCollection, Collection };
 use Symfony\Component\Validator\Constraints as Assert;
@@ -161,6 +162,11 @@ class Member implements UserInterface {
      * @ORM\OneToMany(targetEntity="Email", mappedBy="manager")
      */
     private Collection $managingEmails;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Membership\MembershipStatus", inversedBy="members")
+     */
+    private ?MembershipStatus $currentMembershipStatus = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})
@@ -326,13 +332,23 @@ class Member implements UserInterface {
         return $this->managingEmails;
     }
 
+    public function getCurrentMembershipStatus(): ?MembershipStatus {
+        return $this->currentMembershipStatus;
+    }
+
+    public function setCurrentMembershipStatus(?MembershipStatus $membershipStatus) {
+        $this->currentMembershipStatus = $membershipStatus;
+    }
+
     /** @see UserInterface */
     public function getUsername(): string { return $this->id; }
 
     /** @see UserInterface */
     public function getRoles(): array {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        if ($this->getCurrentMembershipStatus() === null || $this->currentMembershipStatus->getAllowedAccess()) {
+            $roles[] = 'ROLE_USER';
+        }
         if ($this->getDivision() !== null && $this->getDivision()->getContact() !== null && $this->getDivision()->getContact()->getId() === $this->getId()) {
             $roles[] = 'ROLE_DIVISION_CONTACT';
         }
