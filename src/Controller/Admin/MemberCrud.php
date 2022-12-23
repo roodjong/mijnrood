@@ -50,14 +50,15 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
         ;
     }
 
     public function configureFilters(Filters $filters): Filters
     {
-        $filters->add(EntityFilter::new('division'));
-        return $filters;
+        return $filters
+            ->add(EntityFilter::new('division'))
+            ->add(EntityFilter::new('currentMembershipStatus'));
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -162,7 +163,7 @@ class MemberCrud extends AbstractCrudController
     {
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        return [
+        $fields = [
             IdField::new('id', 'Lidnummer')
                 ->setDisabled(!$isAdmin)
                 ->setRequired(false)
@@ -172,10 +173,17 @@ class MemberCrud extends AbstractCrudController
             TextField::new('lastName', 'Achternaam')->setDisabled(!$isAdmin),
             DateField::new('dateOfBirth', 'Geboortedatum')->setDisabled(!$isAdmin)->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
-                ->setDisabled(!$isAdmin)->setFormat(DateTimeField::FORMAT_SHORT),
-            AssociationField::new('division', 'Groep')->setDisabled(!$isAdmin),
-            BooleanField::new('isAdmin', 'Toegang tot administratie')->setDisabled(!$isAdmin)->hideOnIndex(),
+                ->setFormat(DateTimeField::FORMAT_SHORT)
+                ->hideOnIndex(),
+        ];
 
+        if ($isAdmin) {
+            $fields[] = AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype');
+            $fields[] = AssociationField::new('division', 'Afdeling');
+            $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
+                ->hideOnIndex();
+        }
+        array_push($fields, 
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres')->setDisabled(!$isAdmin),
             TextField::new('phone', 'Telefoonnummer')->setDisabled(!$isAdmin),
@@ -203,7 +211,7 @@ class MemberCrud extends AbstractCrudController
                     'allow_delete' => false
                 ])
                 ->hideOnIndex()
-        ];
+        );
+        return $fields;
     }
-
 }
