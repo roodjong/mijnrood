@@ -12,6 +12,7 @@ parameters:
     app.orgLogo: '%env(ORG_LOGO)%'
     app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
     app.forumUrl: '%env(FORUM_URL)%'
+    app.organizationAdminEmail: '%env(ORGANIZATION_ADMIN_EMAIL)%'
 
 services:
     # default configuration for services in *this* file
@@ -38,6 +39,11 @@ services:
     App\EventSubscriber\:
         resource: '../src/EventSubscriber/'
         tags: ['event_subscriber']
+
+    App\EventListener\MemberChangedNotifier:
+        arguments: [ "%env(ORGANIZATION_NAME)%", "%env(ORGANIZATION_ADMIN_EMAIL)%", "%env(NOREPLY_ADDRESS)%" , "@mailer"]
+        tags:
+          - { name: doctrine.event_listener, event: preUpdate }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
