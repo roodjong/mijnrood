@@ -160,7 +160,7 @@ class ContributionController extends AbstractController
         $member = $this->getUser();
         $form = $this->createForm(ContributionIncomeType::class,
                                   $chosenContribution,
-                                  ['division' => $member->getDivision()]);
+                                  []);
 
 
         $form->handleRequest($request);

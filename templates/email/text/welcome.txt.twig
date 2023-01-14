@@ -6,46 +6,20 @@ Beste {{ member.firstName }},
 
 Recentelijk heb je het aanmeldingsformulier op https://mijn.socialisten.org/aanmelden/ ingevuld. Dit formulier geeft iedereen de mogelijkheid om lid te worden van onze organisatie.
 Via deze mail heten wij je namens het landelijke Socialisten-bestuur hartelijk welkom in onze beweging. Wij zijn erg blij om te horen dat je je wil aansluiten bij één van de verenigingen of werkgroepen van Socialisten.
+
 Je lidnummer is {{ member.id }}.
 
 Je kunt een wachtwoord instellen voor mijn.socialisten.org, de ledenwebsite van de Socialisten, door op deze link te klikken: {{ url }}
 
 Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen.
-Omdat we nu formeel nog geen landelijke vereniging zijn heeft elke lokale vereniging of werkgroep zijn eigen contributieregeling. Jouw contributie gaat dan ook naar {{ division }}.
+Jouw contributie gaat voor 2/3 naar je afdeling en voor 1/3 naar landelijke activiteiten.
 Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen.
-{% if division not in ["Utrecht", "Oost-Brabant", "Noord"] %}
-Op termijn zullen we, in overleg met de plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
-{% endif %}
 
-De contributieregeling voor jouw vereniging/werkgroep is:
+De contributieregeling is:
 
-{% if division in ["Utrecht", "Oost-Brabant", "Noord", "Nijmegen"] %}
 - Werkenden: streefbedrag 0,5% netto inkomen, minimaal 15 euro per kwartaal.
 
 - Werklozen/studenten minimaal 9 euro per kwartaal.
-
-{% elseif division == "Amsterdam" %}
-
-- 15 euro per kwartaal (optioneel meer)
-
-{% elseif division == "Rotterdam" %}
-
-- Minimaal 3 euro per kwartaal
-
-{% elseif division in ["Arnhem", "West-Brabant", "Wageningen", "Zuid-Holland-West"] %}
-
-Nog geen contributieregeling.
-
-In Utrecht hebben ze deze contributieregeling:
-
-- Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.
-
-- Werklozen/studenten minimaal 6 euro per kwartaal.
-
-{% elseif division == "Overijssel" %}
-- Minimaal 7,50 euro per kwartaal
-
-{% endif %}
 
 Het ledenbestand en de financiën wordt momenteel beheerd door de vereniging Socialisten Utrecht. We sturen wel een cc: van dit bericht naar {{ member.division.email }} zodat ze contact met je kunnen opnemen.
 
