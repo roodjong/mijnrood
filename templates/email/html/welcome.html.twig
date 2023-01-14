@@ -14,47 +14,17 @@ Je lidnummer is {{ member.id }}.
 Je kunt een wachtwoord instellen voor mijn.socialisten.org, de ledenwebsite van de Socialisten, door op deze link te klikken: {{ url }}    </p>
     <p>
     <p>
-Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen.
-Omdat we nu formeel nog geen landelijke vereniging zijn heeft elke lokale vereniging of werkgroep zijn eigen contributieregeling. Jouw contributie gaat dan ook naar {{ division }}.
-Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen.
-
-{% if division not in ["Utrecht", "Oost-Brabant", "Noord", "Nijmegen"] %}
-Op termijn zullen we, in overleg met de plaatselijke verenigingen en werkgroepen de contributieregeling harmoniseren. We zullen je dan vragen je contributie aan te passen, indien nodig.
-{% endif %}
+Als socialistische vereniging houden we onze eigen broek omhoog en zijn we niet financieel afhankelijk van subsidie. Het is ons streven om alle socialisten te verenigen. Jouw contributie gaat voor 2/3 naar je afdeling en voor 1/3 naar
+landelijke activiteiten. Op https://mijn.socialisten.org/ kun je, nadat je je wachtwoord hebt ingesteld, je contributie instellen.
     </p>
 <p>
-De contributieregeling voor jouw vereniging/werkgroep is:
+De contributieregeling is:
     </p>
-{% if division in ["Utrecht", "Oost-Brabant", "Noord", "Nijmegen"] %}
 <ul>
 <li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 15 euro per kwartaal.</li>
 
 <li>Werklozen/studenten minimaal 9 euro per kwartaal.</li>
 </ul>
-
-{% elseif division == "Amsterdam" %}
-<ul>
-<li>15 euro per kwartaal (optioneel meer)</li>
-</ul>
-{% elseif division == "Rotterdam" %}
-<ul>
-<li>Minimaal 3 euro per kwartaal</li>
-</ul>
-{% elseif division in ["Arnhem", "West-Brabant", "Wageningen", "Zuid-Holland-West"] %}
-<p>Nog geen contributieregeling</p>
-<p>in Utrecht hebben ze deze contributieregeling:</p>
-<br>
-<ul>
-<li>Werkenden: streefbedrag 0,5% netto inkomen, minimaal 12 euro per kwartaal.</li>
-
-<li>Werklozen/studenten minimaal 6 euro per kwartaal.</li>
-</ul>
-
-{% elseif division == "Overijssel" %}
-<ul>
-<li>Minimaal 7,50 euro per kwartaal</li>
-</ul>
-{% endif %}
     <p>
       Het ledenbestand en de financiën wordt momenteel beheerd door de vereniging Socialisten Utrecht. We sturen wel een cc: van dit bericht naar {{ member.division.email }} zodat ze contact met je kunnen opnemen.
     </p>
