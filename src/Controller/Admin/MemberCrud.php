@@ -177,11 +177,11 @@ class MemberCrud extends AbstractCrudController
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype'),
-            AssociationField::new('division', 'Afdeling'),
             AssociationField::new('workGroups', 'Werkgroepen'),
         ];
 
         if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            $fields[] = AssociationField::new('division', 'Afdeling');
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex();
         }
