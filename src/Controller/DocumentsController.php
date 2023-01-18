@@ -19,7 +19,7 @@ class DocumentsController extends AbstractController
         $folder = $this->getFolder($folderId);
 
         $repoFolders = $this->getDoctrine()->getRepository(DocumentFolder::class);
-        $folders = $repoFolders->findByParent($folder);
+        $folders = $repoFolders->findByParent($folder, ['name' => 'ASC']);
         $documents = $this->getDoctrine()->getRepository(Document::class)->findByFolder($folder, ['name' => 'ASC']);
 
         $canCreateFolder = $canUpload = $canDelete = $this->isGranted('ROLE_ADMIN');
