@@ -163,7 +163,7 @@ class MemberCrud extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        $fields = [
             IdField::new('id', 'Lidnummer')
                 ->setRequired(false)
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
@@ -179,9 +179,13 @@ class MemberCrud extends AbstractCrudController
             AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype'),
             AssociationField::new('division', 'Afdeling'),
             AssociationField::new('workGroups', 'Werkgroepen'),
-            BooleanField::new('isAdmin', 'Toegang tot administratie')
-                ->hideOnIndex(),
+        ];
 
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
+                ->hideOnIndex();
+        }
+        array_push($fields,
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres'),
             TextField::new('phone', 'Telefoonnummer'),
@@ -210,7 +214,8 @@ class MemberCrud extends AbstractCrudController
                     'allow_delete' => false
                 ])
                 ->hideOnIndex()
-        ];
+        );
+        return $fields;
     }
 
 }
