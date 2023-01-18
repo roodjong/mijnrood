@@ -23,6 +23,7 @@ class MemberDetailsType extends AbstractType
             ->add('email')
             ->add('phone')
             ->add('address')
+            ->add('dateOfBirth', null, ['widget' => 'single_text'])
             ->add('city')
             ->add('postCode')
         ;

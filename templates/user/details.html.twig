@@ -50,6 +50,11 @@
             </div>
 
             <div class="form-row">
+                {{ form_label(form.dateOfBirth, 'Geboortedatum') }}
+                {{ form_widget(form.dateOfBirth, { attr: { class: 'text-input' }}) }}
+            </div>
+
+            <div class="form-row">
                 {{ form_label(form.city, 'Plaats') }}
                 {{ form_widget(form.city, { attr: { class: 'text-input' }}) }}
             </div>
