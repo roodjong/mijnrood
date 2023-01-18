@@ -50,7 +50,7 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
         ;
     }
 
