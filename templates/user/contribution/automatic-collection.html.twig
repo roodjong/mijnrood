@@ -27,10 +27,6 @@
                 Hoeveel je hierbij betaalt hangt af van je inkomen:
             </p>
 
-            {% if division in ["Utrecht", "Nijmegen", "Arnhem", "Noord", "West-Brabant", "Zuid-Holland-West", "Arnhem", "Wageningen"] %}
-            {% if division not in ["Utrecht", "Oost-Brabant", "Noord", "Nijmegen"] %}
-                <p>Je afdeling heeft nog geen contributieregeling. De contributieregeling van Utrecht is:</p>
-            {% endif %}
             <table class="table">
                 <tbody>
                     <tr>
@@ -43,23 +39,6 @@
                     </tr>
                 </tbody>
             </table>
-            {% elseif division == "Amsterdam" %}
-            <ul>
-              <li>15 euro per kwartaal (optioneel meer)</li>
-            </ul>
-            {% elseif division == "Rotterdam" %}
-            <ul>
-              <li>Minimaal 3 euro per kwartaal</li>
-            </ul>
-            {% elseif division in ["Overijssel"] %}
-            <ul>
-              <li>Minimaal 7,50 euro per kwartaal</li>
-            </ul>
-            {% elseif division == "Oost-Brabant" %}
-            <ul>
-              <li>3, 9, 15, 30, 45 per kwartaal, met 15 euro als standaard.</li>
-            </ul>
-            {% endif %}
             {% if form.vars.submitted and not form.vars.valid %}
                 <div class="error">
                     {{ form_errors(form) }}
