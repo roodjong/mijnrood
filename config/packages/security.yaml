@@ -43,4 +43,5 @@ security:
         - { path: ^/aanmelden/.*$, roles: [IS_AUTHENTICATED_ANONYMOUSLY], requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/api/.+$, roles: IS_ANONYMOUS, requires_channel: '%env(SECURE_SCHEME)%' }
         - { path: ^/admin$, roles: ROLE_ADMIN, requires_channel: '%env(SECURE_SCHEME)%' }
+        - { path: '^/auth/check_admin', requires_channel: '%env(SECURE_SCHEME)%'}
         - { path: '^', roles: ROLE_USER, requires_channel: '%env(SECURE_SCHEME)%' }
