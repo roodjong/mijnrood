@@ -15,17 +15,17 @@ services:
       - .:/var/www/project
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - php74-service
+      - php82-service
       - mariadb10-service
     networks:
       - mijnrood
 
   # php
-  php74-service:
+  php82-service:
     build:
       context: .
       dockerfile: ./docker/php/Dockerfile
-    container_name: php74-container
+    container_name: php82-container
     ports:
       - "9000:9000"
     volumes:
