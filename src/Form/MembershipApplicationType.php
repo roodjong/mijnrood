@@ -49,9 +49,9 @@ class MembershipApplicationType extends AbstractType
             ->add('contributionPerPeriodInCents', ContributionIncomeType::class, [
                 'label' => 'Contributiebedrag',
                 'error_bubbling' => true
-            ])
-
+            ]);
         }
+
         if ($options['show_work_groups']) {
             $builder->add('preferredWorkGroups', null, [
                 'label' => 'Bij welke werkgroep wil je je aansluiten',

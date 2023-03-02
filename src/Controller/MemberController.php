@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Form\{ MembershipApplicationType, MemberDetailsType, ChangePasswordType };
-use App\Entity\{ Member, MembershipApplication, MemberDetailsRevision, Event};
+use App\Entity\{ Division, WorkGroup, Member, MembershipApplication, MemberDetailsRevision, Event};
 
 use Mollie\Api\MollieApiClient;
 use Mollie\Api\Resources\Customer;
@@ -20,11 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Mollie\Api\MollieApiClient;
-use App\Form\{ MemberDetailsType, ChangePasswordType };
-use DateTime;
-use App\Entity\{ Division, WorkGroup, Member, MembershipApplication, MemberDetailsRevision, Event};
-use App\Form\MembershipApplicationType;
+
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
 
@@ -34,10 +30,6 @@ use DateInterval;
 class MemberController extends AbstractController {
 
     private MollieApiClient $mollieApiClient;
-
-    public function __construct(MollieApiClient $mollieApiClient)
-    {
-        $this->mollieApiClient = $mollieApiClient;
 
     public function __construct(MailerInterface $mailer) {
         $this->mailer = $mailer;
@@ -124,7 +116,6 @@ class MemberController extends AbstractController {
             $em->persist($membershipApplication);
             $em->flush();
 
-<<<<<<< HEAD
             $memberRepository = $this->getDoctrine()->getRepository(Member::class);
             $existingMember = $memberRepository->findOneByEmail($form['email']->getData());
 
@@ -149,7 +140,6 @@ class MemberController extends AbstractController {
 
                 return $this->redirect($payment->getCheckoutUrl(), 303);
             }
-=======
             $noreply = $this->getParameter('app.noReplyAddress');
             $organizationName = $this->getParameter('app.organizationName');
             $divisionEmail = $member->getPreferredDivision()->getEmail();
@@ -171,7 +161,6 @@ class MemberController extends AbstractController {
             return $this->render('user/apply.html.twig', [
                 'success' => true
             ]);
->>>>>>> 8ffa3dd (Set email on first registration)
         }
 
         return $this->render('user/member/apply.html.twig', [

@@ -6,10 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType, MoneyType };
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType, MoneyType};
-use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use App\Entity\ChosenContribution;
 
 class ContributionIncomeType extends AbstractType
