@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzip-dev libgd3 libgd-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \

@@ -8,30 +8,30 @@ The docker-compose file creates four containers:
 
 Build and run these images with docker-compose:
 
-`sudo docker-compose up --build -d`
+`sudo docker compose up --build -d`
 
 The container will have appropriate volume bindings with `./app`.
 
 `composer` is the dependency manager used for PHP. Install the dependencies on the PHP docker container:
 
-`docker-compose run --rm php74-service composer install`
+`docker compose run --rm php82-service composer install`
 
 Do the same for the node dependencies in the node container.
 Do this after you install the composer dependencies as it mutates packages.json:
 
-`docker-compose run --rm node-service yarn install --force`
+`docker compose run --rm node-service yarn install --force`
 
 Create the database by executing:
 
-`docker-compose run --rm php74-service symfony console doctrine:database:create`
+`docker compose run --rm php82-service symfony console doctrine:database:create`
 
 Create the schema with:
 
-`docker-compose run --rm php74-service symfony console doctrine:migrations:migrate`
+`docker compose run --rm php82-service symfony console doctrine:migrations:migrate`
 
 And finally populate the DB with some test data:
 
-`docker-compose run --rm php74-service symfony console doctrine:fixtures:load`
+`docker compose run --rm php82-service symfony console doctrine:fixtures:load`
 
 The default admin ID is 1, but be wary that each time you run the fixtures, this
 ID will be incremented because of auto-increment options in the database.
