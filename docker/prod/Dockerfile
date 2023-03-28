@@ -1,4 +1,4 @@
-FROM php:8.2-fpm as php_builder
+FROM php:8.1-fpm as php_builder
 
 RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzip-dev libgd3 libgd-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
@@ -33,7 +33,7 @@ COPY assets ./assets
 COPY webpack.config.js ./
 RUN npm run build
 
-FROM php:8.2-fpm as mijnrood_php
+FROM php:8.1-fpm as mijnrood_php
 
 RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzip-dev libgd3 libgd-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
