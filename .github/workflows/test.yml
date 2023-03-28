@@ -3,7 +3,7 @@ on: [push]
 jobs:
   migrations:
     name: "Check if migrations need to be created"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     services:
       mariadb10-service:
         image: mariadb:10
@@ -40,7 +40,7 @@ jobs:
 
       - name: Create database
         run: symfony console doctrine:database:create
-      
+
       - name: Create schema
         run: symfony console doctrine:migrations:migrate
 
