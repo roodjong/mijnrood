@@ -53,3 +53,8 @@ services:
             - '%env(DIRECTADMIN_URL)%'
             - '%env(DIRECTADMIN_USERNAME)%'
             - '%env(DIRECTADMIN_PASSWORD)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - '%env(DATABASE_URL)%'
+            - { 'ttl': 3600 }
