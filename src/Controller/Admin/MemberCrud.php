@@ -50,15 +50,14 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
         ;
     }
 
     public function configureFilters(Filters $filters): Filters
     {
-        return $filters
-            ->add(EntityFilter::new('division'))
-            ->add(EntityFilter::new('currentMembershipStatus'));
+        $filters->add(EntityFilter::new('division'));
+        return $filters;
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -175,6 +174,7 @@ class MemberCrud extends AbstractCrudController
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
+            TextField::new('comments', 'Extra informatie'),
         ];
 
         if ($isAdmin) {
@@ -183,7 +183,7 @@ class MemberCrud extends AbstractCrudController
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex();
         }
-        array_push($fields, 
+        array_push($fields,
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres')->setDisabled(!$isAdmin),
             TextField::new('phone', 'Telefoonnummer')->setDisabled(!$isAdmin),
@@ -214,4 +214,5 @@ class MemberCrud extends AbstractCrudController
         );
         return $fields;
     }
+
 }
