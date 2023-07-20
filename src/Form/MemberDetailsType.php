@@ -26,6 +26,7 @@ class MemberDetailsType extends AbstractType
             ->add('dateOfBirth', null, ['widget' => 'single_text'])
             ->add('city')
             ->add('postCode')
+            ->add('comments')
         ;
     }
 

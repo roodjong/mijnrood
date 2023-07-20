@@ -186,6 +186,7 @@ class MemberCrud extends AbstractCrudController
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             AssociationField::new('workGroups', 'Werkgroepen'),
+            TextField::new('comments', 'Extra informatie'),
         ];
 
         if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
