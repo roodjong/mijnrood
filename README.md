@@ -1,3 +1,5 @@
+**Deprecation Notice:** This repository is no longer actively maintained.
+
 # Setup
 
 The docker-compose file creates four containers:
