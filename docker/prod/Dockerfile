@@ -61,7 +61,7 @@ COPY templates /var/www/project/templates
 COPY translations /var/www/project/translations
 COPY .env composer.json /var/www/project/
 COPY docker/prod/php-fpm-entrypoint.sh /var/www/project/
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/prod/php.ini /usr/local/etc/php/php.ini
 
 CMD [ "/var/www/project/php-fpm-entrypoint.sh" ]
 
