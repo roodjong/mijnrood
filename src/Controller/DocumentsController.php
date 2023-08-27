@@ -57,7 +57,7 @@ class DocumentsController extends AbstractController
         }
 
         $response = new Response();
-        if (!str_ends_with($document->getFileName(), '.html') {
+        if (!str_ends_with($document->getFileName(), '.html')) {
             $response->headers->set('Content-Disposition', 'attachment; filename="'.urlencode($document->getFileName()).'"');
             $response->headers->set('Content-Type', 'application/octet-stream');
         }
