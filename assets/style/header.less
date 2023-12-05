@@ -3,7 +3,7 @@
 
     #header-content {
         margin: 0 auto;
-        padding: 20px;
+        padding: 1rem;
         max-width: 1240px;
         display: flex;
         align-items: center;
@@ -11,51 +11,36 @@
     }
 
     #header-logo {
-        flex: 0 0 200px;
+        flex: 0 0 100px;
         max-height: 100px;
-
-        @media @mobile {
-            flex-basis: 150px;
-        }
     }
 
     #show-header {
         display: none;
-
-        @media @mobile {
-            &:not(:checked) ~ #header-menu {
-                top: -100vh;
-                bottom: 100vh;
-            }
+        &:not(:checked) ~ #header-menu {
+            top: -100vh;
+            bottom: 100vh;
         }
     }
 
     #show-header-button {
+        display: none;
         width: 30px;
         height: 20px;
         color: #000;
         background: linear-gradient(0deg, currentColor 0%, currentColor 0%, currentColor 20%, transparent 20%, transparent 40%, currentColor 40%, currentColor 60%, transparent 60%, transparent 80%, currentColor 80%, currentColor 100%);
 
-        @media @desktop {
-            display: none;
+        @media @mobile {
+            display: block;
         }
     }
     #header-menu {
         ul {
             display: flex;
+            gap: 1rem;
 
             li {
                 display: block;
-
-                @media @desktop {
-                    & + li {
-                        margin-left: 60px;
-                    }
-
-                    a {
-                        color: #000;
-                    }
-                }
 
                 a {
                     font-size: 24px;
@@ -84,22 +69,9 @@
             z-index: 1000;
             background: @rood;
 
-            #hide-header-button {
-                position: absolute;
-                top: 60px;
-                right: 20px;
-                width: 30px;
-                height: 20px;
-                color: #fff;
-                background: linear-gradient(0deg, currentColor 0%, currentColor 0%, currentColor 20%, transparent 20%, transparent 40%, currentColor 40%, currentColor 60%, transparent 60%, transparent 80%, currentColor 80%, currentColor 100%);
-
-                @media @desktop {
-                    display: none;
-                }
-            }
-
             ul {
                 flex-direction: column;
+                gap: 2rem;
                 align-items: center;
                 justify-content: center;
                 height: 100vh;
@@ -108,18 +80,30 @@
                 margin: 0;
 
                 li {
-                    margin-bottom: 40px;
-
                     a {
                         color: #fff;
-
                     }
-
                     &.current a, &:hover a {
                         color: #fff;
                         text-decoration: underline 4px;
                     }
                 }
+            }
+        }
+
+        #hide-header-button {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 30px;
+            height: 20px;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(0deg, currentColor 0%, currentColor 0%, currentColor 20%, transparent 20%, transparent 40%, currentColor 40%, currentColor 60%, transparent 60%, transparent 80%, currentColor 80%, currentColor 100%);
+
+            @media @mobile {
+                display: block;
             }
         }
     }
