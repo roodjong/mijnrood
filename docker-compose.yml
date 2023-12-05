@@ -50,7 +50,7 @@ services:
 
   # node
   node-service:
-    image: node:latest
+    image: node:20
     container_name: node-container
     volumes:
       - .:/var/www/project
