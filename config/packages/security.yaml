@@ -42,6 +42,6 @@ security:
         - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
         - { path: ^/aanmelden/.*$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
         - { path: ^/api/.+$, roles: IS_ANONYMOUS }
-        - { path: ^/admin$, roles: ROLE_ADMIN }
+        - { path: ^/admin$, roles: [ROLE_ADMIN, ROLE_DIVISION_CONTACT] }
         - { path: '^/auth/check_admin'}
         - { path: '^', roles: ROLE_USER }

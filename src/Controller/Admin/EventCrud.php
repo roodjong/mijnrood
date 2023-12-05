@@ -22,6 +22,7 @@ class EventCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('evenement')
             ->setEntityLabelInPlural('Evenementen')
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 

@@ -40,7 +40,7 @@ ID will be incremented because of auto-increment options in the database.
 
 Go to `http://localhost:8080/` and you should be greeted by the MijnRood login page.
 
-You can log in with `admindebaas@localhost` as email, and `admin` as password.
+You can log in with `admindebaas@example.com` as email, and `admin` as password.
 Look at `src/DataFixtures/` to see an overview of all test data, including other accounts.
 
 ## License
