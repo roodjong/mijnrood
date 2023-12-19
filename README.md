@@ -35,6 +35,10 @@ And finally populate the DB with some test data:
 
 `docker compose run --rm php82-service symfony console doctrine:fixtures:load`
 
+Create a new file `.env.local` and insert here the testing `MOLLIE_API_KEY`:
+
+`echo MOLLIE_API_KEY=test_................................. > test`
+
 The default admin ID is 1, but be wary that each time you run the fixtures, this
 ID will be incremented because of auto-increment options in the database.
 
