@@ -297,6 +297,16 @@ class Member implements UserInterface {
     public function getRoles(): array {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
+        if (!is_null($this->getDivision())) {
+            $isContactOfAnyDivision = $this->getDivision()->getContacts()->exists(
+                function ($key, $division) {
+                    return $division->getId() === $this->getId();
+                }
+            );
+            if ($isContactOfAnyDivision) {
+                $roles[] = 'ROLE_DIVISION_CONTACT';
+            }
+        }
         return array_unique($roles);
     }
 

@@ -19,7 +19,9 @@
     <div id="header">
         <div id="header-content-wrapper">
             <div id="header-content">
-                <img id="header-logo" src="{{ asset(orgLogo) }}" />
+                <a href="/">
+                    <img id="header-logo" src="{{ asset(orgLogo) }}" />
+                </a>
                 <input type="checkbox" id="show-header" />
                 <label id="show-header-button" for="show-header"></label>
                 <div id="header-menu">
@@ -29,11 +31,14 @@
                         'Home': 'member_home',
                         'Gegevens': 'member_details',
                         'Documenten': 'member_documents',
+                        'Ledenbeheer': 'admin_dashboard',
                         'Uitloggen': 'logout'
                     } %}
-                        <li{% if app.request.attributes.get('_route') == route %} class="current"{% endif %}>
-                            <a href="{{ url(route) }}">{{ text }}</a>
-                        </li>
+                    <li{% if app.request.attributes.get('_route') == route %} class="current"{% endif %}>
+                        {% if route != "admin_dashboard" or ( route == "admin_dashboard" and (is_granted("ROLE_ADMIN") or is_granted("ROLE_DIVISION_CONTACT")) ) %}
+                        <a href="{{ url(route) }}">{{ text }}</a>
+                        {% endif %}
+                    </li>
                     {% endfor %}
                     </ul>
                 </div>
