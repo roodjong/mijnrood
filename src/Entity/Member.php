@@ -300,7 +300,7 @@ class Member implements UserInterface {
         return $this->currentMembershipStatus;
     }
 
-    public function setCurrentMembershipStatus(?MembershipStatus $membershipStatus) {
+    public function setCurrentMembershipStatus(?MembershipStatus $membershipStatus): void {
         $this->currentMembershipStatus = $membershipStatus;
     }
 

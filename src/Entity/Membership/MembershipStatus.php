@@ -44,7 +44,7 @@ class MembershipStatus {
     public function setName(string $name): void { $this->name = $name; }
 
     public function getAllowedAccess(): bool { return $this->allowedAccess; }
-    public function setAllowedAccess(bool $allowedAccess) { $this->allowedAccess = $allowedAccess; }
+    public function setAllowedAccess(bool $allowedAccess): void { $this->allowedAccess = $allowedAccess; }
 
     public function getMembers(): Collection { return $this->members; }
 }
