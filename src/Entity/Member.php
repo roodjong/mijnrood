@@ -7,13 +7,14 @@ use Doctrine\Common\Collections\{ ArrayCollection, Collection };
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use App\Repository\MemberRepository;
 
 /**
  * @ORM\Entity
  * @ORM\Table("admin_member")
  */
-class Member implements UserInterface {
+class Member implements UserInterface, PasswordAuthenticatedUserInterface {
 
     const PERIOD_MONTHLY = 0;
     const PERIOD_QUARTERLY = 1;
@@ -292,6 +293,12 @@ class Member implements UserInterface {
 
     /** @see UserInterface */
     public function getUsername(): string { return $this->id; }
+
+    /** @see UserInterface */
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
+    }
 
     /** @see UserInterface */
     public function getRoles(): array {

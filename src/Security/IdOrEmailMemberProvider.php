@@ -16,7 +16,7 @@ class IdOrEmailMemberProvider implements UserProviderInterface {
         $this->entityManager = $entityManager;
     }
 
-    public function loadUserByUsername(string $usernameOrEmail) {
+    public function loadUserByUsername(string $usernameOrEmail): UserInterface {
         $user = $this->entityManager->createQuery('SELECT m FROM App\Entity\Member m WHERE m.id = ?1 OR m.email = ?1')
             ->setParameter(1, $usernameOrEmail)
             ->getOneOrNullResult()

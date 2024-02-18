@@ -1,7 +1,7 @@
 security:
+    enable_authenticator_manager: true
     password_hashers:
-        App\Entity\Member:
-            algorithm: auto
+       Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface: 'auto'
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
@@ -14,7 +14,6 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
             lazy: true
             provider: app_user_provider
             form_login:
@@ -22,7 +21,7 @@ security:
                 check_path: login
                 default_target_path: member_home
                 always_use_default_target_path: true
-                csrf_token_generator: security.csrf.token_manager
+                enable_csrf: true
             logout:
                 path: logout
 
@@ -35,13 +34,13 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/login$, roles: IS_ANONYMOUS }
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/steunlid-worden(/|$), roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/wachtwoord-opvragen$, roles: IS_ANONYMOUS }
-        - { path: ^/wachtwoord-instellen/.+$, roles: IS_ANONYMOUS }
+        - { path: ^/wachtwoord-opvragen$, roles: PUBLIC_ACCESS }
+        - { path: ^/wachtwoord-instellen/.+$, roles: PUBLIC_ACCESS }
         - { path: ^/aanmelden$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
         - { path: ^/aanmelden/.*$, roles: [IS_AUTHENTICATED_ANONYMOUSLY] }
-        - { path: ^/api/.+$, roles: IS_ANONYMOUS }
+        - { path: ^/api/.+$, roles: PUBLIC_ACCESS }
         - { path: ^/admin$, roles: [ROLE_ADMIN, ROLE_DIVISION_CONTACT] }
         - { path: '^/auth/check_admin'}
         - { path: '^', roles: ROLE_USER }
