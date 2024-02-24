@@ -9,6 +9,8 @@ use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Repository\MemberRepository;
 
+use App\Entity\Membership\MembershipStatus;
+
 /**
  * @ORM\Entity
  * @ORM\Table("admin_member_revision")
@@ -64,6 +66,11 @@ class MemberDetailsRevision {
     /** @ORM\Column(type="date", nullable=true) */
     private ?DateTime $dateOfBirth = null;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Membership\MembershipStatus")
+     */
+    private ?MembershipStatus $currentMembershipStatus = null;
+
     public function __construct(Member $member, bool $own) {
         $this->member = $member;
         $this->own = $own;
@@ -79,6 +86,7 @@ class MemberDetailsRevision {
         $this->postCode = $member->getPostCode();
         $this->country = $member->getCountry();
         $this->dateOfBirth = $member->getDateOfBirth();
+        $this->currentMembershipStatus = $member->getCurrentMembershipStatus();
     }
 
     public function hasChanged(Member $member) {
@@ -93,6 +101,7 @@ class MemberDetailsRevision {
          || $this->getEmail() !== $member->getEmail()
          || $this->getPostCode() !== $member->getPostCode()
          || $this->getCountry() !== $member->getCountry()
+         || $this->getCurrentMembershipStatus() !== $member->getCurrentMembershipStatus()
          || $this->getDateOfBirth()->format('Ymd') !== $member->getDateOfBirth('Ymd');
     }
 
@@ -110,5 +119,13 @@ class MemberDetailsRevision {
     public function getPostCode(): string { return $this->postCode; }
     public function getCountry(): string { return $this->country; }
     public function getDateOfBirth(): ?DateTime { return $this->dateOfBirth; }
+
+    public function getCurrentMembershipStatus(): ?MembershipStatus {
+        return $this->currentMembershipStatus;
+    }
+
+    public function setCurrentMembershipStatus(?MembershipStatus $membershipStatus): void {
+        $this->currentMembershipStatus = $membershipStatus;
+    }
 
 }
