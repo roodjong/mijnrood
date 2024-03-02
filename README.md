@@ -10,7 +10,7 @@ The docker-compose file creates four containers:
 
 Build and run these images with docker-compose:
 
-`sudo docker compose up --build -d`
+`docker compose up --build -d`
 
 The container will have appropriate volume bindings with `./app`.
 
@@ -37,7 +37,7 @@ And finally populate the DB with some test data:
 
 Create a new file `.env.local` and insert here the testing `MOLLIE_API_KEY`:
 
-`echo MOLLIE_API_KEY=test_................................. > test`
+`echo MOLLIE_API_KEY=test_................................. > .env.local`
 
 The default admin ID is 1, but be wary that each time you run the fixtures, this
 ID will be incremented because of auto-increment options in the database.
