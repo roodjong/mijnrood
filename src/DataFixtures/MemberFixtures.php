@@ -28,7 +28,7 @@ class MemberFixtures extends Fixture
         $divisionNooderhaaks = new Division();
         $divisionNooderhaaks->setName("Noorderhaaks");
         $divisionNooderhaaks->setPostCode("1234AB");
-        
+
         $contactNooderhaaks = new Member();
         $contactNooderhaaks->setId(1338);
         $contactNooderhaaks->setFirstName("Jan");
