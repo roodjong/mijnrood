@@ -50,14 +50,15 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
         ;
     }
 
     public function configureFilters(Filters $filters): Filters
     {
-        $filters->add(EntityFilter::new('division'));
-        return $filters;
+        return $filters
+            ->add(EntityFilter::new('division'))
+            ->add(EntityFilter::new('currentMembershipStatus'));
     }
 
     public function configureActions(Actions $actions): Actions {
