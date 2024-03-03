@@ -22,6 +22,7 @@ class MemberFixtures extends Fixture
         $admin->setIsAdmin(true);
         $admin->setContributionPerPeriodInEuros(5);
         $admin->setPasswordHash(password_hash("admin", PASSWORD_DEFAULT));
+        $admin->setComments("Dit is de Baas");
         $manager->persist($admin);
 
         // Add Division (Groep) with contact member and new member
