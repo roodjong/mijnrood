@@ -50,15 +50,17 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])//, 'workGroups.name'])  TODO: fix
         ;
     }
 
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(EntityFilter::new('division'))
-            ->add(EntityFilter::new('currentMembershipStatus'));
+            ->add(EntityFilter::new('division', 'Afdeling'))
+            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'))
+            /* ->add(EntityFilter::new('workGroups', 'Werkgroepen')) */  TODO: fix
+        ;
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -183,7 +185,7 @@ class MemberCrud extends AbstractCrudController
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex();
         }
-        array_push($fields, 
+        array_push($fields,
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres')->setDisabled(!$isAdmin),
             TextField::new('phone', 'Telefoonnummer')->setDisabled(!$isAdmin),
