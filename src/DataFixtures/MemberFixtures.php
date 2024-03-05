@@ -61,7 +61,8 @@ class MemberFixtures extends Fixture
         $newMember = new Member();
         $newMember->setId(1339);
         $newMember->setFirstName("Henk");
-        $newMember->setLastName("de Vries");
+        $newMember->setMiddleName("de");
+        $newMember->setLastName("Vries");
         $newMember->setEmail("henkdevries@example.com");
         $newMember->setContributionPerPeriodInEuros(5);
         $newMember->setPasswordHash(password_hash("new_member", PASSWORD_DEFAULT));

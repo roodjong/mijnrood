@@ -130,7 +130,7 @@ class MembershipApplicationCrud extends AbstractCrudController
 
         $message = (new Email())
             ->subject("Welkom bij $organizationName!")
-            ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
+            ->to(new Address($member->getEmail(), $member->getFullName()))
             ->from(new Address($noreply,$organizationName))
             ->html(
                 $this->renderView('email/html/welcome.html.twig', ['member' => $member])
@@ -147,7 +147,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             {
                 $message2 = (new Email())
                     ->subject('Nieuw lid aangesloten bij je groep')
-                    ->to(new Address($contact->getEmail(), $contact->getFirstName() .' '. $contact->getLastName()))
+                    ->to(new Address($contact->getEmail(), $contact->getFullName()))
                     ->from(new Address($noreply, $organizationName))
                     ->html(
                         $this->renderView('email/html/contact_new_member.html.twig', [
@@ -174,8 +174,15 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        $fields = [
             TextField::new('firstName', 'Voornaam'),
+        ];
+
+        if ($this->getParameter('app.useMiddleName')) {
+            $fields[] = TextField::new('middleName', 'Tussenvoegsel')->setRequired(false);
+        }
+
+        array_push($fields,
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
@@ -209,7 +216,9 @@ class MembershipApplicationCrud extends AbstractCrudController
                 ->hideOnIndex(),
 
             BooleanField::new('paid', 'Eerste contributie betaald')
-        ];
+        );
+
+        return $fields;
     }
 
     public function configureFilters(Filters $filters): Filters

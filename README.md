@@ -47,6 +47,14 @@ Go to `http://localhost:8080/` and you should be greeted by the MijnRood login p
 You can log in with `admindebaas@example.com` as email, and `admin` as password.
 Look at `src/DataFixtures/` to see an overview of all test data, including other accounts.
 
+## Contributing
+
+You can generate new migrations with:
+
+`docker compose run --rm php82-service symfony console doctrine:migrations:diff`
+
+Make sure the output is as you expected, and change it if necessary!
+
 ## License
 
 This project is licensed under the EUPL, the license text in English can be found in the `LICENSE` file.

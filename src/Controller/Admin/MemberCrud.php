@@ -170,13 +170,20 @@ class MemberCrud extends AbstractCrudController
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam')->setDisabled(!$isAdmin),
+        ];
+
+        if ($this->getParameter('app.useMiddleName')) {
+            $fields[] = TextField::new('middleName', 'Tussenvoegsel')->setDisabled(!$isAdmin)->setRequired(false);
+        }
+
+        array_push($fields,
             TextField::new('lastName', 'Achternaam')->setDisabled(!$isAdmin),
             DateField::new('dateOfBirth', 'Geboortedatum')->setDisabled(!$isAdmin)->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             TextField::new('comments', 'Extra informatie'),
-        ];
+        );
 
         if ($isAdmin) {
             $fields[] = AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype');
