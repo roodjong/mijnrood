@@ -19,7 +19,7 @@ class MembershipApplicationType extends AbstractType
         $builder->add('firstName', null, ['label' => 'Voornaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]]);
 
         if ($options['use_middle_name']) {
-            $builder->add('middleName', null, ['label' => 'Tussenvoegsel', 'error_bubbling' => true]);
+            $builder->add('middleName', null, ['label' => 'Tussenvoegsel', 'error_bubbling' => true, 'required' => false]);
         }
 
         $builder
