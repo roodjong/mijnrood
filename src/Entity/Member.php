@@ -162,6 +162,11 @@ class Member implements UserInterface {
      */
     private bool $acceptUsePersonalInformation = true;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $comments = null;
+
     public function __construct() {
         $this->registrationTime = new DateTime;
         $this->contributionPayments = new ArrayCollection;
@@ -295,6 +300,9 @@ class Member implements UserInterface {
     public function getManagingEmails(): Collection {
         return $this->managingEmails;
     }
+
+    public function getComments(): ?string { return $this->comments; }
+    public function setComments(?string $comments): void { $this->comments = $comments; }
 
     public function getCurrentMembershipStatus(): ?MembershipStatus {
         return $this->currentMembershipStatus;

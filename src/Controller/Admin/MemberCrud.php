@@ -175,6 +175,7 @@ class MemberCrud extends AbstractCrudController
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
+            TextField::new('comments', 'Extra informatie'),
         ];
 
         if ($isAdmin) {
@@ -183,7 +184,7 @@ class MemberCrud extends AbstractCrudController
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex();
         }
-        array_push($fields, 
+        array_push($fields,
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres')->setDisabled(!$isAdmin),
             TextField::new('phone', 'Telefoonnummer')->setDisabled(!$isAdmin),
@@ -214,4 +215,5 @@ class MemberCrud extends AbstractCrudController
         );
         return $fields;
     }
+
 }

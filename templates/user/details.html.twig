@@ -59,6 +59,11 @@
                 {{ form_widget(form.division, { attr: { class: 'text-input' }}) }}
             </div>
 
+            <div class="form-row">
+                {{ form_label(form.comments, 'Extra informatie') }}
+                {{ form_widget(form.comments, { attr: { class: 'text-input' }}) }}
+            </div>
+
             <button type="submit" class="button">Opslaan</button>
 
             {{ form_end(form) }}

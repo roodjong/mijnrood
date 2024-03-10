@@ -25,6 +25,7 @@ class MemberDetailsType extends AbstractType
             ->add('address')
             ->add('city')
             ->add('postCode')
+            ->add('comments')
         ;
     }
 
