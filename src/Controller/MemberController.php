@@ -89,7 +89,11 @@ class MemberController extends AbstractController {
         $membershipApplication = new MembershipApplication();
         $membershipApplication->setRegistrationTime(new \DateTime());
         $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
-        $form = $this->createForm(MembershipApplicationType::class, $membershipApplication);
+        $form = $this->createForm(MembershipApplicationType::class, $membershipApplication, [
+            'use_middle_name' => $this->getParameter('app.useMiddleName'),
+            'privacy_policy_url' => $this->getParameter('app.privacyPolicyUrl'),
+            'organization_name' => $this->getParameter('app.organizationName')
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -107,7 +111,7 @@ class MemberController extends AbstractController {
             else
             {
                 $customer = $this->mollieApiClient->customers->create([
-                    'name' => $membershipApplication->getFirstName() . ' ' . $membershipApplication->getLastName(),
+                    'name' => $membershipApplication->getFullName(),
                     'email' => $membershipApplication->getEmail()
                 ]);
 
@@ -125,7 +129,8 @@ class MemberController extends AbstractController {
 
         return $this->render('user/member/apply.html.twig', [
             'success' => false,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'useMiddleName' => $this->getParameter('app.useMiddleName')
         ]);
     }
 

@@ -49,6 +49,11 @@
                 {{ form_label(form.firstName, 'Naam') }}
                 <div class="form-field-group">
                     {{ form_widget(form.firstName, { attr: { class: 'text-input', placeholder: 'Voornaam' } }) }}
+
+                    {% if useMiddleName %}
+                        {{ form_widget(form.middleName, { attr: { class: 'text-input', placeholder: 'Tussenvoegsel' } }) }}
+                    {% endif %}
+
                     {{ form_widget(form.lastName, { attr: { class: 'text-input', placeholder: 'Achternaam' } }) }}
                 </div>
             </div>
