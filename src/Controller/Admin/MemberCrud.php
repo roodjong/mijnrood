@@ -57,8 +57,8 @@ class MemberCrud extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(EntityFilter::new('division'))
-            ->add(EntityFilter::new('currentMembershipStatus'));
+            ->add(EntityFilter::new('division', 'Afdeling'))
+            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'));
     }
 
     public function configureActions(Actions $actions): Actions {
