@@ -92,7 +92,8 @@ class MemberController extends AbstractController {
         $form = $this->createForm(MembershipApplicationType::class, $membershipApplication, [
             'use_middle_name' => $this->getParameter('app.useMiddleName'),
             'privacy_policy_url' => $this->getParameter('app.privacyPolicyUrl'),
-            'organization_name' => $this->getParameter('app.organizationName')
+            'organization_name' => $this->getParameter('app.organizationName'),
+            'contribution_tiers' => $this->getParameter('app.contributionTiers')
         ]);
 
         $form->handleRequest($request);

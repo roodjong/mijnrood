@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzi
 
 WORKDIR /var/www/project
 
-ENV APP_ENV=prod
+ENV APP_ENV=ds
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -59,7 +59,7 @@ COPY public/index.php /var/www/project/public/index.php
 COPY src /var/www/project/src
 COPY templates /var/www/project/templates
 COPY translations /var/www/project/translations
-COPY .env composer.json /var/www/project/
+COPY .env composer.json .env.ds /var/www/project/
 COPY docker/prod/php-fpm-entrypoint.sh /var/www/project/
 COPY docker/prod/php.ini /usr/local/etc/php/php.ini
 

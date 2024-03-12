@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  mijnrood_nginx:
+    restart: unless-stopped
+    build:
+      dockerfile: ./docker/prod/Dockerfile
+      context: ../..
+      target: mijnrood_nginx
+    networks:
+      - mijnrood
+    ports:
+      - "8080:80"
+  mijnrood_php:
+    restart: unless-stopped
+    build:
+      dockerfile: ./docker/prod/Dockerfile
+      context: ../..
+      target: mijnrood_php
+    volumes:
+      - ../../.env.local:/var/www/project/.env.local
+      - ../../../mijnrood-data/documents:/var/www/project/var/documents
+    networks:
+      - mijnrood
+  mijnrood_mariadb:
+    restart: unless-stopped
+    image: mariadb:10
+    container_name: mijnrood_mariadb
+    volumes:
+      - mariadb_volume:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: trotzalledem
+    networks:
+      - mijnrood
+networks:
+  mijnrood:
+    driver: bridge
+volumes:
+  mariadb_volume:
+    driver: local

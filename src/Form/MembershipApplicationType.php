@@ -48,7 +48,8 @@ class MembershipApplicationType extends AbstractType
             ])
             ->add('contributionPerPeriodInCents', ContributionIncomeType::class, [
                 'label' => 'Contributiebedrag',
-                'error_bubbling' => true
+                'error_bubbling' => true,
+                'contribution_tiers' => $options['contribution_tiers']
             ])
             ->add('accept', CheckboxType::class, [
                 'label' => 'Ik heb het <a target="_blank" href="' . $options['privacy_policy_url'] . '">privacybeleid</a> gelezen en ik ga daarmee akkoord.',
@@ -77,6 +78,10 @@ class MembershipApplicationType extends AbstractType
 
         $resolver->setRequired([
             'organization_name'
+        ]);
+
+        $resolver->setRequired([
+            'contribution_tiers'
         ]);
     }
 }
