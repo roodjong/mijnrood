@@ -3,15 +3,28 @@
 {% block scripts %}
     {{ parent() }}
     <script>
-        const otherAmountInput = document.getElementById("contribution_income_otherAmount");
-        const otherAmountRadio = document.getElementById("form_contributionAmount_{{ form.contributionAmount.vars.choices | length }}");
-        otherAmountInput.disabled = !otherAmountRadio.checked;
-
-        for (var i = 1; i <= {{ form.contributionAmount.vars.choices | length }}; i++) {
-            document.getElementById("form_contributionAmount_" + i).addEventListener("input", (event) => {
-                otherAmountInput.disabled = !otherAmountRadio.checked;
-            });
+        function updateContribution() {
+            let other = document.querySelector('.other-amount');
+            if (document.querySelector('.choice :checked').value !== 0) {
+                other.value = '';
+            }
         }
+        function updateOtherAmount() {
+            let other = document.querySelector('.other-amount');
+            if (other.value != '')
+            {
+                document.querySelector('.choice [value="0"]').checked = true;
+            }
+        }
+        document.addEventListener('change', e => {
+            if (e.target.closest) {
+                if (e.target.closest('.other-amount')) {
+                    updateOtherAmount();
+                } else if (e.target.closest('.choices')) {
+                    updateContribution();
+                }
+            }
+        })
     </script>
 {% endblock %}
 
@@ -30,8 +43,10 @@
         {% else %}
             <p>
                 Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso.
-                Hoeveel je hierbij betaalt hangt af van je inkomen:
+                Hoeveel je hierbij betaalt hangt af van je inkomen.
             </p>
+
+            {% if contribution.tiers|length > 2 %}
             <table class="table">
                 <thead>
                     <tr>
@@ -40,20 +55,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Tot en met €2000</td>
-                        <td>€7,50 per kwartaal (€2,50 per maand)</td>
-                    </tr>
-                    <tr>
-                        <td>€2000-€3499</td>
-                        <td>€15,00 per kwartaal (€5 per maand)</td>
-                    </tr>
-                    <tr>
-                        <td>€3500 en daarboven</td>
-                        <td>€22,50 per kwartaal (€7,50 per maand)</td>
-                    </tr>
+                    {% for tier in contribution.tiers %}
+                        {% if tier.amount is not same as(null) %}
+                        <tr>
+                            <td>{{ tier.description }}</td>
+                            <td>€{{ (tier.amount / 100)|number_format(2, ',') }} per kwartaal (€{{ (tier.amount / 100 / 3)|number_format(2, ',') }} per maand)</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
                 </tbody>
             </table>
+            {% endif %}
 
             {% if form.vars.submitted and not form.vars.valid %}
                 <div class="error">

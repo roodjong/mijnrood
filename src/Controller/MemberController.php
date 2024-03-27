@@ -19,6 +19,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Yaml\Yaml;
 
 use DateTime;
 use DateInterval;
@@ -86,13 +87,17 @@ class MemberController extends AbstractController {
      * @Route("/aanmelden", name="member_apply")
      */
     public function apply(Request $request): Response {
+        $projectRoot = $this->getParameter('kernel.project_dir');
+        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->getParameter('app.organizationID') . '.yaml');
+
         $membershipApplication = new MembershipApplication();
         $membershipApplication->setRegistrationTime(new \DateTime());
         $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
         $form = $this->createForm(MembershipApplicationType::class, $membershipApplication, [
             'use_middle_name' => $this->getParameter('app.useMiddleName'),
             'privacy_policy_url' => $this->getParameter('app.privacyPolicyUrl'),
-            'organization_name' => $this->getParameter('app.organizationName')
+            'organization_name' => $this->getParameter('app.organizationName'),
+            'contribution' => $org_config['contribution']
         ]);
 
         $form->handleRequest($request);
