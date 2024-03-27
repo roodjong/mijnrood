@@ -31,6 +31,10 @@ Create the schema with:
 
 `docker compose run --rm php82-service symfony console doctrine:migrations:migrate`
 
+Build some files needed for the frontend:
+
+`docker compose run --rm node-service yarn build`
+
 And finally populate the DB with some test data:
 
 `docker compose run --rm php82-service symfony console doctrine:fixtures:load`
