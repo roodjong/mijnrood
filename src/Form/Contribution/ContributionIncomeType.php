@@ -7,21 +7,32 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\{ ChoiceType, MoneyType };
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContributionIncomeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $choices = [];
+        $max_amount = 0;
+        foreach ($options['contribution']['tiers'] as $tier) {
+            if ($tier['amount'] === null) {
+                $choices[$tier['description']] = 0;
+            } else {
+                $description = $tier['description'] . ' (ik betaal €' . number_format($tier['amount'] / 100, 2, ',') . ' contributie per kwartaal)';
+                $choices[$description] = $tier['amount'];
+            }
+
+            if ($tier['amount'] > $max_amount) {
+                $max_amount = $tier['amount'];
+            }
+        }
+
         $builder
             ->add('contributionAmount', ChoiceType::class, [
                 'error_bubbling' => true,
                 'label' => 'Maandinkomen',
-                'choices' => [
-                    'Tot en met €2000 (ik betaal €7,50 contributie per kwartaal)' => 750,
-                    '€2000-€3499 (ik betaal €15,00 contributie per kwartaal)' => 1500,
-                    '€3500 en daarboven (ik betaal €22,50 contributie per kwartaal)' => 2250,
-                    'ik betaal een hogere contributie, namelijk:' => 0,
-                ],
+                'choices' => $choices,
                 'expanded' => true
             ])
             ->add('otherAmount', MoneyType::class, [
@@ -31,21 +42,27 @@ class ContributionIncomeType extends AbstractType
                 'divisor' => 100,
                 'required' => false,
                 'attr' => [
-                    'min' => 2250
+                    'min' => $max_amount / 100
                 ],
                 'constraints' => new Assert\GreaterThan([
-                    'value' => 22.50,
-                    'message' => 'Als je een hoger bedrag selecteert, moet dit hoger dan {{ compared_value }} zijn'
+                    'value' => $max_amount,
+                    'message' => 'Als je een hoger bedrag selecteert, moet dit hoger dan €' . number_format($max_amount / 100, 2, ',') . ' zijn.'
                 ])
             ]);
 
         $builder->addModelTransformer(new CallbackTransformer(
             fn($model) => [
-                'contributionAmount' => $model > 2250 ? null : $model,
-                'otherAmount' => $model > 2250 ? $model : null
+                'contributionAmount' => $model > $max_amount ? null : $model,
+                'otherAmount' => $model > $max_amount ? $model : null
             ],
             fn($norm) => $norm['contributionAmount'] === 0 ? $norm['otherAmount'] : $norm['contributionAmount']
         ));
     }
 
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setRequired([
+            'contribution'
+        ]);
+    }
 }

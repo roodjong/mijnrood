@@ -15,6 +15,7 @@ use App\Entity\{ ContributionPayment, Member, ChosenContribution };
 use DateTime;
 use DateInterval;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class ContributionController extends AbstractController
 {
@@ -154,8 +155,12 @@ class ContributionController extends AbstractController
      * @Route("/automatische-incasso", name="member_contribution_automatic_collection")
      */
     public function automaticCollection(Request $request, LoggerInterface $logger): Response {
-        $form = $this->createForm(ContributionIncomeType::class);
-        $form->setData(750);
+        $projectRoot = $this->getParameter('kernel.project_dir');
+        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->getParameter('app.organizationID') . '.yaml');
+
+        $form = $this->createForm(ContributionIncomeType::class, null, [
+            'contribution' => $org_config['contribution']
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -170,7 +175,8 @@ class ContributionController extends AbstractController
 
         return $this->render('user/contribution/automatic-collection.html.twig', [
             'success' => false,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'contribution' => $org_config['contribution']
         ]);
     }
 

@@ -7,6 +7,7 @@ parameters:
     documents_directory: '%kernel.project_dir%/var/documents'
     mollie_payment_description: 'Contributiebetaling %env(ORGANIZATION_NAME)%'
     app.organizationName: '%env(ORGANIZATION_NAME)%'
+    app.organizationID: '%env(ORGANIZATION_ID)%'
     app.noReplyAddress: '%env(NOREPLY_ADDRESS)%'
     app.homepageUrl: '%env(HOMEPAGE)%'
     app.orgLogo: '%env(ORG_LOGO)%'

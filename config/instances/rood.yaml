@@ -1,0 +1,10 @@
+contribution:
+  tiers:
+    - amount: 750
+      description: Tot en met €2000 bruto
+    - amount: 1500
+      description: €2000-€3499 bruto
+    - amount: 2250
+      description: €3500 bruto en daarboven
+    - amount: null
+      description: ik betaal een hogere contributie, namelijk:

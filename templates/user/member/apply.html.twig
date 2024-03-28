@@ -32,10 +32,10 @@
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
 
-        <img id="logo" src="{{ asset('assets/image/logo.png') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
-            Inschrijven bij <span class="rood">ROOD</span>
+            Inschrijven bij <span class="rood">{{ orgnaamkort }}</span>
         </span>
 
         {% if form.vars.submitted and not form.vars.valid %}
@@ -67,7 +67,7 @@
             {{ form_row(form.preferredDivision, { attr: { class: 'text-input' } }) }}
 
             <p>
-                Selecteer wat er voor jou van toepassing is:
+                Bij {{ orgnaamkort }} hebben we contributie op basis van je bruto maandinkomen. Selecteer wat er voor jou van toepassing is:
             </p>
             <div class="choices">
                 {% for option in form.contributionPerPeriodInCents.contributionAmount %}
