@@ -6,10 +6,17 @@ use App\Entity\Member;
 use App\Form\Admin\ContributionPaymentType;
 use App\Form\Contribution\ContributionPeriodType;
 
+use Doctrine\ORM\QueryBuilder;
+
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Actions, Action };
-use EasyCorp\Bundle\EasyAdminBundle\Filter\{ ChoiceFilter, EntityFilter };
+use EasyCorp\Bundle\EasyAdminBundle\Filter\{ EntityFilter };
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -22,6 +29,16 @@ use DateTime;
 
 class MemberCrud extends AbstractCrudController
 {
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            return $response;
+        }
+        $division = $this->getUser()->getDivision();
+        $response->andWhere('entity.division = :division')->setParameter('division', $division);
+        return $response;
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -33,15 +50,15 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
         ;
     }
 
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(EntityFilter::new('division'))
-        ;
+            ->add(EntityFilter::new('division', 'Afdeling'))
+            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'));
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -50,11 +67,10 @@ class MemberCrud extends AbstractCrudController
             ->setCssClass('btn btn-secondary')
             ->createAsGlobalAction();
 
-        return $actions
-            ->add(Crud::PAGE_INDEX, $action);
+        return $actions->add(Crud::PAGE_INDEX, $action);
     }
 
-    public function export(AdminContext $adminContext)
+    public function export(AdminContext $adminContext): BinaryFileResponse
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -84,7 +100,12 @@ class MemberCrud extends AbstractCrudController
             Member::PERIOD_ANNUALLY => 'Jaarlijks'
         ];
         $now = new DateTime;
-        $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
+        }
+        else {
+            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $this->getUser()->getDivision()]);
+        }
 
         $i = 2;
         foreach ($members as $member)
@@ -133,48 +154,62 @@ class MemberCrud extends AbstractCrudController
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'Export MijnROOD Ledendatabase.xlsx'
+            'Export Ledendatabase.xlsx'
         );
         return $response;
     }
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        $fields = [
             IdField::new('id', 'Lidnummer')
+                ->setDisabled(!$isAdmin)
                 ->setRequired(false)
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
-            TextField::new('firstName', 'Voornaam'),
-            TextField::new('lastName', 'Achternaam'),
-            DateField::new('dateOfBirth', 'Geboortedatum')
-                ->hideOnIndex(),
+            TextField::new('firstName', 'Voornaam')->setDisabled(!$isAdmin),
+        ];
+
+        if ($this->getParameter('app.useMiddleName')) {
+            $fields[] = TextField::new('middleName', 'Tussenvoegsel')->setDisabled(!$isAdmin)->setRequired(false);
+        }
+
+        array_push($fields,
+            TextField::new('lastName', 'Achternaam')->setDisabled(!$isAdmin),
+            DateField::new('dateOfBirth', 'Geboortedatum')->setDisabled(!$isAdmin)->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
-            AssociationField::new('division', 'Groep'),
-            BooleanField::new('isAdmin', 'Toegang tot administratie')
-                ->hideOnIndex(),
+            TextField::new('comments', 'Extra informatie'),
+        );
 
+        if ($isAdmin) {
+            $fields[] = AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype');
+            $fields[] = AssociationField::new('division', 'Afdeling');
+            $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
+                ->hideOnIndex();
+        }
+        array_push($fields,
             FormField::addPanel('Contactinformatie'),
-            EmailField::new('email', 'E-mailadres'),
-            TextField::new('phone', 'Telefoonnummer'),
-            TextField::new('address', 'Adres')->hideOnIndex(),
-            TextField::new('city', 'Plaats'),
-            TextField::new('postCode', 'Postcode')->hideOnIndex(),
-            TextField::new('country', 'Landcode')
+            EmailField::new('email', 'E-mailadres')->setDisabled(!$isAdmin),
+            TextField::new('phone', 'Telefoonnummer')->setDisabled(!$isAdmin),
+            TextField::new('address', 'Adres')->setDisabled(!$isAdmin)->hideOnIndex(),
+            TextField::new('city', 'Plaats')->setDisabled(!$isAdmin),
+            TextField::new('postCode', 'Postcode')->hideOnIndex()->setDisabled(!$isAdmin),
+            TextField::new('country', 'Landcode')->setDisabled(!$isAdmin)
                 ->hideOnIndex()
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Twee-letterige landcode']]),
 
             FormField::addPanel('Contributie'),
-            TextField::new('iban', 'IBAN-rekeningnummer')->hideOnIndex(),
+            TextField::new('iban', 'IBAN-rekeningnummer')->setDisabled(!$isAdmin)->hideOnIndex(),
             Field::new('contributionPeriod', 'Betalingsperiode')
-                ->setFormType(ContributionPeriodType::class)
-                ->hideOnIndex(),
+                ->setDisabled(!$isAdmin)->setFormType(ContributionPeriodType::class)->hideOnIndex(),
             MoneyField::new('contributionPerPeriodInCents', 'Bedrag')
-                ->setCurrency('EUR')
-                ->hideOnIndex(),
+                ->setDisabled(!$isAdmin)->setCurrency('EUR')->hideOnIndex(),
             CollectionField::new('contributionPayments', 'Betalingen')
+                ->setDisabled(!$isAdmin)
                 ->setEntryIsComplex(false)
                 ->setEntryType(ContributionPaymentType::class)
                 ->setFormTypeOptions([
@@ -184,7 +219,8 @@ class MemberCrud extends AbstractCrudController
                     'allow_delete' => false
                 ])
                 ->hideOnIndex()
-        ];
+        );
+        return $fields;
     }
 
 }

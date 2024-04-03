@@ -2,19 +2,51 @@
 
 namespace App\Controller\Admin;
 
+use Doctrine\ORM\QueryBuilder;
+
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use App\Entity\{ Member, MembershipApplication };
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\{ IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
-use App\Form\Admin\ContributionPaymentType;
+use EasyCorp\Bundle\EasyAdminBundle\Field\{ BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Action, Actions };
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
-use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlGenerator;
-use Swift_Mailer, Swift_Message;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Mollie\Api\MollieApiClient;
+use Mollie\Api\Exceptions\ApiException;
+
+use DateTime;
+use DateInterval;
 
 class MembershipApplicationCrud extends AbstractCrudController
 {
-    public function __construct(Swift_Mailer $mailer) { $this->mailer = $mailer; }
+    private MailerInterface $mailer;
+    private MollieApiClient $mollieApiClient;
+
+    public function __construct(MailerInterface $mailer, MollieApiClient $mollieApiClient)
+    {
+        $this->mailer = $mailer;
+        $this->mollieApiClient = $mollieApiClient;
+    }
+
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            return $response;
+        }
+        $division = $this->getUser()->getDivision();
+        $response->andWhere('entity.preferredDivision = :division')->setParameter('division', $division);
+        return $response;
+    }
 
     // it must return a FQCN (fully-qualified class name) of a Doctrine ORM entity
     public static function getEntityFqcn(): string
@@ -46,33 +78,92 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function acceptApplication(AdminContext $context)
     {
+        $noreply = $this->getParameter('app.noReplyAddress');
+        $organizationName = $this->getParameter('app.organizationName');
         $mailer = $this->mailer;
 
         $application = $context->getEntity()->getInstance();
-        $member = $application->createMember();
-        $member->setNewPasswordToken(sha1($member->getEmail().time()));
+
+        $mollieIntervals = [
+            Member::PERIOD_MONTHLY => '1 month',
+            Member::PERIOD_QUARTERLY => '3 months',
+            Member::PERIOD_ANNUALLY => '1 year'
+        ];
+        $dateTimeIntervals = [
+            Member::PERIOD_MONTHLY => 'P1M',
+            Member::PERIOD_QUARTERLY => 'P3M',
+            Member::PERIOD_ANNUALLY => 'P1Y'
+        ];
+
+        $startDate = new DateTime();
+        $startDate->setDate(date('Y'), floor(date('m') / 3) * 3, 1);
+        $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
+        $subscriptionId = null;
+
+        try {
+            $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
+
+            $subscription = $customer->createSubscription([
+                'amount' => [
+                    'currency' => 'EUR',
+                    'value' => number_format($application->getContributionPerPeriodInEuros(), 2, '.', '')
+                ],
+                'interval' => $mollieIntervals[$application->getContributionPeriod()],
+                'description' => $this->getParameter('mollie_payment_description'),
+                'startDate' => $startDate->format('Y-m-d'),
+                'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            ]);
+            $subscriptionId = $subscription->id;
+
+        } catch (ApiException $e) {
+            // De subscription moet later nog gedaan worden door het lid zelf
+            $this->addFlash("warning", "Het net geaccepteerde lid heeft nog geen automatisch incasso. Het nieuwe lid kan dit alleen zelf instellen.");
+        }
+
+        $member = $application->createMember($subscriptionId);
+        $member->generateNewPasswordToken();
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($member);
         $em->remove($application);
         $em->flush();
 
-        $message = (new Swift_Message())
-            ->setSubject('Welkom bij ROOD, jong in de SP')
-            ->setTo([$member->getEmail() => $member->getFirstName() .' '. $member->getLastName()])
-            ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
-            ->setBody(
-                $this->renderView('email/html/welcome.html.twig', ['member' => $member]),
-                'text/html'
+        $message = (new Email())
+            ->subject("Welkom bij $organizationName!")
+            ->to(new Address($member->getEmail(), $member->getFullName()))
+            ->from(new Address($noreply,$organizationName))
+            ->html(
+                $this->renderView('email/html/welcome.html.twig', ['member' => $member])
             )
-            ->addPart(
-                $this->renderView('email/text/welcome.txt.twig', ['member' => $member]),
-                'text/plain'
+            ->text(
+                $this->renderView('email/text/welcome.txt.twig', ['member' => $member])
             );
         $mailer->send($message);
 
-        $url = $this->get(CrudUrlGenerator::class)
-            ->build()
+        // Email naar de contactpersoon
+        if ($member->getDivision() !== null)
+        {
+            foreach ($member->getDivision()->getContacts() as $contact)
+            {
+                $message2 = (new Email())
+                    ->subject('Nieuw lid aangesloten bij je groep')
+                    ->to(new Address($contact->getEmail(), $contact->getFullName()))
+                    ->from(new Address($noreply, $organizationName))
+                    ->html(
+                        $this->renderView('email/html/contact_new_member.html.twig', [
+                            'member' => $member,
+                        ]),
+                    )
+                    ->text(
+                        $this->renderView('email/text/contact_new_member.txt.twig', [
+                            'member' => $member,
+                        ]),
+                    );
+                $mailer->send($message2);
+            }
+        }
+
+        $url = $this->container->get(AdminUrlGenerator::class)
             ->setController(MemberCrud::class)
             ->setAction(Action::DETAIL)
             ->setEntityId($member->getId())
@@ -83,8 +174,15 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        return [
+        $fields = [
             TextField::new('firstName', 'Voornaam'),
+        ];
+
+        if ($this->getParameter('app.useMiddleName')) {
+            $fields[] = TextField::new('middleName', 'Tussenvoegsel')->setRequired(false);
+        }
+
+        array_push($fields,
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
@@ -115,8 +213,12 @@ class MembershipApplicationCrud extends AbstractCrudController
                 ->hideOnIndex(),
             MoneyField::new('contributionPerPeriodInCents', 'Bedrag')
                 ->setCurrency('EUR')
-                ->hideOnIndex()
-        ];
+                ->hideOnIndex(),
+
+            BooleanField::new('paid', 'Eerste contributie betaald')
+        );
+
+        return $fields;
     }
 
     public function configureFilters(Filters $filters): Filters

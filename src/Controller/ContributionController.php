@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
@@ -9,12 +10,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Mollie\Api\MollieApiClient;
-use Swift_Mailer, Swift_Message;
-use App\Form\Contribution\{ PreferencesType };
-use App\Entity\{ ContributionPayment, Member };
+use App\Form\Contribution\{ PreferencesType, ContributionIncomeType };
+use App\Entity\{ ContributionPayment, Member, ChosenContribution };
 use DateTime;
+use DateInterval;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Throwable;
+use Symfony\Component\Yaml\Yaml;
 
 class ContributionController extends AbstractController
 {
@@ -91,9 +93,19 @@ class ContributionController extends AbstractController
         // Create payment
         $customer = $this->getOrCreateMollieCustomer($mollieApiClient);
 
+
+        // Create ContributionPayment
+        $contributionAmount = $member->getContributionPerPeriodInEuros();
+        $contributionPayment = $this->createContributionPayment($member->getContributionPeriod(), $contributionAmount, null);
+        $member->addContributionPayment($contributionPayment);
+        $this->getDoctrine()->getManager()->flush();
+
+        // Generate redirect URL
         $redirectUrl = $automaticCollection
             ? $this->generateUrl('member_contribution_automatic_collection_enabled', [], UrlGeneratorInterface::ABSOLUTE_URL)
-            : $this->generateUrl('member_contribution_paid', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            : $this->generateUrl('member_contribution_paid', [
+                'contributionPaymentId' => $contributionPayment->getId()
+            ], UrlGeneratorInterface::ABSOLUTE_URL)
         ;
 
         if ($automaticCollection)
@@ -105,7 +117,7 @@ class ContributionController extends AbstractController
         $molliePayment = $customer->createPayment([
             'amount' => [
                 'currency' => 'EUR',
-                'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
+                'value' => number_format($contributionAmount, 2, '.', '')
             ],
             'sequenceType' => 'first',
             'locale' => 'nl_NL',
@@ -114,9 +126,8 @@ class ContributionController extends AbstractController
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
         ]);
 
-        // Save contribution payment in database
-        $contributionPayment = $this->createContributionPayment($member->getContributionPeriod(), $molliePayment);
-        $member->addContributionPayment($contributionPayment);
+        // Save reference to Mollie payment in database
+        $contributionPayment->setMolliePaymentId($molliePayment->id);
         $this->getDoctrine()->getManager()->flush();
 
         // If first payment for automatic collection, show info screen
@@ -146,7 +157,7 @@ class ContributionController extends AbstractController
         // If the payment comes from a subscription, it is not yet registered in the database
         if ($contributionPayment === null) {
             $member = $this->getDoctrine()->getRepository(Member::class)->findOneByMollieSubscriptionId($molliePayment->subscriptionId);
-            $contributionPayment = $this->createContributionPayment($member->getContributionPeriod(), $molliePayment);
+            $contributionPayment = $this->createContributionPayment($member->getContributionPeriod(), $molliePayment->amount->value, $molliePayment);
             $member->addContributionPayment($contributionPayment);
         } else {
             $member = $contributionPayment->getMember();
@@ -181,8 +192,30 @@ class ContributionController extends AbstractController
     /**
      * @Route("/automatische-incasso", name="member_contribution_automatic_collection")
      */
-    public function automaticCollection(Request $request): Response {
-        return $this->render('user/contribution/automatic-collection.html.twig');
+    public function automaticCollection(Request $request, LoggerInterface $logger): Response {
+        $projectRoot = $this->getParameter('kernel.project_dir');
+        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->getParameter('app.organizationID') . '.yaml');
+
+        $form = $this->createForm(ContributionIncomeType::class, null, [
+            'contribution' => $org_config['contribution']
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $member = $this->getUser();
+            $member->setContributionPerPeriodInCents($form->getData());
+            $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
+            $em->flush();
+
+            return $this->redirectToRoute('member_contribution_automatic_collection_enable');
+        }
+
+        return $this->render('user/contribution/automatic-collection.html.twig', [
+            'success' => false,
+            'form' => $form->createView(),
+            'contribution' => $org_config['contribution']
+        ]);
     }
 
     /**
@@ -237,12 +270,39 @@ class ContributionController extends AbstractController
     }
 
     /**
-     * @Route("/contributie-betaald", name="member_contribution_paid")
+     * @Route("/contributie-betaald/{contributionPaymentId}", name="member_contribution_paid")
      */
-    public function contributionPaid(Request $request): Response {
+    public function contributionPaid(Request $request, MollieApiClient $mollieApiClient, string $contributionPaymentId): Response {
         $member = $this->getUser();
 
-        return $this->render('user/contribution/paid.html.twig');
+        $contributionPayment = $contributionPaymentId === '' ? null : $this->getDoctrine()->getRepository(ContributionPayment::class)->find($contributionPaymentId);
+        if ($contributionPayment === null)
+        {
+            return $this->redirectToRoute('member_contribution_pay');
+        }
+
+        $molliePayment = $mollieApiClient->payments->get($contributionPayment->getMolliePaymentId());
+
+        $status = $molliePayment->isPending() ? 'pending' : ($molliePayment->isPaid() ? 'paid' : 'failed');
+
+        if (in_array('application/json', $request->getAcceptableContentTypes()))
+        {
+            return $this->json([
+                'status' => $status
+            ]);
+        }
+
+        if ($status === 'paid')
+        {
+            return $this->render('user/contribution/paid.html.twig');
+        }
+
+        if ($status == 'failed')
+        {
+            return $this->render('user/contribution/failed.html.twig');
+        }
+
+        return $this->render('user/contribution/checking.html.twig');
     }
 
     /**
@@ -282,7 +342,7 @@ class ContributionController extends AbstractController
         {
             $subscription = $mollieApiClient->subscriptions->getFor($customer, $request->query->get('subscriptionId'));
             $html .= '<h3>'.htmlentities($subscription->description).'</h3>';
-            $html .= 'Status: '.$subscription->status.'<br />';
+            $html .= 'Status: '.json_encode($subscription).'<br />';
 
             if (!$request->query->has('action'))
             {
@@ -383,13 +443,17 @@ class ContributionController extends AbstractController
         return $customer;
     }
 
-    private function createContributionPayment(int $contributionPeriod, $molliePayment) {
+    private function createContributionPayment(int $contributionPeriod, float $contributionAmount, $molliePayment) {
         // Create contribution payment
         $contributionPayment = new ContributionPayment();
-        $contributionPayment->setAmountInCents(round($molliePayment->amount->value * 100));
+        $contributionPayment->setAmountInCents(round($contributionAmount * 100));
         $contributionPayment->setStatus(ContributionPayment::STATUS_PENDING);
         $contributionPayment->setPaymentTime(new DateTime);
-        $contributionPayment->setMolliePaymentId($molliePayment->id);
+
+        if ($molliePayment !== null)
+        {
+            $contributionPayment->setMolliePaymentId($molliePayment->id);
+        }
 
         // Set correct year and period information
         $contributionPayment->setPeriodYear((int) date('Y'));
@@ -415,13 +479,18 @@ class ContributionController extends AbstractController
     }
 
     private function setupSubscription(Member $member, $customer) {
-        $startDate = new DateTime('next year 1 january');
+        $startDate = DateTime::createFromFormat('Y-m-d', date('Y-'). (ceil(date('m') / 3) * 3 + 1). '-1');
+
         $subscription = $customer->createSubscription([
             'amount' => [
                 'currency' => 'EUR',
                 'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
             ],
-            'interval' => '12 months',
+            'interval' => [
+                Member::PERIOD_MONTHLY => '1 month',
+                Member::PERIOD_QUARTERLY => '3 months',
+                Member::PERIOD_ANNUALLY => '1 year'
+            ][$member->getContributionPeriod()],
             'description' => $this->getParameter('mollie_payment_description'),
             'startDate' => $startDate->format('Y-m-d'),
             'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)

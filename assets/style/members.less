@@ -56,3 +56,52 @@ h1, h2, h3 {
 
     }
 }
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+
+    th {
+        background: #eee;
+        font-weight: normal;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+}
+
+#nagbar {
+    background-color: @rood;
+    padding: 0 1rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+        color: white;
+        font-weight: bold;
+    }
+    a, a:hover, a:active, a:visited {
+        color: white;
+    }
+}
+
+#main-content-details {
+    display: flex;
+    gap: 2rem;
+
+    @media @mobile {
+        flex-direction: column;
+    }
+
+    .details {
+        width: 100%;
+    }
+
+    .contributions {
+        flex-shrink: 2;
+    }
+}

@@ -1,1 +1,0 @@
-import '../style/login.less';

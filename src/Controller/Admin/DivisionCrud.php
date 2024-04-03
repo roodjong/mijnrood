@@ -20,6 +20,7 @@ class DivisionCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('groep')
             ->setEntityLabelInPlural('Groepen')
+            ->setEntityPermission('ROLE_ADMIN')
         ;
     }
 
@@ -28,7 +29,7 @@ class DivisionCrud extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
             TextField::new('name', 'Groepsnaam'),
-            AssociationField::new('contact', 'Contactpersoon'),
+            AssociationField::new('contacts', 'Contactpersonen'),
             BooleanField::new('canBeSelectedOnApplication', 'Kan als gewenste groep worden geselecteerd bij aanmelding')
                 ->hideOnIndex(),
 

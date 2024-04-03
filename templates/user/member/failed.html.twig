@@ -1,0 +1,21 @@
+{% set pageTitle = 'Lid worden' %}
+{% extends 'user/layout/login.html.twig' %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset('assets/image/logo.png') }}" />
+
+        <span class="center-form-title">
+            {% trans %}Betaling mislukt{% endtrans %}
+        </span>
+
+        <p>
+            {% trans %}De betaling is helaas mislukt, waardoor je lidmaatschap niet afgesloten kon worden.{% endtrans %}
+        </p>
+
+        <a href="{{ retryUrl }}" class="submit-button">
+            {% trans %}Nogmaals proberen{% endtrans %}
+        </a>
+    </div>
+{% endblock %}

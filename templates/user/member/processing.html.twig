@@ -1,0 +1,34 @@
+{% set pageTitle = 'Lid worden' %}
+{% extends 'user/layout/login.html.twig' %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        function enqueueCheck() {
+            setTimeout(function() {
+                fetch(window.location.href + '?check=1').then(r => r.json()).then(d => {
+                    if (d.success)
+                        window.location.reload();
+                    else
+                        enqueueCheck();
+                })
+            }, 1000)
+        }
+        enqueueCheck();
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div id="center-form-wrapper" class="big-form">
+
+        <img id="logo" src="{{ asset('assets/image/logo.png') }}" />
+
+        <span class="center-form-title">
+            {% trans %}Betaling verwerken...{% endtrans %}
+        </span>
+
+        <p>
+            {% trans %}Je betaling wordt verwerkt. Gelieve even geduld te hebben.{% endtrans %}
+        </p>
+    </div>
+{% endblock %}

@@ -1,17 +1,16 @@
-@import 'members.less';
+@import './common.less';
 
 .document-interface-head {
-    @media @desktop {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    white-space: nowrap;
+
+    @media @mobile {
+        flex-direction: column;
     }
 
-    margin-bottom: 20px;
-
     .breadcrumbs {
-        margin: 10px 0;
-
         a {
             color: @rood;
             text-decoration: none;
@@ -25,22 +24,19 @@
     }
 
     .document-folder-actions {
+        display: flex;
+        gap: 1rem;
+        white-space: nowrap;
         a {
-            display: inline-block;
             border: 2px solid @rood;
             color: @rood;
             border-radius: 3px;
             padding: 10px 20px;
             text-decoration: none;
 
-            & + a {
-                margin-left: 10px;
-            }
-
             &.active {
                 background: @rood;
                 color: #fff;
-                // box-shadow: inset 0 0 0 2px #fff;
             }
         }
     }
@@ -99,8 +95,11 @@
         text-decoration: none;
     }
 
-    @media @desktop { .date-short { display: none; } }
-    @media @mobile { .date-long { display: none; } }
+    .date-short { display: none; }
+    @media @mobile {
+        .date-short { display: block; }
+        .date-long { display: none; }
+    }
 
     .document-actions {
         width: auto;
@@ -121,7 +120,7 @@
 
                 &::before {
                     content: '\f142';
-                    font-family: 'ForkAwesome';
+                    font-family: 'ForkAwesome', sans-serif;
                 }
 
                 & > input:not(:checked) + .document-action-buttons {
@@ -153,13 +152,11 @@
             color: #888;
             text-decoration: none;
 
-            @media @desktop {
-                padding: 6px 10px;
-                border-radius: 3px;
-                border: 1px solid;
+            padding: 6px 10px;
+            border-radius: 3px;
+            border: 1px solid;
 
-                span { display: none; }
-            }
+            span { display: none; }
 
             &:hover {
                 color: @rood;

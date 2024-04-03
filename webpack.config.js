@@ -8,9 +8,9 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     // directory where compiled assets will be stored
-    .setOutputPath('public/build/')
+    .setOutputPath('public/assets/')
     // public path used by the web server to access the output path
-    .setPublicPath('/build')
+    .setPublicPath('/assets')
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
 
@@ -23,9 +23,9 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry('login', './assets/script/login.js')
-    //.addEntry('page1', './assets/page1.js')
-    //.addEntry('page2', './assets/page2.js')
+    .addEntry('login', './assets/login.js')
+    .addEntry('members', './assets/members.js')
+    .addEntry('documents', './assets/documents.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -33,9 +33,15 @@ Encore
     // will require an extra script tag for runtime.js
     // but, you probably want this, unless you're building a single-page app
     .enableSingleRuntimeChunk()
+
+    // Copy images and fonts
     .copyFiles({
-         from: './assets',
-         to: '[path][name].[ext]'
+         from: './assets/image',
+         to: 'image/[path][name].[ext]'
+    })
+    .copyFiles({
+         from: './assets/font',
+         to: 'font/[path][name].[ext]'
     })
 
     /*
@@ -60,7 +66,7 @@ Encore
     .enableLessLoader()
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
 
 ;
 

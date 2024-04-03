@@ -5,7 +5,17 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     documents_directory: '%kernel.project_dir%/var/documents'
-    mollie_payment_description: 'Contributiebetaling ROOD, jong in de SP'
+    mollie_payment_description: 'Contributiebetaling %env(ORGANIZATION_NAME)%'
+    app.organizationName: '%env(ORGANIZATION_NAME)%'
+    app.organizationID: '%env(ORGANIZATION_ID)%'
+    app.noReplyAddress: '%env(NOREPLY_ADDRESS)%'
+    app.homepageUrl: '%env(HOMEPAGE)%'
+    app.orgLogo: '%env(ORG_LOGO)%'
+    app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
+    app.listmonkUrl: '%env(string:LISTMONK_URL)%'
+    app.useMiddleName: '%env(bool:USE_MIDDLE_NAME)%'
+    router.request_context.scheme: '%env(SECURE_SCHEME)%'
+    asset.request_context.secure: true
 
 services:
     # default configuration for services in *this* file
@@ -45,3 +55,8 @@ services:
             - '%env(DIRECTADMIN_URL)%'
             - '%env(DIRECTADMIN_USERNAME)%'
             - '%env(DIRECTADMIN_PASSWORD)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - '%env(DATABASE_URL)%'
+            - { 'ttl': 3600 }

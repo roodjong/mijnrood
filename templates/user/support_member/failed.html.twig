@@ -2,24 +2,24 @@
 {% extends 'user/layout/base.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+    {{ encore_entry_link_tags('login') }}
 {% endblock %}
 
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
 
-        <img id="logo" src="{{ asset('assets/image/rood-sp.svg') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
-            Betaling mislukt
+            {% trans %}Betaling mislukt{% endtrans %}
         </span>
 
         <p>
-            De betaling is helaas mislukt, waardoor je steunlidmaatschap niet afgesloten kon worden.
+            {% trans %}De betaling is helaas mislukt, waardoor je steunlidmaatschap niet afgesloten kon worden.{% endtrans %}
         </p>
 
         <a href="{{ retryUrl }}" class="submit-button">
-            Nogmaals proberen
+            {% trans %}Nogmaals proberen{% endtrans %}
         </a>
     </div>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Membership\MembershipStatus;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\{ ArrayCollection, Collection };
 use Symfony\Component\Validator\Constraints as Assert;
@@ -30,6 +31,11 @@ class Member implements UserInterface {
      * @ORM\Column(type="string", length=50)
      */
     private string $firstName = '';
+
+    /**
+     * @ORM\Column(type="string", length=50, options={"default": ""})
+     */
+    private string $middleName = '';
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -152,9 +158,19 @@ class Member implements UserInterface {
     private Collection $managingEmails;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Membership\MembershipStatus", inversedBy="members")
+     */
+    private ?MembershipStatus $currentMembershipStatus = null;
+
+    /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})
      */
     private bool $acceptUsePersonalInformation = true;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $comments = null;
 
     public function __construct() {
         $this->registrationTime = new DateTime;
@@ -173,11 +189,17 @@ class Member implements UserInterface {
     public function getFirstName(): string { return $this->firstName; }
     public function setFirstName(string $firstName): void { $this->firstName = $firstName; }
 
+    public function getMiddleName(): string { return $this->middleName; }
+    public function setMiddleName(?string $middleName): void { $this->middleName = $middleName ? $middleName : ''; }
+
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
 
     public function getFullName(): string {
-        return $this->firstName. ' ' . $this->lastName;
+        if ($this->middleName === '') {
+            return $this->firstName. ' ' . $this->lastName;
+        }
+        return $this->firstName . ' ' . $this->middleName . ' ' . $this->lastName;
     }
 
     public function getAddress(): string { return $this->address; }
@@ -290,13 +312,36 @@ class Member implements UserInterface {
         return $this->managingEmails;
     }
 
+    public function getComments(): ?string { return $this->comments; }
+    public function setComments(?string $comments): void { $this->comments = $comments; }
+
+    public function getCurrentMembershipStatus(): ?MembershipStatus {
+        return $this->currentMembershipStatus;
+    }
+
+    public function setCurrentMembershipStatus(?MembershipStatus $membershipStatus): void {
+        $this->currentMembershipStatus = $membershipStatus;
+    }
+
     /** @see UserInterface */
     public function getUsername(): string { return $this->id; }
 
     /** @see UserInterface */
     public function getRoles(): array {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        if ($this->getCurrentMembershipStatus() === null || $this->currentMembershipStatus->getAllowedAccess()) {
+            $roles[] = 'ROLE_USER';
+        }
+        if (!is_null($this->getDivision())) {
+            $isContactOfAnyDivision = $this->getDivision()->getContacts()->exists(
+                function ($key, $division) {
+                    return $division->getId() === $this->getId();
+                }
+            );
+            if ($isContactOfAnyDivision) {
+                $roles[] = 'ROLE_DIVISION_CONTACT';
+            }
+        }
         return array_unique($roles);
     }
 
@@ -317,6 +362,11 @@ class Member implements UserInterface {
     public function setNewPasswordToken(?string $newPasswordToken): void {
         $this->newPasswordToken = $newPasswordToken;
         $this->newPasswordTokenGeneratedTime = $newPasswordToken === null ? null : new DateTime();
+    }
+    public function generateNewPasswordToken() {
+        // Urlsafe base64 encode some random bytes as token
+        $this->newPasswordToken = rtrim(strtr(base64_encode(random_bytes(36)), '+/', '-_'), '=');
+        $this->newPasswordTokenGeneratedTime = new DateTime();
     }
     public function getNewPasswordTokenGeneratedTime(): ?DateTime { return $this->newPasswordTokenGeneratedTime; }
 }

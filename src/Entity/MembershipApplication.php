@@ -14,6 +14,7 @@ use App\Repository\MemberRepository;
  * @ORM\Table("admin_membership_application")
  */
 class MembershipApplication {
+
     /**
      * @ORM\Column(type="integer", options={ "unsigned": false })
      * @ORM\Id
@@ -25,6 +26,11 @@ class MembershipApplication {
      * @ORM\Column(type="string", length=50)
      */
     private string $firstName = '';
+
+    /**
+     * @ORM\Column(type="string", length=50, options={"default": ""})
+     */
+    private string $middleName = '';
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -94,7 +100,17 @@ class MembershipApplication {
     /**
      * @ORM\Column(type="integer", options={"default": 0})
      */
-    private int $contributionPerPeriodInCents = 0;
+    private int $contributionPerPeriodInCents = 750;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $mollieCustomerId = null;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default": true})
+     */
+    private ?bool $paid = false;
 
     public function __construct() {
         $this->registrationTime = new DateTime();
@@ -104,9 +120,10 @@ class MembershipApplication {
         return $this->lastName .', '. $this->firstName;
     }
 
-    public function createMember(): Member {
+    public function createMember(?string $mollieSubscriptionId): Member {
         $member = new Member();
         $member->setFirstName($this->getFirstName());
+        $member->setMiddleName($this->getMiddleName());
         $member->setLastName($this->getLastName());
         $member->setAddress($this->getAddress());
         $member->setCity($this->getCity());
@@ -120,6 +137,8 @@ class MembershipApplication {
         $member->setContributionPerPeriodInCents($this->getContributionPerPeriodInCents());
         $member->setContributionPeriod($this->getContributionPeriod());
         $member->setDivision($this->getPreferredDivision());
+        $member->setMollieCustomerId($this->getMollieCustomerId());
+        $member->setMollieSubscriptionId($mollieSubscriptionId);
         return $member;
     }
 
@@ -129,8 +148,18 @@ class MembershipApplication {
     public function getFirstName(): string { return $this->firstName; }
     public function setFirstName(string $firstName): void { $this->firstName = $firstName; }
 
+    public function getMiddleName(): string { return $this->middleName; }
+    public function setMiddleName(?string $middleName): void { $this->middleName = $middleName ? $middleName : ''; }
+
     public function getLastName(): string { return $this->lastName; }
     public function setLastName(string $lastName): void { $this->lastName = $lastName; }
+
+    public function getFullName(): string {
+        if ($this->middleName === '') {
+            return $this->firstName. ' ' . $this->lastName;
+        }
+        return $this->firstName . ' ' . $this->middleName . ' ' . $this->lastName;
+    }
 
     public function getAddress(): string { return $this->address; }
     public function setAddress(string $address): void { $this->address = $address; }
@@ -164,6 +193,12 @@ class MembershipApplication {
 
     public function getContributionPerPeriodInEuros(): float { return $this->contributionPerPeriodInCents / 100; }
     public function setContributionPerPeriodInEuros(float $contributionPerPeriodInEuros): void { $this->contributionPerPeriodInCents = round($contributionPerPeriodInEuros * 100); }
+
+    public function getMollieCustomerId(): ?string { return $this->mollieCustomerId; }
+    public function setMollieCustomerId(?string $mollieCustomerId): void { $this->mollieCustomerId = $mollieCustomerId; }
+
+    public function getPaid(): bool { return $this->paid; }
+    public function setPaid(bool $paid): void { $this->paid = $paid; }
 
     public function getPreferredDivision(): ?Division { return $this->preferredDivision; }
     public function setPreferredDivision(?Division $preferredDivision): void { $this->preferredDivision = $preferredDivision; }

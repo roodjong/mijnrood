@@ -1,15 +1,10 @@
 {% extends 'user/layout/members.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/members.less') }}" />
-{% endblock %}
-
 {% block content %}
     <div class="main-content">
-        <h1>Mijn <span class="rood">ROOD</span></h1>
+        <h1><span class="rood">{{ organisatienaam }}</span></h1>
         <p>
-            Dit is de interne website van ROOD, jong in de SP.
+            Dit is de interne website van {{ organisatienaam }}.
             Hier kun je je lidmaadschapsgegevens aanpassen, je contributie betalen, en relevante documenten raadplegen.
         </p>
 
@@ -26,7 +21,7 @@
                             - {{ event.timeEnd|format_date('medium') }}
                         {% endif %}
                     </span>
-                    <span class="event-division">Georganiseerd door {{ event.division is null ? 'ROOD Landelijk' : event.division.name }}</span>
+                    <span class="event-division">Georganiseerd door {{ event.division is null ? organisatienaam : event.division.name }}</span>
                     <span class="event-description">{{ event.description|raw }}</span>
                     {# <a href="{{ url('member_event') }}">Lees meer</a> #}
                 </div>

@@ -36,20 +36,6 @@ body {
         color: @rood;
     }
 
-    .error {
-        padding: 14px;
-        font-size: 16px;
-        background: #F3C3C6;
-        margin-bottom: 10px;
-
-        a {
-            display: block;
-            margin-top: 20px;
-            color: @rood;
-            text-decoration: none;
-        }
-    }
-
     .text-input {
         display: block;
         border: 1px solid #AEAEAE;
@@ -80,7 +66,7 @@ body {
         display: block;
         border: none;
         width: 100%;
-        margin: 42px 0;
+        margin: 30px 0;
     }
 
     .center-form-title {
@@ -93,14 +79,16 @@ body {
 
     label a { color: @rood }
 
-    @media @desktop {
-        .form-field-group {
-            display: flex;
-        }
+    .form-field-group {
+        display: flex;
+    }
+
+    .checkbox {
+        margin: 20px 0;
     }
 }
 
 .button {
     width: 100%;
-    margin: 42px 0;
+    margin: 32px 0;
 }

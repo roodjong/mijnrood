@@ -1,6 +1,4 @@
-@desktop:   ~"only screen and (min-width: 901px)";
-@tablet:    ~"only screen and (min-width: 601px) and (max-width: 900px)";
-@mobile:    ~"only screen and (max-width: 600px)";
+@mobile:    ~"only screen and (max-width: 900px)";
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -27,5 +25,34 @@ h1, h2, h3 {
 
     &:first-child {
         margin-top: 0;
+    }
+}
+
+.error {
+    padding: 14px;
+    font-size: 16px;
+    background: #F3C3C6;
+    margin-bottom: 10px;
+
+    a {
+        display: block;
+        margin-top: 20px;
+        color: @rood;
+        text-decoration: none;
+    }
+}
+
+.choices {
+    margin: 10px 0;
+
+    .choice {
+        display: flex;
+        align-items: baseline;
+        margin: 10px 0;
+        line-height: 1.5;
+
+        input {
+            margin-right: 10px;
+        }
     }
 }

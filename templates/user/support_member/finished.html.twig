@@ -2,25 +2,25 @@
 {% extends 'user/layout/base.html.twig' %}
 
 {% block stylesheets %}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/login.less') }}" />
+    {{ encore_entry_link_tags('login') }}
 {% endblock %}
 
 {% block body %}
     <div id="center-form-wrapper" class="big-form">
 
-        <img id="logo" src="{{ asset('assets/image/rood-sp.svg') }}" />
+        <img id="logo" src="{{ asset(orgLogo) }}" />
 
         <span class="center-form-title">
-            Steunlidmaatschap
+            {% trans %}Steunlidmaatschap{% endtrans %}
         </span>
 
         <p>
-            Je steunlidmaatschap is succesvol afgesloten.
-            De contributie zal in het vervolg automatisch van je bankrekening afgeschreven worden.
+            {% trans %}Je steunlidmaatschap is succesvol afgesloten.{% endtrans %}
+            {% trans %}De contributie zal in het vervolg automatisch van je bankrekening afgeschreven worden.{% endtrans %}
         </p>
 
         <p>
-            Mocht je de frequentie of hoogte van je contributie willen wijzigen, neem dan contact op met het bestuur van ROOD via <a href="mailto:info@roodjongindesp.nl">info@roodjongindesp.nl</a>.
+            {% trans %}Mocht je de frequentie of hoogte van je contributie willen wijzigen, neem dan contact op met het bestuur van ROOD via <a href="mailto:info@roodjongeren.nl">info@roodjongeren.nl</a>.{% endtrans %}
         </p>
     </div>
 {% endblock %}

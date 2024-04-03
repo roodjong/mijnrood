@@ -19,8 +19,8 @@ class DocumentsController extends AbstractController
         $folder = $this->getFolder($folderId);
 
         $repoFolders = $this->getDoctrine()->getRepository(DocumentFolder::class);
-        $folders = $repoFolders->findByParent($folder);
-        $documents = $this->getDoctrine()->getRepository(Document::class)->findByFolder($folder);
+        $folders = $repoFolders->findByParent($folder, ['name' => 'ASC']);
+        $documents = $this->getDoctrine()->getRepository(Document::class)->findByFolder($folder, ['name' => 'ASC']);
 
         $canCreateFolder = $canUpload = $canDelete = $this->isGranted('ROLE_ADMIN');
 
@@ -57,8 +57,10 @@ class DocumentsController extends AbstractController
         }
 
         $response = new Response();
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.urlencode($document->getFileName()).'"');
-        $response->headers->set('Content-Type', 'application/octet-stream');
+        if (!str_ends_with($document->getFileName(), '.html')) {
+            $response->headers->set('Content-Disposition', 'attachment; filename="'.urlencode($document->getFileName()).'"');
+            $response->headers->set('Content-Type', 'application/octet-stream');
+        }
         $response->setContent(file_get_contents($this->getParameter('documents_directory').'/'.$document->getUploadFileName()));
         return $response;
     }

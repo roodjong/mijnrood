@@ -1,9 +1,12 @@
 {
     "devDependencies": {
-        "@symfony/webpack-encore": "^0.31.0",
+        "@symfony/webpack-encore": "^3.0.0",
         "core-js": "^3.0.0",
+        "file-loader": "^6.0.0",
+        "fos-router": "./vendor/friendsofsymfony/jsrouting-bundle/Resources/",
         "regenerator-runtime": "^0.13.2",
-        "webpack-notifier": "^1.6.0"
+        "webpack-notifier": "^1.6.0",
+        "webpack": "^4.6.0"
     },
     "license": "UNLICENSED",
     "private": true,
@@ -14,6 +17,9 @@
         "build": "encore production --progress"
     },
     "dependencies": {
-        "less-loader": "6.2"
+        "fork-awesome": "^1.2.0",
+        "jquery": "^3.6.0",
+        "less": "^4.0.0",
+        "less-loader": "^12.2.0"
     }
 }

@@ -9,10 +9,12 @@ use App\Entity\Member;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Swift_Mailer;
-use Swift_Message;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+
 
 class SecurityController extends AbstractController
 {
@@ -44,7 +46,7 @@ class SecurityController extends AbstractController
     }
 
     /** @Route("/wachtwoord-opvragen", name="request_new_password") */
-    public function requestNewPassword(Request $request, AuthenticationUtils $authenticationUtils, Swift_Mailer $mailer): Response {
+    public function requestNewPassword(Request $request, AuthenticationUtils $authenticationUtils, MailerInterface $mailer): Response {
         $lastUsername = $authenticationUtils->getLastUsername();
 
         $form = $this->createFormBuilder()
@@ -52,7 +54,8 @@ class SecurityController extends AbstractController
             ->getForm([
                 'username' => $lastUsername
             ]);
-
+        $orgName = $this->getParameter('app.organizationName');
+        $noreply = $this->getParameter('app.noReplyAddress');
         $form->handleRequest($request);
         $success = false;
         if ($form->isSubmitted() && $form->isValid()) {
@@ -66,20 +69,18 @@ class SecurityController extends AbstractController
             ;
 
             if ($member !== null) {
-                $member->setNewPasswordToken(sha1($member->getEmail().time()));
+                $member->generateNewPasswordToken();
                 $this->getDoctrine()->getManager()->flush();
 
-                $message = (new Swift_Message())
-                    ->setSubject('Nieuw wachtwoord voor Mijn ROOD')
-                    ->setTo([$member->getEmail() => $member->getFirstName() .' '. $member->getLastName()])
-                    ->setFrom(['noreply@roodjongindesp.nl' => 'Mijn ROOD'])
-                    ->setBody(
-                        $this->renderView('email/html/request_new_password.html.twig', ['member' => $member]),
-                        'text/html'
+                $message = (new Email())
+                    ->subject('Aanvraag nieuw wachtwoord')
+                    ->to(new Address($member->getEmail(), $member->getFirstName() .' '. $member->getLastName()))
+                    ->from(new Address($noreply, $orgName))
+                    ->html(
+                        $this->renderView('email/html/request_new_password.html.twig', ['member' => $member])
                     )
-                    ->addPart(
-                        $this->renderView('email/text/request_new_password.txt.twig', ['member' => $member]),
-                        'text/plain'
+                    ->text(
+                        $this->renderView('email/text/request_new_password.txt.twig', ['member' => $member])
                     );
                 $mailer->send($message);
             }

@@ -16,13 +16,12 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet/less" type="text/css" href="{{ asset('assets/style/documents.less') }}" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous">
+    {{ encore_entry_link_tags('documents') }}
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/script/documents.js') }}"></script>
+    {{ encore_entry_script_tags('documents') }}
 {% endblock %}
 
 {% block content %}

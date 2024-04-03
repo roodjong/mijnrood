@@ -1,0 +1,15 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Betaling mislukt</h1>
+        <p>
+            Er is iets fout gegaan tijdens het betalen, waardoor we je betaling niet ontvangen hebben.
+        </p>
+
+        <div class="button-group">
+            <a href="{{ url('member_contribution_pay') }}" class="button">Nogmaals proberen</a>
+            <a href="{{ url('member_details') }}" class="button">Terug naar overzicht</a>
+        </div>
+    </div>
+{% endblock %}
