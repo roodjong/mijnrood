@@ -136,6 +136,8 @@
                 </p>
 
                 <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso stopzetten</a>
+                <a class="action-link" href="{{ url('member_contribution_preferences_change_bank_account') }}" class="button">Instellen met andere bankrekening</a>
+
             {% else %}
                 {# <p>
                     Je hebt aangegeven je contributie van <strong>{{ app.user.contributionPerPeriodInCents|format_price }}</strong> {{ { 0: 'maandelijks', 1: 'per kwartaal', 2: 'jaarlijks'}[app.user.contributionPeriod] }} te willen betalen.
