@@ -51,6 +51,14 @@ Go to `http://localhost:8080/` and you should be greeted by the MijnRood login p
 You can log in with `admindebaas@example.com` as email, and `admin` as password.
 Look at `src/DataFixtures/` to see an overview of all test data, including other accounts.
 
+## Extra configuration
+
+### Custom welcome mail
+
+To add a custom welcome email, put the two templates (html and plain text) in:
+
+`templates/custom/email/welcome.html.twig` and `templates/custom/email/welcome.html.txt`
+
 ## Contributing
 
 You can generate new migrations with:
