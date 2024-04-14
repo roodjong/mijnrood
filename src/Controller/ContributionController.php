@@ -15,6 +15,7 @@ use App\Entity\{ ContributionPayment, Member, ChosenContribution };
 use DateTime;
 use DateInterval;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Throwable;
 use Symfony\Component\Yaml\Yaml;
 
 class ContributionController extends AbstractController
@@ -38,6 +39,43 @@ class ContributionController extends AbstractController
         return $this->render('user/contribution/preferences.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/contribute-instellingen/verander-bankrekening", name="member_contribution_preferences_change_bank_account")
+     */
+    public function changeBankAccount(MollieApiClient $mollieApiClient): Response
+    {
+        /** @var Member */
+        $member = $this->getUser();
+
+        if ($member->getMollieCustomerId() !== null)
+        {
+            $customer = $mollieApiClient->customers->get($member->getMollieCustomerId());
+
+            if ($member->getMollieSubscriptionId() !== null)
+            {
+                $subscription = $mollieApiClient->subscriptions->getFor($customer, $member->getMollieSubscriptionId());
+                $subscription->cancel();
+                $member->setMollieSubscriptionId(null);
+                $this->getDoctrine()->getManager()->flush();
+            }
+
+            foreach ($customer->mandates()->getIterator() as $mandate)
+            {
+                try
+                {
+                    $mandate->revoke();
+                }
+                catch (Throwable $throwable)
+                {}
+            }
+        }
+
+        $member->setCreateSubscriptionAfterPayment(true);
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->redirectToRoute('member_contribution_pay');
     }
 
     /**
