@@ -57,7 +57,7 @@ Look at `src/DataFixtures/` to see an overview of all test data, including other
 
 To add a custom welcome email, put the two templates (html and plain text) in:
 
-`templates/custom/email/welcome.html.twig` and `templates/custom/email/welcome.html.txt`
+`templates/custom/email/html/welcome.html.twig` and `templates/custom/email/text/welcome.html.txt`
 
 ## Contributing
 
