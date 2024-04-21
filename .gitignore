@@ -19,3 +19,4 @@ node_modules
 public/assets
 public/bundles
 docker/mysql
+templates/custom
