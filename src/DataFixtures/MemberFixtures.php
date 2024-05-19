@@ -29,6 +29,7 @@ class MemberFixtures extends Fixture
         $divisionNooderhaaks = new Division();
         $divisionNooderhaaks->setName("Noorderhaaks");
         $divisionNooderhaaks->setPostCode("1234AB");
+        $divisionNooderhaaks->setCanBeSelectedOnApplication(true);
 
         $contactNooderhaaks = new Member();
         $contactNooderhaaks->setId(1338);
@@ -45,6 +46,7 @@ class MemberFixtures extends Fixture
         $divisionAchterhoek = new Division();
         $divisionAchterhoek->setName("Achterhoek");
         $divisionAchterhoek->setPostCode("4321BA");
+        $divisionAchterhoek->setCanBeSelectedOnApplication(true);
 
         $contactAchterhoek = new Member();
         $contactAchterhoek->setId(8673);

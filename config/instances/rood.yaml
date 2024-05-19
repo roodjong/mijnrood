@@ -8,3 +8,6 @@ contribution:
       description: €3500 bruto en daarboven
     - amount: null
       description: ik betaal een hogere contributie, namelijk:
+signup:
+  min_age: 14
+  max_age: 27

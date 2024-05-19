@@ -94,6 +94,8 @@ class MemberController extends AbstractController {
         $membershipApplication->setRegistrationTime(new \DateTime());
         $membershipApplication->setContributionPeriod(Member::PERIOD_QUARTERLY);
         $form = $this->createForm(MembershipApplicationType::class, $membershipApplication, [
+            'min_age' => $org_config['signup']['min_age'],
+            'max_age' => $org_config['signup']['max_age'],
             'use_middle_name' => $this->getParameter('app.useMiddleName'),
             'privacy_policy_url' => $this->getParameter('app.privacyPolicyUrl'),
             'organization_name' => $this->getParameter('app.organizationName'),

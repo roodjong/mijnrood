@@ -4,3 +4,6 @@ contribution:
       description: Studenten en werklozen
     - amount: null
       description: "Werkenden: 0,5% van het netto inkomen (minimaal €15 per kwartaal)"
+signup:
+  min_age: 16
+  max_age: null
