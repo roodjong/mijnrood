@@ -101,7 +101,7 @@
 
             {{ form_end(formPassword) }}
         </div>
-
+	{% if contributionEnabled %}
         <div class="contributions">
             <h1>Contributie</h1>
 
@@ -158,5 +158,6 @@
                 </tbody>
             </table>
         </div>
+	{% endif %}
     </div>
 {% endblock %}

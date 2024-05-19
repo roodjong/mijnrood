@@ -48,8 +48,35 @@ ID will be incremented because of auto-increment options in the database.
 
 Go to `http://localhost:8080/` and you should be greeted by the MijnRood login page.
 
-You can log in with `admindebaas@example.com` as email, and `admin` as password.
-Look at `src/DataFixtures/` to see an overview of all test data, including other accounts.
+## Local test login data:
+
+Admin level:
+- Name: `Admin de Baas`
+- E-mail: `admindebaas@example.com`
+- Password: `admin`
+
+Group head level:
+- Name: `Jan Jansen`
+- E-mail: `janjansen@example.com`
+- Password: `contact`
+- Member off: `Noorderhaaks`
+- Head off: `Noorderhaaks`
+
+Member level:
+- Name: `Henk de Vries`
+- E-mail: `henkdevries@example.com`
+- Password: `new_member`
+- Member off: `Nooderhaaks`
+
+## Server deployment
+
+To deploy updates on the server:
+```
+sudo -u deploy -i
+docker compose -f docker/prod/docker-compose.yml --env-file .env.local down
+git pull
+docker compose -f docker/prod/docker-compose.yml --env-file .env.local up --build -d
+```
 
 ## Extra configuration
 
