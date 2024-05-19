@@ -94,7 +94,6 @@ class Member implements UserInterface {
 
     /**
      * @ORM\ManyToMany(targetEntity="Division", inversedBy="contacts")
-     * @ORM\JoinTable(name="division_member")
      */
     private Collection $managed_divisions;
 
