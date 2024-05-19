@@ -217,7 +217,10 @@ class MemberController extends AbstractController {
                     $this->mailer->send($message);
                 }
 
-                if ($this->getParameter('app.sendFreshMemberEmailToDivisionEmail') && $membershipApplication->getPreferredDivision() !== null) {
+                if ($this->getParameter('app.sendFreshMemberEmailToDivisionEmail')
+                    && $membershipApplication->getPreferredDivision() !== null
+                    && $membershipApplication->getPreferredDivision()->getEmail() !== null
+                ) {
                     $division = $membershipApplication->getPreferredDivision();
                     $message = (new Email())
                         ->subject("Er is een nieuw lid die geaccepteerd kan worden")
