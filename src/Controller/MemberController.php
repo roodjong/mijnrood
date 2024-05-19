@@ -37,6 +37,7 @@ class MemberController extends AbstractController {
         $member = $this->getUser();
         $orgName = $this->getParameter('app.organizationName');
         $privacyPolicyUrl = $this->getParameter('app.privacyPolicyUrl');
+        $contributionEnabled = $this->getParameter('app.contributionEnabled');
         $form = $this->createFormBuilder($member)
             ->add('acceptUsePersonalInformation', null, [
                 'label' => "Ik ga ermee akkoord dat $orgName mijn persoonsgegevens opslaat in haar ledenadministratie, zoals beschreven in het <a href='$privacyPolicyUrl'>privacybeleid</a>.",
@@ -57,7 +58,8 @@ class MemberController extends AbstractController {
         }
 
         return $this->render('user/privacy-policy.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+	    'contributionEnabled' => $contributionEnabled,
         ]);
     }
 
@@ -69,6 +71,7 @@ class MemberController extends AbstractController {
         if (!$member->getAcceptUsePersonalInformation())
             return $this->memberAcceptPersonalDetails($request);
 
+        $contributionEnabled = $this->getParameter('app.contributionEnabled');
         $events = $this->getDoctrine()->getRepository(Event::class)->createQueryBuilder('e')
             ->where('e.division IS NULL or e.division = ?1')
             ->andWhere('e.timeEnd > ?2')
@@ -79,7 +82,8 @@ class MemberController extends AbstractController {
             ->getResult();
 
         return $this->render('user/home.html.twig', [
-            'events' => $events
+            'events' => $events,
+	    'contributionEnabled' => $contributionEnabled,
         ]);
     }
 
@@ -264,7 +268,7 @@ class MemberController extends AbstractController {
         $member = $this->getUser();
         if (!$member->getAcceptUsePersonalInformation())
             return $this->memberAcceptPersonalDetails($request);
-
+	$contributionEnabled = $this->getParameter('app.contributionEnabled');
         $form = $this->createForm(MemberDetailsType::class, $member);
         $revision = new MemberDetailsRevision($member, true);
         $success = false;
@@ -301,7 +305,8 @@ class MemberController extends AbstractController {
             'form' => $form->createView(),
             'formPassword' => $formPassword->createView(),
             'success' => $success,
-            'successPassword' => $successPassword
+            'successPassword' => $successPassword,
+            'contributionEnabled' => $contributionEnabled,
         ]);
     }
 

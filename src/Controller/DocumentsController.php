@@ -30,6 +30,7 @@ class DocumentsController extends AbstractController
             'choices' => $repoFolders->findAll(),
             'action' => $this->generateUrl('member_documents_move')
         ]);
+        $contributionEnabled = $this->getParameter('app.contributionEnabled');
 
         return $this->render('user/documents.html.twig', [
             'folders' => $folders,
@@ -43,7 +44,8 @@ class DocumentsController extends AbstractController
 
             'uploadForm' => $uploadForm->createView(),
             'newFolderForm' => $newFolderForm->createView(),
-            'moveForm' => $moveForm->createView()
+            'moveForm' => $moveForm->createView(),
+	    'contributionEnabled' => $contributionEnabled,
         ]);
     }
 
@@ -93,7 +95,8 @@ class DocumentsController extends AbstractController
                 return $this->json(['status' => 'success', 'id' => $newFolder->getId()]);
             }
 
-            return $this->redirectToRoute('member_documents', ['folderId' => $newFolder->getId()]);
+            $contributionEnabled = $this->getParameter('app.contributionEnabled');
+            return $this->redirectToRoute('member_documents', ['folderId' => $newFolder->getId(), 'contributionEnabled' => $contributionEnabled]);
         }
 
         throw $this->createNotFoundException();
@@ -157,8 +160,10 @@ class DocumentsController extends AbstractController
                 ]);
             }
 
+            $contributionEnabled = $this->getParameter('app.contributionEnabled');
             return $this->redirectToRoute('member_documents', [
-                'folderId' => $folder ? $folder->getId() : ''
+                'folderId' => $folder ? $folder->getId() : '',
+		'contributionEnabled' => $contributionEnabled,
             ]);
         }
 
