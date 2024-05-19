@@ -124,7 +124,7 @@ class SupportMemberController extends AbstractController
                     }
 
                     $retryUrl = $this->generateUrl('support_member_retry', [
-                        'customerId' => $customerId, '_locale' => $request->locale
+                        'customerId' => $customerId, '_locale' => $request->getLocale()
                     ]);
 
                     return $this->render('user/support_member/failed.html.twig', [
@@ -153,7 +153,7 @@ class SupportMemberController extends AbstractController
         if ($supportMembershipApplication === null)
         {
             return $this->redirectToRoute('support_member_redirect', [
-                'customerId' => $customerId, '_locale' => $request->locale
+                'customerId' => $customerId, '_locale' => $request->getLocale()
             ]);
         }
         else
@@ -216,16 +216,22 @@ class SupportMemberController extends AbstractController
             $em->flush();
             $noReplyMail = $this->getParameter('app.noReplyAddress');
 
+            $templatePrefix = '';
+
+            if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
+                $templatePrefix = 'custom/';
+            }
+
             // Send confirmation email
             $message = (new Email())
                 ->subject($translator->trans('Welkom als steunlid bij ROOD, Socialistische Jongeren'))
                 ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
                 ->from(new Address($noReplyMail, 'ROOD, Socialistische Jongeren'))
                 ->html(
-                    $this->renderView('email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
+                    $this->renderView($templatePrefix . 'email/html/welcome_support-' . $request->getLocale() . '.html.twig', ['supportMember' => $supportMember])
                 )
                 ->text(
-                    $this->renderView('email/text/welcome_support-' . $request->locale . '.txt.twig', ['supportMember' => $supportMember])
+                    $this->renderView($templatePrefix . 'email/text/welcome_support-' . $request->getLocale() . '.txt.twig', ['supportMember' => $supportMember])
                 );
             $mailer->send($message);
 

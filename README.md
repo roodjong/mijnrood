@@ -82,9 +82,11 @@ docker compose -f docker/prod/docker-compose.yml --env-file .env.local up --buil
 
 ### Custom welcome mail
 
-To add a custom welcome email, put the two templates (html and plain text) in:
-
-`templates/custom/email/html/welcome.html.twig` and `templates/custom/email/text/welcome.html.txt`
+To add a custom welcome email, put the templates (html and plain text) in `templates/custom/email`.
+Supported override templates are:
+- `welcome.html.twig`, `welcome.html.txt.twig`
+- `welcome_support-en.html.twig`, `welcome_support-en.txt.twig`
+- `welcome_support-nl.html.twig`, `welcome_support-nl.txt.twig`
 
 ## Contributing
 
