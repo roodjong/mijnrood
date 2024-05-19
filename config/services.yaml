@@ -12,7 +12,6 @@ parameters:
     app.homepageUrl: '%env(HOMEPAGE)%'
     app.orgLogo: '%env(ORG_LOGO)%'
     app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
-    app.listmonkUrl: '%env(string:LISTMONK_URL)%'
     app.useMiddleName: '%env(bool:USE_MIDDLE_NAME)%'
     app.contributionEnabled: '%env(bool:CONTRIBUTION_ENABLED)%'
     router.request_context.scheme: '%env(SECURE_SCHEME)%'

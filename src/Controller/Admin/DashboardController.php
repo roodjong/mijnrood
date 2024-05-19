@@ -49,10 +49,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        $listmonkUrl = $this->getParameter('app.listmonkUrl');
-        $listmonkItem = $listmonkUrl ? [MenuItem::linkToUrl('Listmonk', 'fa fa-mail-bulk', $listmonkUrl)->setPermission('ROLE_ADMIN')] : [];
-
-        return array_merge([
+        return [
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
             MenuItem::section('Website')->setPermission('ROLE_ADMIN'),
@@ -68,11 +65,10 @@ class DashboardController extends AbstractDashboardController
             MenuItem::section('Technisch')->setPermission('ROLE_ADMIN'),
             MenuItem::linkToCrud('E-mailadressen', 'fa fa-at', Email::class)->setPermission('ROLE_ADMIN'),
             MenuItem::linkToCrud('E-maildomeinen', 'fa fa-globe', EmailDomain::class)->setPermission('ROLE_ADMIN'),
-        ], $listmonkItem, [
             MenuItem::section(''),
             MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
             MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics')->setPermission('ROLE_ADMIN'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
-        ]);
+        ];
     }
 }
