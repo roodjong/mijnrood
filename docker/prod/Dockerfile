@@ -20,11 +20,11 @@ COPY config /var/www/project/config
 COPY src /var/www/project/src
 COPY composer.json composer.lock symfony.lock .env /var/www/project/
 RUN mkdir /var/www/project/public
-RUN composer install
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install
 
 RUN bin/console assets:install public
 
-FROM node:18.8.0 as node_builder
+FROM node:20.12.2 as node_builder
 
 COPY package.json yarn.lock ./
 COPY --from=php_builder /var/www/project/vendor ./vendor
@@ -33,7 +33,7 @@ COPY assets ./assets
 COPY webpack.config.js ./
 RUN npm run build
 
-FROM php:8.1-fpm as mijnrood_php
+FROM php:8.2-fpm as mijnrood_php
 
 RUN apt-get update && apt-get install -y zlib1g-dev g++ git libicu-dev zip libzip-dev libgd3 libgd-dev zip \
     && docker-php-ext-install intl opcache pdo pdo_mysql \
