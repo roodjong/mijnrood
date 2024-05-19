@@ -187,8 +187,9 @@ class MemberController extends AbstractController {
                 $memberFullName = $membershipApplication->getFullName();
                 $memberFirstName = $membershipApplication->getFirstName();
 
-                $emailSender = $this->getParameter('app.noReplyAddress');
-                $organizationName = $this->getParameter('app.organizationEmail');
+                $noreplySender = $this->getParameter('app.noReplyAddress');
+                $emailSender = $this->getParameter('app.organizationEmail');
+                $organizationName = $this->getParameter('app.organizationName');
                 $message = (new Email())
                     ->subject("Bedankt voor je aanmelding bij $organizationName!")
                     ->to(new Address($memberEmail, $memberFullName))
@@ -200,6 +201,30 @@ class MemberController extends AbstractController {
                         $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['memberFirstName' => $memberFirstName])
                     );
                 $this->mailer->send($message);
+
+                if ($this->getParameter('app.sendFreshMemberEmailToBoard')) {
+                    $message = (new Email())
+                        ->subject("Er is een nieuw lid die geaccepteerd kan worden")
+                        ->to(new Address($emailSender, $organizationName))
+                        ->from(new Address($noreplySender, "De website"))
+                        ->text(
+                            $this->renderView($templatePrefix . 'email/text/fresh_member.txt.twig', ['memberFullName' => $memberFullName, 'memberEmail' => $memberEmail])
+                        );
+                    $this->mailer->send($message);
+                }
+
+                if ($this->getParameter('app.sendFreshMemberEmailToContactPeople') && $membershipApplication->getPreferredDivision() !== null) {
+                    $division = $membershipApplication->getPreferredDivision();
+                    $message = (new Email())
+                        ->subject("Er is een nieuw lid die geaccepteerd kan worden")
+                        ->to(new Address($division->getEmail(), $division->getName()))
+                        ->from(new Address($noreplySender, "De website"))
+                        ->text(
+                            $this->renderView($templatePrefix . 'email/text/fresh_member.txt.twig', ['memberFullName' => $memberFullName, 'memberEmail' => $memberEmail])
+                        );
+                    $this->mailer->send($message);
+                }
+
                 $membershipApplication->setHasSentInitialEmail(true);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($membershipApplication);
