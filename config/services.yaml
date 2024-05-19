@@ -16,7 +16,7 @@ parameters:
     app.listmonkUrl: '%env(string:LISTMONK_URL)%'
     app.useMiddleName: '%env(bool:USE_MIDDLE_NAME)%'
     app.sendFreshMemberEmailToBoard: '%env(bool:SEND_FRESH_MEMBER_EMAIL_TO_BOARD)%'
-    app.sendFreshMemberEmailToContactPeople: '%env(bool:SEND_FRESH_MEMBER_EMAIL_TO_CONTACT_PEOPLE)%'
+    app.sendFreshMemberEmailToDivisionEmail: '%env(bool:SEND_FRESH_MEMBER_EMAIL_TO_DIVISION_EMAIL)%'
     app.contributionEnabled: '%env(bool:CONTRIBUTION_ENABLED)%'
     router.request_context.scheme: '%env(SECURE_SCHEME)%'
     asset.request_context.secure: true
