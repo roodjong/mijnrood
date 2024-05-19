@@ -25,14 +25,31 @@ class MembershipApplicationType extends AbstractType
         $builder
             ->add('lastName', null, ['label' => 'Achternaam', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('email', null, ['label' => 'E-mailadres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
-            ->add('phone', null, ['label' => 'Telefoonnummer', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
+            ->add('phone', null, ['label' => 'Telefoonnummer', 'error_bubbling' => true, 'constraints' => [new NotBlank()]]);
+
+        if ($options['max_age']) {
+            $age_constraint = new Age([
+                'min' => $options['min_age'],
+                'max' => $options['max_age'],
+                'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van ' . $options['organization_name'] . '.'
+            ]);
+        } else {
+            $age_constraint = new Age([
+                'min' => $options['min_age'],
+                'message' => 'Je moet minimaal {{ min }} jaar oud zijn om lid te worden van ' . $options['organization_name'] . '.'
+            ]);
+        }
+
+        $builder
             ->add('dateOfBirth', null, [
                 'label' => 'Geboortedatum',
                 'required' => true,
                 'widget' => 'single_text',
-                'constraints' => [new NotBlank(), new Age(['min' => 14, 'max' => 27, 'message' => 'Je moet tussen de {{ min }} en {{ max }} jaar oud zijn om lid te worden van ROOD.'])],
+                'constraints' => [new NotBlank(), $age_constraint],
                 'error_bubbling' => true
-            ])
+            ]);
+
+        $builder
             // ->add('iban', null, ['label' => 'IBAN-rekeningnummer', 'error_bubbling' => true])
             ->add('address', null, ['label' => 'Adres', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
             ->add('city', null, ['label' => 'Plaats', 'error_bubbling' => true, 'constraints' => [new NotBlank()]])
@@ -82,6 +99,14 @@ class MembershipApplicationType extends AbstractType
 
         $resolver->setRequired([
             'contribution'
+        ]);
+
+        $resolver->setRequired([
+            'min_age'
+        ]);
+
+        $resolver->setRequired([
+            'max_age'
         ]);
     }
 }
