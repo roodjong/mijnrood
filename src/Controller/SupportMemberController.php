@@ -124,7 +124,7 @@ class SupportMemberController extends AbstractController
                     }
 
                     $retryUrl = $this->generateUrl('support_member_retry', [
-                        'customerId' => $customerId, '_locale' => $request->locale
+                        'customerId' => $customerId, '_locale' => $request->getLocale()
                     ]);
 
                     return $this->render('user/support_member/failed.html.twig', [
@@ -153,7 +153,7 @@ class SupportMemberController extends AbstractController
         if ($supportMembershipApplication === null)
         {
             return $this->redirectToRoute('support_member_redirect', [
-                'customerId' => $customerId, '_locale' => $request->locale
+                'customerId' => $customerId, '_locale' => $request->getLocale()
             ]);
         }
         else
@@ -228,10 +228,10 @@ class SupportMemberController extends AbstractController
                 ->to(new Address($supportMember->getEmail(), $supportMember->getFirstName() .' '. $supportMember->getLastName()))
                 ->from(new Address($noReplyMail, 'ROOD, Socialistische Jongeren'))
                 ->html(
-                    $this->renderView($templatePrefix . 'email/html/welcome_support-' . $request->locale . '.html.twig', ['supportMember' => $supportMember])
+                    $this->renderView($templatePrefix . 'email/html/welcome_support-' . $request->getLocale() . '.html.twig', ['supportMember' => $supportMember])
                 )
                 ->text(
-                    $this->renderView($templatePrefix . 'email/text/welcome_support-' . $request->locale . '.txt.twig', ['supportMember' => $supportMember])
+                    $this->renderView($templatePrefix . 'email/text/welcome_support-' . $request->getLocale() . '.txt.twig', ['supportMember' => $supportMember])
                 );
             $mailer->send($message);
 
