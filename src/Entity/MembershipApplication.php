@@ -112,6 +112,11 @@ class MembershipApplication {
      */
     private ?bool $paid = false;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    private bool $hasSentInitialEmail = false;
+
     public function __construct() {
         $this->registrationTime = new DateTime();
     }
@@ -209,5 +214,8 @@ class MembershipApplication {
             throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
         $this->contributionPeriod = $contributionPeriod;
     }
+
+    public function getHasSentInitialEmail(): bool { return $this->hasSentInitialEmail; }
+    public function setHasSentInitialEmail(bool $hasSentInitialEmail): void { $this->hasSentInitialEmail = $hasSentInitialEmail; }
 
 }

@@ -1,0 +1,16 @@
+{% extends 'email/text/layout.txt.twig' %}
+{% block content %}
+Hoi bestuur of lokaal bestuur,
+
+Er heeft net een lid zich aangemeld op de website. Je kan dit lid nu goedkeuren of weigeren op de website.
+
+Dit is de informatie van het nieuwe lid:
+
+{{ memberFullName }}
+{{ memberEmail }}
+
+Kameraadschappelijke groet,
+
+de website
+
+{% endblock %}

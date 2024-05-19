@@ -128,11 +128,11 @@ class MembershipApplicationCrud extends AbstractCrudController
         $em->remove($application);
         $em->flush();
 
-	$templatePrefix = '';
+        $templatePrefix = '';
 
-	if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
-	    $templatePrefix = 'custom/';
-	}
+        if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
+            $templatePrefix = 'custom/';
+        }
 
         $message = (new Email())
             ->subject("Welkom bij $organizationName!")
@@ -156,12 +156,12 @@ class MembershipApplicationCrud extends AbstractCrudController
                     ->to(new Address($contact->getEmail(), $contact->getFullName()))
                     ->from(new Address($noreply, $organizationName))
                     ->html(
-                        $this->renderView('email/html/contact_new_member.html.twig', [
+                        $this->renderView($templatePrefix . 'email/html/contact_new_member.html.twig', [
                             'member' => $member,
                         ]),
                     )
                     ->text(
-                        $this->renderView('email/text/contact_new_member.txt.twig', [
+                        $this->renderView($templatePrefix . 'email/text/contact_new_member.txt.twig', [
                             'member' => $member,
                         ]),
                     );
