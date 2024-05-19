@@ -93,6 +93,12 @@ class Member implements UserInterface {
     private ?Division $division = null;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Division", inversedBy="contacts")
+     * @ORM\JoinTable(name="division_member")
+     */
+    private Collection $managed_divisions;
+
+    /**
      * @ORM\Column(type="date", nullable=true)
      */
     private ?DateTime $registrationTime = null;
@@ -228,6 +234,8 @@ class Member implements UserInterface {
 
     public function getDivision(): ?Division { return $this->division; }
     public function setDivision(?Division $division): void { $this->division = $division; }
+
+    public function getManagedDivisions(): Collection { return $this->managed_divisions; }
 
     public function getRegistrationTime(): ?DateTime { return $this->registrationTime; }
     public function setRegistrationTime(?DateTime $registrationTime): void { $this->registrationTime = $registrationTime; }
