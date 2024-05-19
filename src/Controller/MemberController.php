@@ -166,6 +166,7 @@ class MemberController extends AbstractController {
     public function handleRedirect(Request $request, string $customerId): Response
     {
         $membershipApplicationRepository = $this->getDoctrine()->getRepository(MembershipApplication::class);
+        /** @var MembershipApplication $membershipApplication */
         $membershipApplication = $membershipApplicationRepository->findOneByMollieCustomerId($customerId);
 
         if ($membershipApplication !== null && $membershipApplication->getPaid())
@@ -181,19 +182,21 @@ class MemberController extends AbstractController {
                 $templatePrefix = 'custom/';
             }
 
-            $member = $this->getUser();
+            $memberEmail = $membershipApplication->getEmail();
+            $memberFullName = $membershipApplication->getFullName();
+            $memberFirstName = $membershipApplication->getFirstName();
 
             $emailSender = $this->getParameter('app.noReplyAddress');
             $organizationName = $this->getParameter('app.organizationEmail');
             $message = (new Email())
                 ->subject("Bedankt voor je aanmelding bij $organizationName!")
-                ->to(new Address($member->getEmail(), $member->getFullName()))
+                ->to(new Address($memberEmail, $memberFullName))
                 ->from(new Address($emailSender, $organizationName))
                 ->html(
-                    $this->renderView($templatePrefix . 'email/html/apply.html.twig', ['member' => $member])
+                    $this->renderView($templatePrefix . 'email/html/apply.html.twig', ['memberFirstName' => $memberFirstName])
                 )
                 ->text(
-                    $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['member' => $member])
+                    $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['memberFirstName' => $memberFirstName])
                 );
             $this->mailer->send($message);
 
