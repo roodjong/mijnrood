@@ -176,29 +176,35 @@ class MemberController extends AbstractController {
                 return $this->json(['success' => true]);
             }
 
-            $templatePrefix = '';
+            if (!$membershipApplication->getHasSentInitialEmail()) {
+                $templatePrefix = '';
 
-            if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
-                $templatePrefix = 'custom/';
+                if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
+                    $templatePrefix = 'custom/';
+                }
+
+                $memberEmail = $membershipApplication->getEmail();
+                $memberFullName = $membershipApplication->getFullName();
+                $memberFirstName = $membershipApplication->getFirstName();
+
+                $emailSender = $this->getParameter('app.noReplyAddress');
+                $organizationName = $this->getParameter('app.organizationEmail');
+                $message = (new Email())
+                    ->subject("Bedankt voor je aanmelding bij $organizationName!")
+                    ->to(new Address($memberEmail, $memberFullName))
+                    ->from(new Address($emailSender, $organizationName))
+                    ->html(
+                        $this->renderView($templatePrefix . 'email/html/apply.html.twig', ['memberFirstName' => $memberFirstName])
+                    )
+                    ->text(
+                        $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['memberFirstName' => $memberFirstName])
+                    );
+                $this->mailer->send($message);
+                $membershipApplication->setHasSentInitialEmail(true);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($membershipApplication);
+                $em->flush();
             }
-
-            $memberEmail = $membershipApplication->getEmail();
-            $memberFullName = $membershipApplication->getFullName();
-            $memberFirstName = $membershipApplication->getFirstName();
-
-            $emailSender = $this->getParameter('app.noReplyAddress');
-            $organizationName = $this->getParameter('app.organizationEmail');
-            $message = (new Email())
-                ->subject("Bedankt voor je aanmelding bij $organizationName!")
-                ->to(new Address($memberEmail, $memberFullName))
-                ->from(new Address($emailSender, $organizationName))
-                ->html(
-                    $this->renderView($templatePrefix . 'email/html/apply.html.twig', ['memberFirstName' => $memberFirstName])
-                )
-                ->text(
-                    $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['memberFirstName' => $memberFirstName])
-                );
-            $this->mailer->send($message);
 
             return $this->render('user/member/finished.html.twig');
         }
