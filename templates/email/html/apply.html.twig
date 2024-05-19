@@ -1,0 +1,15 @@
+{% extends 'email/html/layout.html.twig' %}
+{% block content %}
+    <p>
+        Beste {{ member.firstName }},
+    </p>
+    <p>
+Bedankt voor het aanmelden bij {{ organisatienaam }}. De afdeling zal je aanmelding verwerken waarna u nog een bevestigingsmail zult ontvangen.
+    </p>
+    <p>
+        Kameraadschappelijke groet,
+    </p>
+    <p>
+        {{ organisatienaam }}
+    </p>
+{% endblock %}

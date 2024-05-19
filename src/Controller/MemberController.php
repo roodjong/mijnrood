@@ -13,6 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Form\Extension\Core\Type\{ PasswordType, RepeatedType };
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -28,8 +31,9 @@ class MemberController extends AbstractController {
 
     private MollieApiClient $mollieApiClient;
 
-    public function __construct(MollieApiClient $mollieApiClient)
+    public function __construct(MailerInterface $mailer, MollieApiClient $mollieApiClient)
     {
+        $this->mailer = $mailer;
         $this->mollieApiClient = $mollieApiClient;
     }
 
@@ -170,6 +174,28 @@ class MemberController extends AbstractController {
             {
                 return $this->json(['success' => true]);
             }
+
+            $templatePrefix = '';
+
+            if (is_dir($this->getParameter('kernel.project_dir') . '/templates/custom')) {
+                $templatePrefix = 'custom/';
+            }
+
+            $member = $this->getUser();
+
+            $emailSender = $this->getParameter('app.noReplyAddress');
+            $organizationName = $this->getParameter('app.organizationEmail');
+            $message = (new Email())
+                ->subject("Bedankt voor je aanmelding bij $organizationName!")
+                ->to(new Address($member->getEmail(), $member->getFullName()))
+                ->from(new Address($emailSender, $organizationName))
+                ->html(
+                    $this->renderView($templatePrefix . 'email/html/apply.html.twig', ['member' => $member])
+                )
+                ->text(
+                    $this->renderView($templatePrefix . 'email/text/apply.txt.twig', ['member' => $member])
+                );
+            $this->mailer->send($message);
 
             return $this->render('user/member/finished.html.twig');
         }

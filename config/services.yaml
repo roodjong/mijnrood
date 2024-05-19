@@ -9,6 +9,7 @@ parameters:
     app.organizationName: '%env(ORGANIZATION_NAME)%'
     app.organizationID: '%env(ORGANIZATION_ID)%'
     app.noReplyAddress: '%env(NOREPLY_ADDRESS)%'
+    app.organizationEmail: '%env(ORGANIZATION_EMAIL)%'
     app.homepageUrl: '%env(HOMEPAGE)%'
     app.orgLogo: '%env(ORG_LOGO)%'
     app.privacyPolicyUrl: '%env(PRIVACY_POLICY_URL)%'
