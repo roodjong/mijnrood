@@ -32,11 +32,11 @@ class MemberCrud extends AbstractCrudController
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
-            return $response;
+
+        if (!in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            $response->andWhere('entity.division IN (:division)')->setParameter('division', $this->getUser()->getManagedDivisions());
         }
-        $division = $this->getUser()->getDivision();
-        $response->andWhere('entity.division = :division')->setParameter('division', $division);
+
         return $response;
     }
 
@@ -104,7 +104,15 @@ class MemberCrud extends AbstractCrudController
             $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
         }
         else {
-            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $this->getUser()->getDivision()]);
+            // Just using the division objects should work, but for some reason
+            // it gave an error that the PersistentCollection could not be cast
+            // to int. So just collecting the id's first fixes this.
+            $divisions = [];
+            foreach ($this->getUser()->getManagedDivisions() as $division) {
+                $divisions[] = $division->getId();
+            }
+
+            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $divisions]);
         }
 
         $i = 2;
@@ -187,7 +195,11 @@ class MemberCrud extends AbstractCrudController
 
         if ($isAdmin) {
             $fields[] = AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype');
-            $fields[] = AssociationField::new('division', 'Afdeling');
+        }
+
+        $fields[] = AssociationField::new('division', 'Afdeling');
+
+        if ($isAdmin) {
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
                 ->hideOnIndex();
         }

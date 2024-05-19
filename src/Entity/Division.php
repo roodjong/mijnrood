@@ -25,7 +25,7 @@ class Division {
     private string $name = '';
 
     /**
-     * @ORM\ManyToMany(targetEntity="Member")
+     * @ORM\ManyToMany(targetEntity="Member", inversedBy="managed_divisions")
      * @ORM\JoinTable(name="division_member")
      */
     private Collection $contacts;
