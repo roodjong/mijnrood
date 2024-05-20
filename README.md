@@ -87,6 +87,9 @@ Supported override templates are:
 - `welcome.html.twig`, `welcome.html.txt.twig`
 - `welcome_support-en.html.twig`, `welcome_support-en.txt.twig`
 - `welcome_support-nl.html.twig`, `welcome_support-nl.txt.twig`
+- `apply.html.twig`, `apply.txt.twig`
+- `fresh_member.txt.twig`
+- `contact_new_member.html.twig`, `contact_new_member.txt.twig`
 
 ## Contributing
 
