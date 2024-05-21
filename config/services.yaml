@@ -17,6 +17,7 @@ parameters:
     app.sendFreshMemberEmailToBoard: '%env(bool:SEND_FRESH_MEMBER_EMAIL_TO_BOARD)%'
     app.sendFreshMemberEmailToDivisionEmail: '%env(bool:SEND_FRESH_MEMBER_EMAIL_TO_DIVISION_EMAIL)%'
     app.contributionEnabled: '%env(bool:CONTRIBUTION_ENABLED)%'
+    app.enableDivisionContactsCanApproveNewMembers: '%env(bool:ENABLE_DIVISION_CONTACTS_CAN_APPROVE_NEW_MEMBERS)%'
     router.request_context.scheme: '%env(SECURE_SCHEME)%'
     asset.request_context.secure: true
 

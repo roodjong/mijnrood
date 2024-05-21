@@ -56,11 +56,19 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $crud
             ->setEntityLabelInSingular('aanmelding')
             ->setEntityLabelInPlural('Lidmaatschapsaanmeldingen')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
         ;
+
+        if ($this->getParameter('app.enableDivisionContactsCanApproveNewMembers')) {
+            $crud->setEntityPermission('ROLE_DIVISION_CONTACT');
+        } else {
+            $crud->setEntityPermission('ROLE_ADMIN');
+        }
+
+        return $crud;
     }
 
     public function configureActions(Actions $actions): Actions

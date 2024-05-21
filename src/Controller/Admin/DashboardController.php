@@ -49,7 +49,7 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        return [
+        $items = [
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
             MenuItem::section('Website')->setPermission('ROLE_ADMIN'),
@@ -58,7 +58,15 @@ class DashboardController extends AbstractDashboardController
             MenuItem::section('Administratie'),
             MenuItem::linkToCrud('Leden', 'fa fa-users', Member::class),
             MenuItem::linkToCrud('Steunleden', 'fa fa-users', SupportMember::class)->setPermission('ROLE_ADMIN'),
-            MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class),
+        ];
+
+        $membership_applications = MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class);
+        if (!$this->getParameter('app.enableDivisionContactsCanApproveNewMembers')) {
+            $membership_applications->setPermission('ROLE_ADMIN');
+        }
+
+        array_push($items,
+            $membership_applications,
             MenuItem::linkToCrud('Groepen', 'fa fa-building', Division::class)->setPermission('ROLE_ADMIN'),
             MenuItem::linkToCrud('Lidmaatschapstypes', 'fa fa-building', MembershipStatus::class)->setPermission('ROLE_ADMIN'),
 
@@ -69,6 +77,8 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToRoute('Home', 'fa fa-arrow-left', 'member_home'),
             MenuItem::linkToRoute('Statistieken', 'fa fa-bar-chart', 'admin_statistics')->setPermission('ROLE_ADMIN'),
             MenuItem::linkToLogout('Uitloggen', 'fa fa-lock')
-        ];
+        );
+
+        return $items;
     }
 }

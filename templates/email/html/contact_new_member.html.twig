@@ -1,7 +1,7 @@
 {% extends 'email/html/layout.html.twig' %}
 {% block content %}
 <p>
-    Beste {{ contact.getFullName }},
+    Beste {{ contact.getFirstName }},
 </p>
 <p>
     Onlangs heeft een nieuw lid zich aangemeld bij {{ organisatienaam }}: {{ member.getFullName }}.
