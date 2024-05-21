@@ -58,7 +58,7 @@ class DashboardController extends AbstractDashboardController
             MenuItem::section('Administratie'),
             MenuItem::linkToCrud('Leden', 'fa fa-users', Member::class),
             MenuItem::linkToCrud('Steunleden', 'fa fa-users', SupportMember::class)->setPermission('ROLE_ADMIN'),
-            MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class)->setPermission('ROLE_ADMIN'),
+            MenuItem::linkToCrud('Aanmeldingen', 'fa fa-user-plus', MembershipApplication::class),
             MenuItem::linkToCrud('Groepen', 'fa fa-building', Division::class)->setPermission('ROLE_ADMIN'),
             MenuItem::linkToCrud('Lidmaatschapstypes', 'fa fa-building', MembershipStatus::class)->setPermission('ROLE_ADMIN'),
 
