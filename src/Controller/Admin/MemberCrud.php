@@ -93,6 +93,7 @@ class MemberCrud extends AbstractCrudController
         $sheet->setCellValue('Q1', 'Mollie CID');
         $sheet->setCellValue('R1', 'Mollie SID');
         $sheet->setCellValue('S1', 'Privacybeleid geaccepteerd');
+        $sheet->setCellValue('T1', 'Lidmaatschapstype');
 
         $contributionPeriodNames = [
             Member::PERIOD_MONTHLY => 'Maandelijks',
@@ -146,6 +147,7 @@ class MemberCrud extends AbstractCrudController
             $sheet->setCellValue('Q'. $i, $member->getMollieCustomerId());
             $sheet->setCellValue('R'. $i, $member->getMollieSubscriptionId());
             $sheet->setCellValue('S'. $i, $member->getAcceptUsePersonalInformation() ? 'Ja' : 'Nee');
+            $sheet->setCellValue('T'. $i, $member->getCurrentMembershipStatus() ? $member->getCurrentMembershipStatus()->getName() : '');
 
             $i++;
         }
@@ -191,13 +193,9 @@ class MemberCrud extends AbstractCrudController
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
             TextField::new('comments', 'Extra informatie'),
+            AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype'),
+            AssociationField::new('division', 'Afdeling')
         );
-
-        if ($isAdmin) {
-            $fields[] = AssociationField::new('currentMembershipStatus', 'Lidmaatschapstype');
-        }
-
-        $fields[] = AssociationField::new('division', 'Afdeling');
 
         if ($isAdmin) {
             $fields[] = BooleanField::new('isAdmin', 'Toegang tot administratie')
