@@ -93,7 +93,7 @@ class Member implements UserInterface {
     private ?Division $division = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Division", inversedBy="contacts")
+     * @ORM\ManyToMany(targetEntity="Division", mappedBy="contacts")
      */
     private Collection $managed_divisions;
 
