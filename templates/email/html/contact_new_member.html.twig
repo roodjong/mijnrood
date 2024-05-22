@@ -1,8 +1,7 @@
 {% extends 'email/html/layout.html.twig' %}
-{% set url = url('division', { division: member.division.name }) %}
 {% block content %}
 <p>
-    Beste {{ member.division.contact.firstName }} {{ member.division.contact.lastName }},
+    Beste {{ contact.getFirstName }},
 </p>
 <p>
     Onlangs heeft een nieuw lid zich aangemeld bij {{ organisatienaam }}: {{ member.getFullName }}.
@@ -10,8 +9,7 @@
     zich graag aan te sluiten bij de groep {{ member.division.name }}.
 </p>
 <p>
-    Hun gegevens zijn toegevoegd aan het ledenoverzicht in het ledenadministratiesysteem. Klik op de onderstaande link om het te openen.
-    <a href="{{ url }}">{{ url }}</a>
+    Hun gegevens zijn toegevoegd aan het ledenoverzicht in het ledenadministratiesysteem.
 </p>
 <p>
     Kameraadschappelijke groet,

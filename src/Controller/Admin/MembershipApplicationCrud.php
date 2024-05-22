@@ -40,11 +40,11 @@ class MembershipApplicationCrud extends AbstractCrudController
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $response = $this->get(EntityRepository::class)->createQueryBuilder($searchDto, $entityDto, $fields, $filters);
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
-            return $response;
+
+        if (!in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
+            $response->andWhere('entity.preferredDivision IN (:division)')->setParameter('division', $this->getUser()->getManagedDivisions());
         }
-        $division = $this->getUser()->getDivision();
-        $response->andWhere('entity.preferredDivision = :division')->setParameter('division', $division);
+
         return $response;
     }
 
@@ -56,11 +56,19 @@ class MembershipApplicationCrud extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        $crud
             ->setEntityLabelInSingular('aanmelding')
             ->setEntityLabelInPlural('Lidmaatschapsaanmeldingen')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
         ;
+
+        if ($this->getParameter('app.enableDivisionContactsCanApproveNewMembers')) {
+            $crud->setEntityPermission('ROLE_DIVISION_CONTACT');
+        } else {
+            $crud->setEntityPermission('ROLE_ADMIN');
+        }
+
+        return $crud;
     }
 
     public function configureActions(Actions $actions): Actions
@@ -157,11 +165,13 @@ class MembershipApplicationCrud extends AbstractCrudController
                     ->from(new Address($noreply, $organizationName))
                     ->html(
                         $this->renderView($templatePrefix . 'email/html/contact_new_member.html.twig', [
+                            'contact' => $contact,
                             'member' => $member,
                         ]),
                     )
                     ->text(
                         $this->renderView($templatePrefix . 'email/text/contact_new_member.txt.twig', [
+                            'contact' => $contact,
                             'member' => $member,
                         ]),
                     );
