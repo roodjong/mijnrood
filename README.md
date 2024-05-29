@@ -78,6 +78,11 @@ git pull
 docker compose -f docker/prod/docker-compose.yml --env-file .env.local up --build -d
 ```
 
+If there are changed migrations, there is an extra step:
+```
+docker compose -f docker/prod/docker-compose.yml --env-file .env.local exec mijnrood_php bin/console doctrine:migrations:migrate
+```
+
 ## Extra configuration
 
 ### Custom welcome mail
