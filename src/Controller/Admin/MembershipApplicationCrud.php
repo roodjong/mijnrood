@@ -240,7 +240,7 @@ class MembershipApplicationCrud extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(EntityFilter::new('division'))
+            ->add(EntityFilter::new('preferredDivision', 'Afdeling'))
         ;
     }
 
