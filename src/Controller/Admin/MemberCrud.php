@@ -24,7 +24,9 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-use Symfony\Component\HttpFoundation\{ BinaryFileResponse, ResponseHeaderBag };
+use Mollie\Api\MollieApiClient;
+
+use Symfony\Component\HttpFoundation\{ BinaryFileResponse, ResponseHeaderBag, Response };
 use DateTime;
 
 class MemberCrud extends AbstractCrudController
@@ -66,8 +68,30 @@ class MemberCrud extends AbstractCrudController
             ->linkToCrudAction('export')
             ->setCssClass('btn btn-secondary')
             ->createAsGlobalAction();
+        $actions->add(Crud::PAGE_INDEX, $action);
+        $contributionEnabled = $this->getParameter('app.contributionEnabled');
+        if ($contributionEnabled) {
+            $actionCancelMollie = Action::new('cancel', 'Lidmaatschap stoppen', 'fa fa-dollar-sign')
+                ->linkToCrudAction('cancelMembership')
+                ->setCssClass('btn btn-secondary');
+            $actions->add(Crud::PAGE_EDIT, $actionCancelMollie);
+        }
+        return $actions;
+    }
 
-        return $actions->add(Crud::PAGE_INDEX, $action);
+    public function cancelMembership(AdminContext $adminContext, MollieApiClient $mollieApiClient): Response
+    {
+        $member = $adminContext->getEntity()->getInstance();
+        if ($member->getMollieSubscriptionId() === null)
+        {
+            return new Response('Membership already cancelled');
+        }
+        $customer = $mollieApiClient->customers->get($member->getMollieCustomerId());
+        $subscription = $mollieApiClient->subscriptions->getFor($customer, $member->getMollieSubscriptionId());
+        $subscription->cancel();
+        $member->setMollieSubscriptionId(null);
+        $em->flush();
+        return new Response('Membership cancelled succesfully');
     }
 
     public function export(AdminContext $adminContext): BinaryFileResponse
