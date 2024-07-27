@@ -271,8 +271,8 @@ class Member implements UserInterface {
                 $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year && $payment->getPeriodMonthStart() == $month);
                 break;
             case self::PERIOD_QUARTERLY:
-                $quarter = ceil($month / 3);
-                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year && $payment->getPeriodMonthStart() <= $month && $payment->getPeriodMonthEnd() >= $month);
+                $when->modify('-3 months');
+                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPaymentTime() >= $when);
                 break;
             case self::PERIOD_ANNUALLY:
                 $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year);
