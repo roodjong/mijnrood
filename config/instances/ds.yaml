@@ -7,3 +7,5 @@ contribution:
 signup:
   min_age: 16
   max_age: null
+
+mollie_payment_description: "Contributiebetaling {{organisation_name}}, voor lidnummer {{member_number}}"

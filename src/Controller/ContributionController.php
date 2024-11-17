@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\SubscriptionSetupService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
@@ -20,6 +21,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class ContributionController extends AbstractController
 {
+
+    public function __construct(
+        private readonly SubscriptionSetupService $subscriptionService,
+    )
+    {
+    }
 
     /**
      * @Route("/contributie-instellingen", name="member_contribution_preferences")
@@ -134,7 +141,9 @@ class ContributionController extends AbstractController
         if ($automaticCollection)
         {
             return $this->render('user/contribution/first-payment.html.twig', [
-                'checkoutUrl' => $molliePayment->getCheckoutUrl()
+                'checkoutUrl' => $molliePayment->getCheckoutUrl(),
+                // The user is currently setting up contribution, so setting this false disables the contribution nagbar
+                'contributionEnabled' => false,
             ]);
         }
 
@@ -176,7 +185,7 @@ class ContributionController extends AbstractController
                 $contributionPayment->setStatus(ContributionPayment::STATUS_PAID);
 
                 if ($member->getCreateSubscriptionAfterPayment()) {
-                    $this->setupSubscription($member, $customer);
+                    $this->subscriptionService->createSubscription($member, $customer);
                     $member->setCreateSubscriptionAfterPayment(false);
                 }
                 break;
@@ -225,6 +234,7 @@ class ContributionController extends AbstractController
      */
     public function enableAutomaticCollection(Request $request, MollieApiClient $mollieApiClient): Response {
         $em = $this->getDoctrine()->getManager();
+        /** @var Member $member */
         $member = $this->getUser();
 
         // Already has subscription
@@ -243,7 +253,7 @@ class ContributionController extends AbstractController
         }
 
         // 3. If a mandate does exist, set up subscription
-        $this->setupSubscription($member, $customer);
+        $this->subscriptionService->createSubscription($member, $customer);
 
         // 4. Show automatic collection enabled screen
         return $this->redirectToRoute('member_contribution_automatic_collection');
@@ -445,23 +455,23 @@ class ContributionController extends AbstractController
         return $customer;
     }
 
-    private function createContributionPayment(int $contributionPeriod, float $contributionAmount, $molliePayment) {
+    private function createContributionPayment(int $contributionPeriod, float $contributionAmount, $molliePayment)
+    {
         // Create contribution payment
         $contributionPayment = new ContributionPayment();
         $contributionPayment->setAmountInCents(round($contributionAmount * 100));
         $contributionPayment->setStatus(ContributionPayment::STATUS_PENDING);
         $contributionPayment->setPaymentTime(new DateTime);
 
-        if ($molliePayment !== null)
-        {
+        if ($molliePayment !== null) {
             $contributionPayment->setMolliePaymentId($molliePayment->id);
         }
 
         // Set correct year and period information
-        $contributionPayment->setPeriodYear((int) date('Y'));
+        $contributionPayment->setPeriodYear((int)date('Y'));
 
-        $month = (int) date('m');
-        switch($contributionPeriod) {
+        $month = (int)date('m');
+        switch ($contributionPeriod) {
             case Member::PERIOD_MONTHLY:
                 $contributionPayment->setPeriodMonthStart($month);
                 $contributionPayment->setPeriodMonthEnd($month);
@@ -479,26 +489,4 @@ class ContributionController extends AbstractController
 
         return $contributionPayment;
     }
-
-    private function setupSubscription(Member $member, $customer) {
-        $startDate = DateTime::createFromFormat('Y-m-d', date('Y-'). (ceil(date('m') / 3) * 3 + 1). '-1');
-
-        $subscription = $customer->createSubscription([
-            'amount' => [
-                'currency' => 'EUR',
-                'value' => number_format($member->getContributionPerPeriodInEuros(), 2, '.', '')
-            ],
-            'interval' => [
-                Member::PERIOD_MONTHLY => '1 month',
-                Member::PERIOD_QUARTERLY => '3 months',
-                Member::PERIOD_ANNUALLY => '1 year'
-            ][$member->getContributionPeriod()],
-            'description' => $this->getParameter('mollie_payment_description'),
-            'startDate' => $startDate->format('Y-m-d'),
-            'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
-        ]);
-        $member->setMollieSubscriptionId($subscription->id);
-        $this->getDoctrine()->getManager()->flush();
-    }
-
 }
