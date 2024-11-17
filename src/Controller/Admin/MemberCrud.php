@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Actions, Action };
 use EasyCorp\Bundle\EasyAdminBundle\Filter\{ EntityFilter };
@@ -71,20 +72,30 @@ class MemberCrud extends AbstractCrudController
         $actions->add(Crud::PAGE_INDEX, $action);
         $contributionEnabled = $this->getParameter('app.contributionEnabled');
         if ($contributionEnabled) {
-            $actionCancelMollie = Action::new('cancel', 'Lidmaatschap stoppen', 'fa fa-dollar-sign')
-                ->linkToCrudAction('cancelMembership')
-                ->setCssClass('btn btn-secondary');
+            $actionCancelMollie =
+                Action::new('cancel', 'Contributiebetaling stopzetten', 'fa fa-dollar-sign')
+                    ->linkToCrudAction('cancelMembership')
+                    ->setCssClass('btn btn-secondary');
             $actions->add(Crud::PAGE_EDIT, $actionCancelMollie);
         }
         return $actions;
     }
 
-    public function cancelMembership(AdminContext $adminContext, MollieApiClient $mollieApiClient): Response
+    public function cancelMembership(AdminContext      $adminContext,
+                                     MollieApiClient   $mollieApiClient,
+                                     AdminUrlGenerator $adminUrlGenerator): Response
     {
         $member = $adminContext->getEntity()->getInstance();
+        $redirectUrl = $adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Crud::PAGE_EDIT)
+            ->setEntityId($member->getId())
+            ->generateUrl();
+
         if ($member->getMollieSubscriptionId() === null)
         {
-            return new Response('Membership already cancelled');
+            $this->addFlash('warning', 'Contributiebetaling is al gestopt.');
+            return $this->redirect($redirectUrl);
         }
         $customer = $mollieApiClient->customers->get($member->getMollieCustomerId());
         $subscription = $mollieApiClient->subscriptions->getFor($customer, $member->getMollieSubscriptionId());
@@ -92,7 +103,8 @@ class MemberCrud extends AbstractCrudController
         $member->setMollieSubscriptionId(null);
         $em = $this->getDoctrine()->getManager();
         $em->flush();
-        return new Response('Membership cancelled succesfully');
+        $this->addFlash('success', 'Contributiebetaling succesvol stopgezet.');
+        return $this->redirect($redirectUrl);
     }
 
     public function export(AdminContext $adminContext): BinaryFileResponse
