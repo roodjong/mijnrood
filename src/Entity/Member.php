@@ -123,9 +123,9 @@ class Member implements UserInterface {
     private bool $createSubscriptionAfterPayment = false;
 
     /**
-     * @ORM\Column(type="integer", options={"default": 2})
+     * @ORM\Column(type="integer", options={"default": 1})
      */
-    private int $contributionPeriod = self::PERIOD_ANNUALLY;
+    private int $contributionPeriod = self::PERIOD_QUARTERLY;
 
     /**
      * @ORM\Column(type="integer", options={"default": 500})
@@ -271,20 +271,20 @@ class Member implements UserInterface {
     }
 
     public function isContributionCompleted(DateTime $when) {
-        $year = $when->format('Y');
-        $month = $when->format('n');
         switch ($this->getContributionPeriod()) {
             case self::PERIOD_MONTHLY:
-                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year && $payment->getPeriodMonthStart() == $month);
+                $when->modify('-1 month');
                 break;
             case self::PERIOD_QUARTERLY:
                 $when->modify('-3 months');
-                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPaymentTime() >= $when);
                 break;
             case self::PERIOD_ANNUALLY:
-                $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPeriodYear() == $year);
+                $when->modify('-12 months');
                 break;
+            default;
+                throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
         }
+        $payments = $this->contributionPayments->filter(fn($payment) => $payment->getPaymentTime() >= $when);
         $payments = $payments->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID);
         return count($payments) > 0;
     }

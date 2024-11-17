@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Service\SubscriptionSetupService;
 use Doctrine\ORM\QueryBuilder;
 
+use App\Entity\ContributionPayment;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -101,6 +102,32 @@ class MembershipApplicationCrud extends AbstractCrudController
         $member = $application->createMember(null);
         $member->generateNewPasswordToken();
         $em = $this->getDoctrine()->getManager();
+
+        if ($application->getPaid()) {
+            $init_payment = new ContributionPayment();
+            $init_payment->setMember($member);
+            $init_payment->setStatus(1);
+            $init_payment->setPaymentTime($member->getRegistrationTime());
+            $init_payment->setPeriodYear($member->getRegistrationTime()->format('Y'));
+            $init_payment->setPeriodMonthStart($member->getRegistrationTime()->format('n'));
+            switch ($member->getContributionPeriod()) {
+                case $member::PERIOD_MONTHLY:
+                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+1 month')->format('n'));
+                    break;
+                case $member::PERIOD_QUARTERLY:
+                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+3 month')->format('n'));
+                    break;
+                case $member::PERIOD_ANNUALLY:
+                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+12 month')->format('n'));
+                    break;
+                default:
+                    throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
+            }
+            $init_payment->setAmountInCents($member->getContributionPerPeriodInCents());
+            $init_payment->setAmountInEuros($member->getContributionPerPeriodInEuros());
+            $em->persist($init_payment);
+        }
+
         $em->persist($member);
         $em->flush();
 
