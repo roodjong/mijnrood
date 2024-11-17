@@ -140,7 +140,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for contributionPayment in app.user.paidContributionPayments[:5] %}
+                    {% for contributionPayment in app.user.getLastContributionPaymentsForListing %}
                         <tr>
                             <td>{{ contributionPayment.paymentTime|format_date('long') }}</td>
                             <td>{{ contributionPayment.amountInCents|format_price }}</td>

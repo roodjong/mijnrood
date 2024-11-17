@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Membership\MembershipStatus;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\{ ArrayCollection, Collection };
+use Doctrine\Common\Collections\{ArrayCollection, Collection, Criteria, Order};
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -254,6 +254,13 @@ class Member implements UserInterface {
     public function getPaidContributionPayments(): Collection { return $this->contributionPayments->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID); }
 
     public function getContributionPayments(): Collection { return $this->contributionPayments; }
+
+    public function getLastContributionPaymentsForListing(): Collection
+    {
+        $criteria = Criteria::create()
+            ->orderBy(["paymentTime" => Order::Descending])->setMaxResults(5);
+        return $this->contributionPayments->matching($criteria)->filter(fn($payment) => $payment->getStatus() == ContributionPayment::STATUS_PAID);
+    }
 
     public function isAdmin(): bool { return in_array('ROLE_ADMIN', $this->getRoles()); }
     public function setIsAdmin(bool $isAdmin): void {
