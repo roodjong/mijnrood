@@ -90,6 +90,7 @@ class MemberCrud extends AbstractCrudController
         $subscription = $mollieApiClient->subscriptions->getFor($customer, $member->getMollieSubscriptionId());
         $subscription->cancel();
         $member->setMollieSubscriptionId(null);
+        $em = $this->getDoctrine()->getManager();
         $em->flush();
         return new Response('Membership cancelled succesfully');
     }
