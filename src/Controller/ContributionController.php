@@ -214,7 +214,9 @@ class ContributionController extends AbstractController
         return $this->render('user/contribution/automatic-collection.html.twig', [
             'success' => false,
             'form' => $form->createView(),
-            'contribution' => $org_config['contribution']
+            'contribution' => $org_config['contribution'],
+            // The user is currently setting up contribution, so setting this false disables the contribution nagbar
+            'contributionEnabled' => false,
         ]);
     }
 
