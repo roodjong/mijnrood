@@ -24,6 +24,16 @@ class SubscriptionSetupService
     {
     }
 
+    public function generateDescription(Member $member): string
+    {
+        $projectRoot = $this->params->get('kernel.project_dir');
+        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->params->get('app.organizationID') . '.yaml');
+
+        $description = $org_config['mollie_payment_description'];
+        $description = str_replace('{{organisation_name}}', $this->params->get("app.organizationName"), $description);
+        return str_replace('{{member_number}}', (string)$member->getId(), $description);
+    }
+
     /**
      * @throws ApiException
      */
@@ -44,12 +54,7 @@ class SubscriptionSetupService
         $startDate->setDate((int)date('Y'), (int)floor(date('m') / 3) * 3, 1);
         $startDate->add(new \DateInterval($dateTimeIntervals[$member->getContributionPeriod()]));
 
-        $projectRoot = $this->params->get('kernel.project_dir');
-        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->params->get('app.organizationID') . '.yaml');
-
-        $description = $org_config['mollie_payment_description'];
-        $description = str_replace('{{organisation_name}}', $this->params->get("app.organizationName"), $description);
-        $description = str_replace('{{member_number}}', (string)$member->getId(), $description);
+        $description = $this->generateDescription($member);
 
         $subscription = $customer->createSubscription([
             'amount' => [

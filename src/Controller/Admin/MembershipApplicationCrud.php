@@ -98,21 +98,6 @@ class MembershipApplicationCrud extends AbstractCrudController
         /** @var MembershipApplication $application */
         $application = $context->getEntity()->getInstance();
 
-        $mollieIntervals = [
-            Member::PERIOD_MONTHLY => '1 month',
-            Member::PERIOD_QUARTERLY => '3 months',
-            Member::PERIOD_ANNUALLY => '1 year'
-        ];
-        $dateTimeIntervals = [
-            Member::PERIOD_MONTHLY => 'P1M',
-            Member::PERIOD_QUARTERLY => 'P3M',
-            Member::PERIOD_ANNUALLY => 'P1Y'
-        ];
-
-        $startDate = new DateTime();
-        $startDate->setDate(date('Y'), floor(date('m') / 3) * 3, 1);
-        $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
-
         $member = $application->createMember(null);
         $member->generateNewPasswordToken();
         $em = $this->getDoctrine()->getManager();
