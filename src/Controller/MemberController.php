@@ -333,7 +333,7 @@ class MemberController extends AbstractController {
         $member = $this->getUser();
         if (!$member->getAcceptUsePersonalInformation())
             return $this->memberAcceptPersonalDetails($request);
-	$contributionEnabled = $this->getParameter('app.contributionEnabled');
+        $contributionEnabled = $this->getParameter('app.contributionEnabled');
         $form = $this->createForm(MemberDetailsType::class, $member);
         $revision = new MemberDetailsRevision($member, true);
         $success = false;

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Service\SubscriptionSetupService;
 use Doctrine\ORM\QueryBuilder;
 
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -31,7 +32,11 @@ class MembershipApplicationCrud extends AbstractCrudController
     private MailerInterface $mailer;
     private MollieApiClient $mollieApiClient;
 
-    public function __construct(MailerInterface $mailer, MollieApiClient $mollieApiClient)
+    public function __construct(
+        MailerInterface $mailer,
+        MollieApiClient $mollieApiClient,
+        private readonly SubscriptionSetupService $subscriptionService,
+    )
     {
         $this->mailer = $mailer;
         $this->mollieApiClient = $mollieApiClient;
@@ -90,6 +95,7 @@ class MembershipApplicationCrud extends AbstractCrudController
         $organizationName = $this->getParameter('app.organizationName');
         $mailer = $this->mailer;
 
+        /** @var MembershipApplication $application */
         $application = $context->getEntity()->getInstance();
 
         $mollieIntervals = [
@@ -106,32 +112,25 @@ class MembershipApplicationCrud extends AbstractCrudController
         $startDate = new DateTime();
         $startDate->setDate(date('Y'), floor(date('m') / 3) * 3, 1);
         $startDate->add(new DateInterval($dateTimeIntervals[$application->getContributionPeriod()]));
-        $subscriptionId = null;
+
+        $member = $application->createMember(null);
+        $member->generateNewPasswordToken();
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($member);
+        $em->flush();
 
         try {
             $customer = $this->mollieApiClient->customers->get($application->getMollieCustomerId());
 
-            $subscription = $customer->createSubscription([
-                'amount' => [
-                    'currency' => 'EUR',
-                    'value' => number_format($application->getContributionPerPeriodInEuros(), 2, '.', '')
-                ],
-                'interval' => $mollieIntervals[$application->getContributionPeriod()],
-                'description' => $this->getParameter('mollie_payment_description'),
-                'startDate' => $startDate->format('Y-m-d'),
-                'webhookUrl' => $this->generateUrl('member_contribution_mollie_webhook', [], UrlGeneratorInterface::ABSOLUTE_URL)
-            ]);
+            $subscription = $this->subscriptionService->createSubscription($member, $customer);
             $subscriptionId = $subscription->id;
+            $member->setMollieSubscriptionId($subscriptionId);
 
         } catch (ApiException $e) {
             // De subscription moet later nog gedaan worden door het lid zelf
             $this->addFlash("warning", "Het net geaccepteerde lid heeft nog geen automatisch incasso. Het nieuwe lid kan dit alleen zelf instellen.");
         }
 
-        $member = $application->createMember($subscriptionId);
-        $member->generateNewPasswordToken();
-
-        $em = $this->getDoctrine()->getManager();
         $em->persist($member);
         $em->remove($application);
         $em->flush();
