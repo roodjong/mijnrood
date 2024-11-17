@@ -20,3 +20,6 @@ public/assets
 public/bundles
 docker/mysql
 templates/custom
+
+# JetBrains IDE files
+.idea/
