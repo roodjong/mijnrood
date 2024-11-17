@@ -68,6 +68,18 @@ Member level:
 - Password: `new_member`
 - Member off: `Nooderhaaks`
 
+## Ngrok for local payment testing
+
+- Register an account at ngrok.com
+- Install the ngrok client using your distributions package manager or download.ngrok.com/linux
+- Find your authentication token at dashboard.ngrok.com/get-started/your-authtoken and register it with your client:
+`ngrok config add-authtoken <YOUR AUTH TOKEN HERE>`
+- Start ngrok:
+`ngrok http 8080`
+- Set `COOKIE_DOMAIN` to the domain (without http(s)://) mentioned in the `Forwarding` row in `.env.local`:
+`COOKIE_DOMAIN=<YOUR URL HERE>.ngrok-free.app`
+- Open the URL mentioned in the `Forwarding` row instead of `localhost:8080`.
+
 ## Server deployment
 
 To deploy updates on the server:
