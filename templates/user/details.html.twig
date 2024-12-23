@@ -112,6 +112,7 @@
 
                 <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso stopzetten</a>
                 <a class="action-link" href="{{ url('member_contribution_preferences_change_bank_account') }}" class="button">Instellen met andere bankrekening</a>
+                <a class="action-link" href="{{ url('member_contribution_automatic_collection_change_amount') }}">Incasso bedrag aanpassen</a>
             {% else %}
                 {% if app.user.contributionCompleted(date()) %}
                     <p>
