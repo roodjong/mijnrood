@@ -110,15 +110,17 @@ class MembershipApplicationCrud extends AbstractCrudController
             $init_payment->setPaymentTime($member->getRegistrationTime());
             $init_payment->setPeriodYear($member->getRegistrationTime()->format('Y'));
             $init_payment->setPeriodMonthStart($member->getRegistrationTime()->format('n'));
+            # cloning object, so the original DateTime object will not be modified
+            $registration_date = clone $member->getRegistrationTime();
             switch ($member->getContributionPeriod()) {
                 case $member::PERIOD_MONTHLY:
-                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+1 month')->format('n'));
+                    $init_payment->setPeriodMonthEnd($registration_date->modify('+1 month')->format('n'));
                     break;
                 case $member::PERIOD_QUARTERLY:
-                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+3 month')->format('n'));
+                    $init_payment->setPeriodMonthEnd($registration_date->modify('+3 month')->format('n'));
                     break;
                 case $member::PERIOD_ANNUALLY:
-                    $init_payment->setPeriodMonthEnd($member->getRegistrationTime()->modify('+12 month')->format('n'));
+                    $init_payment->setPeriodMonthEnd($registration_date->modify('+12 month')->format('n'));
                     break;
                 default:
                     throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
