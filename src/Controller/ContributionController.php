@@ -152,6 +152,27 @@ class ContributionController extends AbstractController
     }
 
     /**
+     * @Route("/contributie-aanpassen", name="member_contribution_change_amount")
+     */
+    public function changeContributionAmount(Request $request, MollieApiClient $mollieApiClient, bool $automaticCollection = false): Response
+    {
+        $member = $this->getUser();
+
+        $mollieCustomerId = $member->getMollieCustomerId();
+        $contributionAmount = $member->getContributionPerPeriodInEuros();
+        $subscriptionId = $member->getMollieSubscriptionId();
+        // update subscription amount
+        $updatedSubscription = $mollieApiClient->subscriptions->update($mollieCustomerId, $subscriptionId, [
+            'amount' => [
+                'currency' => 'EUR',
+                'value' => number_format($contributionAmount, 2, '.', '')
+            ]
+        ]);
+
+        return $this->redirectToRoute('member_details');
+    }
+
+    /**
      * @Route("/api/webhook/mollie-contribution", name="member_contribution_mollie_webhook")
      */
     public function webhook(Request $request, MollieApiClient $mollieApiClient): Response {
@@ -221,6 +242,38 @@ class ContributionController extends AbstractController
         }
 
         return $this->render('user/contribution/automatic-collection.html.twig', [
+            'success' => false,
+            'form' => $form->createView(),
+            'contribution' => $org_config['contribution'],
+            // The user is currently setting up contribution, so setting this false disables the contribution nagbar
+            'contributionEnabled' => false,
+        ]);
+    }
+
+    /**
+     * @Route("/automatische-incasso-aanpassen", name="member_contribution_automatic_collection_change_amount")
+     */
+    public function automaticCollectionChangeAmount(Request $request, LoggerInterface $logger): Response
+    {
+        $projectRoot = $this->getParameter('kernel.project_dir');
+        $org_config = Yaml::parseFile($projectRoot . '/config/instances/' . $this->getParameter('app.organizationID') . '.yaml');
+
+        $form = $this->createForm(ContributionIncomeType::class, null, [
+            'contribution' => $org_config['contribution']
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $member = $this->getUser();
+            $member->setContributionPerPeriodInCents($form->getData());
+            $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
+            $em->flush();
+
+            return $this->redirectToRoute('member_contribution_change_amount');
+        }
+
+        return $this->render('user/contribution/automatic-collection-change.html.twig', [
             'success' => false,
             'form' => $form->createView(),
             'contribution' => $org_config['contribution'],
