@@ -17,7 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Actions, Action };
-use EasyCorp\Bundle\EasyAdminBundle\Filter\{ EntityFilter };
+use EasyCorp\Bundle\EasyAdminBundle\Filter\{ DateTimeFilter, EntityFilter };
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -53,7 +53,7 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name', 'dateOfBirth'])
         ;
     }
 
@@ -61,7 +61,8 @@ class MemberCrud extends AbstractCrudController
     {
         return $filters
             ->add(EntityFilter::new('division', 'Afdeling'))
-            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'));
+            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'))
+            ->add(DateTimeFilter::new('dateOfBirth', 'GeboorteDatum'));
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -225,7 +226,7 @@ class MemberCrud extends AbstractCrudController
 
         array_push($fields,
             TextField::new('lastName', 'Achternaam')->setDisabled(!$isAdmin),
-            DateField::new('dateOfBirth', 'Geboortedatum')->setDisabled(!$isAdmin)->hideOnIndex(),
+            DateField::new('dateOfBirth', 'Geboortedatum'),
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
