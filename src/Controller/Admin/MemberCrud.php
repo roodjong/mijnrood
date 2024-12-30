@@ -3,9 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Member;
+use App\Entity\SupportMember;
 use App\Form\Admin\ContributionPaymentType;
 use App\Form\Contribution\ContributionPeriodType;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -79,6 +81,10 @@ class MemberCrud extends AbstractCrudController
                     ->setCssClass('btn btn-secondary');
             $actions->add(Crud::PAGE_EDIT, $actionCancelMollie);
         }
+        $actionConvertMember = Action::new('convert', 'Lid omzetten naar steunlid', 'fa fa-exchange-alt')
+            ->linkToCrudAction('convertMemberToSupportMember');
+        $actions
+            ->add(Crud::PAGE_EDIT, $actionConvertMember);
         return $actions;
     }
 
@@ -105,6 +111,57 @@ class MemberCrud extends AbstractCrudController
         $em = $this->getDoctrine()->getManager();
         $em->flush();
         $this->addFlash('success', 'Contributiebetaling succesvol stopgezet.');
+        return $this->redirect($redirectUrl);
+    }
+
+    public function convertMemberToSupportMember(AdminContext $adminContext, AdminUrlGenerator $adminUrlGenerator, EntityManagerInterface $entityManager): Response
+    {
+        /**
+         * @var Member
+         */
+        $member = $adminContext->getEntity()->getInstance();
+
+        // check if current user is allowed and the selected member is allowed to be removed and converted
+        $redirectUrl = $adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Crud::PAGE_EDIT)
+            ->setEntityId($member->getId())
+            ->generateUrl();
+
+        $supportMember = new SupportMember();
+        $supportMember->setFirstName($member->getFirstName());
+        $supportMember->setLastName($member->getLastName());
+        $supportMember->setEmail($member->getEmail());
+        $supportMember->setPhone($member->getPhone());
+        $supportMember->setIban($member->getIban());
+        $supportMember->setAddress($member->getAddress());
+        $supportMember->setCity($member->getCity());
+        $supportMember->setPostCode($member->getPostCode());
+        $supportMember->setCountry($member->getCountry());
+        $supportMember->setDateOfBirth($member->getDateOfBirth());
+        // setting original registration time because:
+        //  button is probably only used when a member reaches the age limit, so we can calculate when they became a support member
+        $supportMember->setRegistrationTime($member->getRegistrationTime());
+
+        // Should this become a new one, because i assume message is different, don't know where it is set
+        $supportMember->setMollieCustomerId($member->getMollieCustomerId());
+        $supportMember->setMollieSubscriptionId($member->getMollieSubscriptionId());
+        $supportMember->setContributionPeriod($member->getContributionPeriod());
+        $supportMember->setContributionPerPeriodInCents($member->getContributionPerPeriodInCents());
+
+        $entityManager->persist($supportMember);
+        
+        // remove/deactivate member
+        $entityManager->remove($member);
+        $entityManager->flush();
+
+        // The highlight stays on the member tab.
+        $redirectUrl = $adminUrlGenerator
+            ->setController(SupportMemberCrud::class)
+            ->setAction(Crud::PAGE_EDIT)
+            ->setEntityId($supportMember->getId())
+            ->generateUrl();
+
         return $this->redirect($redirectUrl);
     }
 
