@@ -60,7 +60,7 @@ $(document).ready(function() {
         let entry = entryInfo(this);
         hideButtons(this);
 
-        let formSelector = entry.type == 'folder' ? '#form-move-folder' : '#form-move';
+        let formSelector = '#form-move';
 
         $('#move-header').text((entry.type == 'folder' ? 'Map "' : 'Document "') + entry.name + '"');
         $('#move_type').val(entry.type);
