@@ -21,7 +21,7 @@ security:
                 login_path: login
                 check_path: login
                 default_target_path: member_home
-                always_use_default_target_path: true
+                always_use_default_target_path: false
                 csrf_token_generator: security.csrf.token_manager
             logout:
                 path: logout
