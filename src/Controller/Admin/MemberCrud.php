@@ -129,6 +129,7 @@ class MemberCrud extends AbstractCrudController
             ->generateUrl();
 
         $supportMember = new SupportMember();
+        $supportMember->setOriginalId($member->getId());
         $supportMember->setFirstName($member->getFirstName());
         $supportMember->setLastName($member->getLastName());
         $supportMember->setEmail($member->getEmail());
@@ -139,9 +140,8 @@ class MemberCrud extends AbstractCrudController
         $supportMember->setPostCode($member->getPostCode());
         $supportMember->setCountry($member->getCountry());
         $supportMember->setDateOfBirth($member->getDateOfBirth());
-        // setting original registration time because:
-        //  button is probably only used when a member reaches the age limit, so we can calculate when they became a support member
-        $supportMember->setRegistrationTime($member->getRegistrationTime());
+        $supportMember->setRegistrationTime(new DateTime());
+        $supportMember->setOriginalRegistrationTime($member->getRegistrationTime());
 
         // Should this become a new one, because i assume message is different, don't know where it is set
         $supportMember->setMollieCustomerId($member->getMollieCustomerId());

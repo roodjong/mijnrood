@@ -142,12 +142,18 @@ class SupportMemberCrud extends AbstractCrudController
             IdField::new('id', 'Lidnummer')
                 ->setRequired(false)
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
+            IdField::new('originalId', 'Origineel Lidnummer')
+                ->setRequired(false)
+                ->setFormTypeOptions(['attr' => ['placeholder' => 'Wordt automatisch bepaald']]),
 
             TextField::new('firstName', 'Voornaam'),
             TextField::new('lastName', 'Achternaam'),
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
+                ->setFormat(DateTimeField::FORMAT_SHORT)
+                ->hideOnIndex(),
+            DateField::new('originalRegistrationTime', 'Originele Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
 
