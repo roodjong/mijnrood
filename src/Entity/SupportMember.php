@@ -105,6 +105,16 @@ class SupportMember
      */
     private int $contributionPerPeriodInCents;
 
+    /**
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private int $originalId;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private ?DateTime $originalRegistrationTime = null;
+
     // /**
     //  * @ORM\OneToMany(targetEntity="SupportMemberDetailsRevision", mappedBy="member")
     //  */
@@ -178,6 +188,12 @@ class SupportMember
             throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
         $this->contributionPeriod = $contributionPeriod;
     }
+
+    public function getOriginalId(): ?int { return $this->originalId; }
+    public function setOriginalId(int $originalId): void { $this->originalId = $originalId; }
+
+    public function getOriginalRegistrationTime(): ?DateTime { return $this->originalRegistrationTime; }
+    public function setOriginalRegistrationTime(?DateTime $originalRegistrationTime): void { $this->originalRegistrationTime = $originalRegistrationTime; }
 
     // public function getDetailRevisions(): Collection { return $this->detailRevisions; }
     // public function getLastDetailRevision(): ?SupportMemberDetailsRevision {

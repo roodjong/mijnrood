@@ -3,9 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Member;
+use App\Entity\SupportMember;
 use App\Form\Admin\ContributionPaymentType;
 use App\Form\Contribution\ContributionPeriodType;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -17,7 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
 use EasyCorp\Bundle\EasyAdminBundle\Config\{ Crud, Filters, Actions, Action };
-use EasyCorp\Bundle\EasyAdminBundle\Filter\{ EntityFilter };
+use EasyCorp\Bundle\EasyAdminBundle\Filter\{ DateTimeFilter, EntityFilter };
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -53,7 +55,7 @@ class MemberCrud extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
-            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name'])
+            ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name', 'dateOfBirth'])
         ;
     }
 
@@ -61,7 +63,8 @@ class MemberCrud extends AbstractCrudController
     {
         return $filters
             ->add(EntityFilter::new('division', 'Afdeling'))
-            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'));
+            ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'))
+            ->add(DateTimeFilter::new('dateOfBirth', 'GeboorteDatum'));
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -78,6 +81,10 @@ class MemberCrud extends AbstractCrudController
                     ->setCssClass('btn btn-secondary');
             $actions->add(Crud::PAGE_EDIT, $actionCancelMollie);
         }
+        $actionConvertMember = Action::new('convert', 'Lid omzetten naar steunlid', 'fa fa-exchange-alt')
+            ->linkToCrudAction('convertMemberToSupportMember');
+        $actions
+            ->add(Crud::PAGE_EDIT, $actionConvertMember);
         return $actions;
     }
 
@@ -104,6 +111,57 @@ class MemberCrud extends AbstractCrudController
         $em = $this->getDoctrine()->getManager();
         $em->flush();
         $this->addFlash('success', 'Contributiebetaling succesvol stopgezet.');
+        return $this->redirect($redirectUrl);
+    }
+
+    public function convertMemberToSupportMember(AdminContext $adminContext, AdminUrlGenerator $adminUrlGenerator, EntityManagerInterface $entityManager): Response
+    {
+        /**
+         * @var Member
+         */
+        $member = $adminContext->getEntity()->getInstance();
+
+        // check if current user is allowed and the selected member is allowed to be removed and converted
+        $redirectUrl = $adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Crud::PAGE_EDIT)
+            ->setEntityId($member->getId())
+            ->generateUrl();
+
+        $supportMember = new SupportMember();
+        $supportMember->setOriginalId($member->getId());
+        $supportMember->setFirstName($member->getFirstName());
+        $supportMember->setLastName($member->getLastName());
+        $supportMember->setEmail($member->getEmail());
+        $supportMember->setPhone($member->getPhone());
+        $supportMember->setIban($member->getIban());
+        $supportMember->setAddress($member->getAddress());
+        $supportMember->setCity($member->getCity());
+        $supportMember->setPostCode($member->getPostCode());
+        $supportMember->setCountry($member->getCountry());
+        $supportMember->setDateOfBirth($member->getDateOfBirth());
+        $supportMember->setRegistrationTime(new DateTime());
+        $supportMember->setOriginalRegistrationTime($member->getRegistrationTime());
+
+        // Should this become a new one, because i assume message is different, don't know where it is set
+        $supportMember->setMollieCustomerId($member->getMollieCustomerId());
+        $supportMember->setMollieSubscriptionId($member->getMollieSubscriptionId());
+        $supportMember->setContributionPeriod($member->getContributionPeriod());
+        $supportMember->setContributionPerPeriodInCents($member->getContributionPerPeriodInCents());
+
+        $entityManager->persist($supportMember);
+        
+        // remove/deactivate member
+        $entityManager->remove($member);
+        $entityManager->flush();
+
+        // The highlight stays on the member tab.
+        $redirectUrl = $adminUrlGenerator
+            ->setController(SupportMemberCrud::class)
+            ->setAction(Crud::PAGE_EDIT)
+            ->setEntityId($supportMember->getId())
+            ->generateUrl();
+
         return $this->redirect($redirectUrl);
     }
 
@@ -227,7 +285,7 @@ class MemberCrud extends AbstractCrudController
 
         array_push($fields,
             TextField::new('lastName', 'Achternaam')->setDisabled(!$isAdmin),
-            DateField::new('dateOfBirth', 'Geboortedatum')->setDisabled(!$isAdmin)->hideOnIndex(),
+            DateField::new('dateOfBirth', 'Geboortedatum'),
             DateField::new('registrationTime', 'Inschrijfdatum')
                 ->setFormat(DateTimeField::FORMAT_SHORT)
                 ->hideOnIndex(),
