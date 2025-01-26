@@ -95,6 +95,11 @@ If there are changed migrations, there is an extra step:
 docker compose -f docker/prod/docker-compose.yml --env-file .env.local exec mijnrood_php bin/console doctrine:migrations:migrate
 ```
 
+## Mollie data browser
+
+A very basic ugly system for browsing the information from Mollie can be found at `/mollie-admin`.
+This just does raw Mollie api requests and is only available for admins.
+
 ## Extra configuration
 
 ### Custom welcome mail
