@@ -108,6 +108,7 @@
             {% if app.user.contributionPaidAutomatically %}
                 <p>
                     Je contributie wordt elk{{ { 0: 'e maand', 1: ' kwartaal', 2: ' jaar'}[app.user.contributionPeriod] }} automatisch per automatische incasso afgeschreven via Mollie.
+                    Je contributiebedrag bedraagt <span>{{ app.user.getContributionPerPeriodInEuros | format_currency('EUR') }}</span>.
                 </p>
 
                 <a class="action-link" href="{{ url('member_contribution_automatic_collection') }}">Automatische incasso stopzetten</a>
