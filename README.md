@@ -121,3 +121,7 @@ Make sure the output is as you expected, and change it if necessary!
 This project is licensed under the EUPL, the license text in English can be found in the `LICENSE` file.
 
 For more information about the EUPL and the license text in other languages, see their website: https://www.eupl.eu
+
+## Common Issues
+
+- CSRF Token invalid? Can't login? This is usually caused by an incorrect `COOKIE_DOMAIN` setting in the environment.
