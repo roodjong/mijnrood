@@ -156,17 +156,28 @@ class ContributionController extends AbstractController
      */
     public function changeContributionAmount(Request $request, MollieApiClient $mollieApiClient, bool $automaticCollection = false): Response
     {
+        /** @var Member $member */
         $member = $this->getUser();
+
+        $member->setContributionPeriod(\App\Entity\Member::PERIOD_QUARTERLY);
 
         $mollieCustomerId = $member->getMollieCustomerId();
         $contributionAmount = $member->getContributionPerPeriodInEuros();
         $subscriptionId = $member->getMollieSubscriptionId();
+
+        $mollieIntervals = [
+            Member::PERIOD_MONTHLY => '1 month',
+            Member::PERIOD_QUARTERLY => '3 months',
+            Member::PERIOD_ANNUALLY => '1 year'
+        ];
+
         // update subscription amount
         $updatedSubscription = $mollieApiClient->subscriptions->update($mollieCustomerId, $subscriptionId, [
             'amount' => [
                 'currency' => 'EUR',
                 'value' => number_format($contributionAmount, 2, '.', '')
-            ]
+            ],
+            'interval' => $mollieIntervals[$member->getContributionPeriod()],
         ]);
 
         return $this->redirectToRoute('member_details');
