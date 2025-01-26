@@ -105,3 +105,34 @@ h1, h2, h3 {
         flex-shrink: 2;
     }
 }
+
+#flash-messages {
+    padding: 0 20px;
+    max-width: 1240px;
+
+    margin: 0 auto 30px;
+
+    .flash {
+        padding: 20px;
+        border: 3px solid oklch(.495 0 86.047 / .3);
+        border-radius: 5px;
+    }
+
+    .flash-notice {
+        background-color: oklch(.9 0 86.047);
+    }
+
+    .flash-warning {
+        background-color: oklch(.795 .184 86.047);
+        color: white;
+    }
+
+    .flash-success {
+        background-color: oklch(.723 .219 149.579);
+    }
+
+    .flash-error {
+        background-color: oklch(.577 .245 27.325);
+        color: white;
+    }
+}

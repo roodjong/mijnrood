@@ -88,7 +88,7 @@
                         <i class="fa fa-fw fa-arrow-right"></i>
                         Verplaatsen
                     </button>
-                    <a class="button button-secondary" style="display: inline-block" onclick="documentActions('#null', '#null')">
+                    <a id="move-cancel" class="button button-secondary" style="display: inline-block">
                         <i class="fa fa-fw fa-times"></i>
                         Annuleren
                     </a>
@@ -121,7 +121,7 @@
                         <td class="document-actions">
                             {% if canDelete %}
                                 <a class="btn-rename" href="#"><i class="fa fa-fw fa-pencil"></i></a>
-                                {# <a class="btn-move-folder" href="#"><i class="fa fa-fw fa-arrow-right"></i></a> #}
+                                <a class="btn-move" href="#"><i class="fa fa-fw fa-arrow-right"></i></a>
                                 <a class="btn-delete" href="#" href="#"><i class="fa fa-trash fa-fw"></i></a>
                             {% endif %}
                         </td>

@@ -244,6 +244,22 @@ class DocumentsController extends AbstractController
             $folder = $repoFolders->find($id);
             if ($folder === null)
                 throw $this->createAccessDeniedException('Je kunt dit document of deze map niet verplaatsen.');
+            
+            // make sure the folder isn't moved into itself or its children to prevent infinite recursion/stack overflow 
+            // recursive function to check if current folder isn't the requested folder, then do the same for its children
+            function folderInsideSelfOrChildren($folder, $parent) {
+                if ($parent->getId() == $folder->getId()) return true;
+                foreach ($folder->getSubFolders() as $nested_folder) {
+                    if (folderInsideSelfOrChildren($nested_folder, $parent)) return true;
+                }
+                return false;
+            }
+            // if parent is null/root it can always be moved, else check if its not being moved into itself.
+            if ($parent != null && folderInsideSelfOrChildren($folder, $parent))
+            {
+                $this->addFlash('warning', 'Je kunt deze map niet naar zichzelf verplaatsen.');
+                return $this->redirectToRoute('member_documents', ['folderId' => $folder->getParent()?->getId()]);
+            }
 
             $folder->setParent($parent);
         } else {
