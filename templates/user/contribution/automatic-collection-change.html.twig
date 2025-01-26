@@ -32,7 +32,7 @@
     <div class="main-content">
         <h1>Automatische incasso</h1>
         <p>
-            Contributie zal elk kwartaal automatisch van je rekening afgeschreven worden via automatisch incasso.
+            Contributie zal elk{{ { 0: 'e maand', 1: ' kwartaal', 2: ' jaar'}[app.user.contributionPeriod] }} automatisch van je rekening afgeschreven worden via automatisch incasso.
             Hoeveel je hierbij betaalt hangt af van je inkomen.
         </p>
 
@@ -49,7 +49,7 @@
                     {% if tier.amount is not same as(null) %}
                     <tr>
                         <td>{{ tier.description }}</td>
-                        <td>€{{ (tier.amount / 100)|number_format(2, ',') }} per kwartaal (€{{ (tier.amount / 100 / 3)|number_format(2, ',') }} per maand)</td>
+                        <td>€{{ (tier.amount / 100)|number_format(2, ',') }} per {{ { 0: 'maand', 1: 'kwartaal', 2: 'jaar'}[app.user.contributionPeriod] }} (€{{ (tier.amount / 100 / 3)|number_format(2, ',') }} per maand)</td>
                     </tr>
                     {% endif %}
                 {% endfor %}
