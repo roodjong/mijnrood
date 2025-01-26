@@ -100,6 +100,8 @@
             <button type="submit" class="button">Wachtwoord wijzigen</button>
 
             {{ form_end(formPassword) }}
+
+            <h3>Wil je jouw lidmaatschap opzeggen? Stuur ons dan een mailtje via <a class="rood" href="mailto:info@roodjongeren.nl?subject=Uitschrijving%20lidnummer%20{{ app.user.id }}">info@roodjongeren.nl</a></h3>
         </div>
 	{% if contributionEnabled %}
         <div class="contributions">
