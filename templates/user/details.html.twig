@@ -101,7 +101,7 @@
 
             {{ form_end(formPassword) }}
 
-            <h3>Wil je jouw lidmaatschap opzeggen? Stuur ons dan een mailtje via <a class="rood" href="mailto:info@roodjongeren.nl?subject=Uitschrijving%20lidnummer%20{{ app.user.id }}">info@roodjongeren.nl</a></h3>
+            <h3>Wil je jouw lidmaatschap opzeggen? Stuur ons dan een mailtje via <a class="rood" href="mailto:{{ organisatiemail }}?subject=Uitschrijving%20lidnummer%20{{ app.user.id }}">{{ organisatiemail }}</a></h3>
         </div>
 	{% if contributionEnabled %}
         <div class="contributions">
