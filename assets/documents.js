@@ -70,6 +70,10 @@ $(document).ready(function() {
         documentActions(formSelector, '#nothing');
     });
 
+    $('#move-cancel').click(function(e) {
+        documentActions("#null", "#null");
+    });
+
 });
 
 function documentActions(formSelector, buttonSelector) {
