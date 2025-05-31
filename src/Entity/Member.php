@@ -177,6 +177,11 @@ class Member implements UserInterface {
      */
     private ?string $comments = null;
 
+    /**
+     * @ORM\OneToMany(targetEntity="EventAttendant", mappedBy="member")
+     */
+    private Collection $eventsAttended;
+
     public function __construct() {
         $this->registrationTime = new DateTime;
         $this->contributionPayments = new ArrayCollection;
@@ -383,4 +388,22 @@ class Member implements UserInterface {
         $this->newPasswordTokenGeneratedTime = new DateTime();
     }
     public function getNewPasswordTokenGeneratedTime(): ?DateTime { return $this->newPasswordTokenGeneratedTime; }
+    
+    public function hasReserved(Event $event){
+        foreach ($this->eventsAttended as $attendedEvent) {
+            if ($event == $attendedEvent->getEvent()){
+                return $attendedEvent->getReserved() != null;
+            }
+        }
+        return false;
+    }
+
+    public function isCheckedIn(Event $event){
+        foreach ($this->eventsAttended as $attendedEvent) {
+            if ($event == $attendedEvent->getEvent()){
+                return $attendedEvent->isCheckedIn();
+            }
+        }
+        return false;
+    }
 }
