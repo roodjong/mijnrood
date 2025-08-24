@@ -15,6 +15,7 @@ class ContributionIncomeType extends AbstractType
     {
         $choices = [];
         $max_amount = 0;
+        $min_amount = null;
         foreach ($options['contribution']['tiers'] as $tier) {
             if ($tier['amount'] === null) {
                 $choices[$tier['description']] = 0;
@@ -25,6 +26,9 @@ class ContributionIncomeType extends AbstractType
 
             if ($tier['amount'] > $max_amount) {
                 $max_amount = $tier['amount'];
+            }
+            if (($min_amount == null || $tier['amount'] < $min_amount) && $tier['amount'] > 0) {
+                $min_amount = $tier['amount'];
             }
         }
 
@@ -41,12 +45,14 @@ class ContributionIncomeType extends AbstractType
                 'label' => 'Hoger contributiebedrag',
                 'divisor' => 100,
                 'required' => false,
+                'html5' => true,
                 'attr' => [
-                    'min' => $max_amount / 100
+                    'min' => $min_amount / 100,
+                    'step' => 0.01,
                 ],
                 'constraints' => new Assert\GreaterThan([
-                    'value' => $max_amount,
-                    'message' => 'Als je een hoger bedrag selecteert, moet dit hoger dan €' . number_format($max_amount / 100, 2, ',') . ' zijn.'
+                    'value' => $min_amount,
+                    'message' => 'Als je een hoger bedrag selecteert, moet dit hoger dan €' . number_format($min_amount / 100, 2, ',') . ' zijn.'
                 ])
             ]);
 

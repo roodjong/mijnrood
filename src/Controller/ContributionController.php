@@ -243,13 +243,17 @@ class ContributionController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $member = $this->getUser();
-            $member->setContributionPerPeriodInCents($form->getData());
-            $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
-            $em->flush();
+            if ($form->getData() == null) {
+                $form->get('otherAmount')->addError(new \Symfony\Component\Form\FormError('Vul een bedrag in.'));
+            } else {
+                $em = $this->getDoctrine()->getManager();
+                $member = $this->getUser();
+                $member->setContributionPerPeriodInCents($form->getData());
+                $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
+                $em->flush();
 
-            return $this->redirectToRoute('member_contribution_automatic_collection_enable');
+                return $this->redirectToRoute('member_contribution_automatic_collection_enable');
+            }
         }
 
         return $this->render('user/contribution/automatic-collection.html.twig', [
@@ -275,13 +279,17 @@ class ContributionController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $member = $this->getUser();
-            $member->setContributionPerPeriodInCents($form->getData());
-            $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
-            $em->flush();
+            if ($form->getData() == null) {
+                $form->get('otherAmount')->addError(new \Symfony\Component\Form\FormError('Vul een bedrag in.'));
+            } else {
+                $em = $this->getDoctrine()->getManager();
+                $member = $this->getUser();
+                $member->setContributionPerPeriodInCents($form->getData());
+                $member->setContributionPeriod(Member::PERIOD_QUARTERLY);
+                $em->flush();
 
-            return $this->redirectToRoute('member_contribution_change_amount');
+                return $this->redirectToRoute('member_contribution_change_amount');
+            }
         }
 
         return $this->render('user/contribution/automatic-collection-change.html.twig', [

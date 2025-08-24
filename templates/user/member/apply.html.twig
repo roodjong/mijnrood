@@ -6,8 +6,10 @@
     <script>
         function updateContribution() {
             let other = document.querySelector('.other-amount');
-            if (document.querySelector('.choice :checked').value !== 0) {
+            if (document.querySelector('.choice :checked').value != 0) {
                 other.value = '';
+            } else {
+                other.value = 1;
             }
         }
         function updateOtherAmount() {
@@ -15,6 +17,8 @@
             if (other.value != '')
             {
                 document.querySelector('.choice [value="0"]').checked = true;
+            } else {
+                other.value = 1;
             }
         }
         document.addEventListener('change', e => {

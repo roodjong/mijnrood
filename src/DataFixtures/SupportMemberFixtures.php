@@ -15,6 +15,7 @@ class SupportMemberFixtures extends Fixture
         // Admin
         $user = new SupportMember();
         $user->setId(1337);
+        $user->setoriginalId(1337);
         $user->setFirstName("Admin");
         $user->setLastName("de Baas");
         $user->setEmail("admindebaas@example.com");
@@ -23,6 +24,7 @@ class SupportMemberFixtures extends Fixture
 
         $user2 = new SupportMember();
         $user2->setId(1337);
+        $user2->setoriginalId(1337);
         $user2->setFirstName("Wow");
         $user2->setLastName("de NietBaas");
         $user2->setEmail("admindebaas@example.com");
