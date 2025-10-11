@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Member;
+use App\Entity\Membership\MembershipStatus;
 use App\Entity\SupportMember;
 use App\Form\Admin\ContributionPaymentType;
 use App\Form\Contribution\ContributionPeriodType;
@@ -30,6 +31,7 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Mollie\Api\MollieApiClient;
 
 use Symfony\Component\HttpFoundation\{ BinaryFileResponse, ResponseHeaderBag, Response };
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use DateTime;
 
 class MemberCrud extends AbstractCrudController
@@ -40,6 +42,13 @@ class MemberCrud extends AbstractCrudController
 
         if (!in_array('ROLE_ADMIN', $this->getUser()->getRoles(), true)) {
             $response->andWhere('entity.division IN (:division)')->setParameter('division', $this->getUser()->getManagedDivisions());
+        }
+
+        $appliedFilters = $searchDto->getAppliedFilters();
+        // This check has to match the filters in the redirect on index. For some reason they are not applied, so we need to properly apply them.
+        // All other filters such as != are done by EasyAdmin when submitting those filters.
+        if (count($appliedFilters) === 1 && isset($appliedFilters['currentMembershipStatus']) && $appliedFilters['currentMembershipStatus']['comparison'] === '=') {
+            $response->andWhere('entity.currentMembershipStatus = :status')->setParameter('status', $appliedFilters['currentMembershipStatus']['value']);
         }
 
         return $response;
@@ -64,7 +73,7 @@ class MemberCrud extends AbstractCrudController
         return $filters
             ->add(EntityFilter::new('division', 'Afdeling'))
             ->add(EntityFilter::new('currentMembershipStatus', 'Lidmaatschapstype'))
-            ->add(DateTimeFilter::new('dateOfBirth', 'GeboorteDatum'));
+            ->add(DateTimeFilter::new('dateOfBirth', 'Geboortedatum'));
     }
 
     public function configureActions(Actions $actions): Actions {
@@ -86,6 +95,34 @@ class MemberCrud extends AbstractCrudController
         $actions
             ->add(Crud::PAGE_EDIT, $actionConvertMember);
         return $actions;
+    }
+
+    public function index(AdminContext $context)
+    {
+        $request = $context->getRequest();
+
+        // Check if the 'filters' query param is missing, and check if the redirect has happaned already to prevent a redirect again when clearing the filters
+        if (!$request->query->has('filters') && !$request->query->has('defaults_applied')) {
+            $params = $request->query->all();
+
+            // By default filter on membership status Lid, if present
+            $membership_status = $this->getDoctrine()->getRepository(MembershipStatus::class)->findBy(['name' => 'Lid']);
+
+            // There should only be one anyway...
+            foreach ($membership_status as $status) {
+                $params['filters'] = [
+                    'currentMembershipStatus' => ['comparison' => '=', 'value' => $status->getId()]
+                ];
+            }
+            $params['defaults_applied'] = 1;
+
+            $url = $request->getUriForPath($request->getPathInfo()) . '?' . http_build_query($params);
+
+            return new RedirectResponse($url);
+        }
+
+        // Let EasyAdmin handle the rest
+        return parent::index($context);
     }
 
     public function cancelMembership(AdminContext      $adminContext,
@@ -150,7 +187,7 @@ class MemberCrud extends AbstractCrudController
         $supportMember->setContributionPerPeriodInCents($member->getContributionPerPeriodInCents());
 
         $entityManager->persist($supportMember);
-        
+
         // remove/deactivate member
         $entityManager->remove($member);
         $entityManager->flush();
