@@ -28,6 +28,8 @@ class DivisionCrud extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
+
+            FormField::addPanel('Algemene informatie'),
             TextField::new('name', 'Groepsnaam'),
             AssociationField::new('contacts', 'Contactpersonen'),
             BooleanField::new('canBeSelectedOnApplication', 'Kan als gewenste groep worden geselecteerd bij aanmelding')
