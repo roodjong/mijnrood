@@ -58,6 +58,7 @@ class MemberCrud extends AbstractCrudController
             ->setEntityLabelInPlural('Leden')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name', 'dateOfBirth'])
             ->setPaginatorPageSize(100)
+            ->showEntityActionsInlined()
         ;
     }
 
@@ -93,6 +94,9 @@ class MemberCrud extends AbstractCrudController
             ->linkToCrudAction('convertMemberToSupportMember');
         $actions
             ->add(Crud::PAGE_EDIT, $actionConvertMember);
+
+        $actions->disable(Action::DELETE);
+
         return $actions;
     }
 
@@ -298,6 +302,7 @@ class MemberCrud extends AbstractCrudController
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
         $fields = [
+            FormField::addPanel('Algemene informatie'),
             IdField::new('id', 'Lidnummer')
                 ->setDisabled(!$isAdmin)
                 ->setRequired(false)
