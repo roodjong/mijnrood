@@ -106,7 +106,7 @@ class MemberCrud extends AbstractCrudController
             $params = $request->query->all();
 
             // By default filter on membership status Lid, if present
-            $membership_status = $this->getDoctrine()->getRepository(MembershipStatus::class)->findBy(['name' => 'Lid']);
+            $membership_status = $this->getDoctrine()->getRepository(MembershipStatus::class)->findBy(['allowedAccess' => true]);
 
             // There should only be one anyway...
             foreach ($membership_status as $status) {
