@@ -66,6 +66,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             ->setEntityLabelInSingular('aanmelding')
             ->setEntityLabelInPlural('Lidmaatschapsaanmeldingen')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode'])
+            ->showEntityActionsInlined()
         ;
 
         if ($this->getParameter('app.enableDivisionContactsCanApproveNewMembers')) {
@@ -86,8 +87,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             ->add(Crud::PAGE_DETAIL, $action)
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->remove(Crud::PAGE_INDEX, Action::DELETE)
-            ->remove(Crud::PAGE_INDEX, Action::EDIT)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT);
+            ->remove(Crud::PAGE_INDEX, Action::EDIT);
     }
 
     public function acceptApplication(AdminContext $context)
@@ -216,8 +216,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             DateField::new('dateOfBirth', 'Geboortedatum')
                 ->hideOnIndex(),
             DateField::new('registrationTime', 'Inschrijfdatum')
-                ->setFormat(DateTimeField::FORMAT_SHORT)
-                ->hideOnIndex(),
+                ->setFormat(DateTimeField::FORMAT_SHORT),
 
             FormField::addPanel('Contactinformatie'),
             EmailField::new('email', 'E-mailadres'),
@@ -228,8 +227,7 @@ class MembershipApplicationCrud extends AbstractCrudController
             TextField::new('country', 'Landcode')
                 ->hideOnIndex()
                 ->setFormTypeOptions(['attr' => ['placeholder' => 'Twee-letterige landcode']]),
-            AssociationField::new('preferredDivision', 'Gewenste groep')
-                ->hideOnIndex(),
+            AssociationField::new('preferredDivision', 'Gewenste groep'),
 
             FormField::addPanel('Contributie'),
             TextField::new('iban', 'IBAN-rekeningnummer')->hideOnIndex(),
