@@ -15,6 +15,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ Field, IdField, BooleanField, FormField, DateField, DateTimeField, CollectionField, ChoiceField, TextField, EmailField, AssociationField, MoneyField };
@@ -56,6 +57,7 @@ class MemberCrud extends AbstractCrudController
             ->setEntityLabelInSingular('lid')
             ->setEntityLabelInPlural('Leden')
             ->setSearchFields(['id', 'firstName', 'lastName', 'email', 'phone', 'city', 'postCode', 'currentMembershipStatus.name', 'dateOfBirth'])
+            ->setPaginatorPageSize(100)
         ;
     }
 
@@ -68,11 +70,17 @@ class MemberCrud extends AbstractCrudController
     }
 
     public function configureActions(Actions $actions): Actions {
-        $action = Action::new('export', 'Exporteren', 'fa fa-file-excel')
-            ->linkToCrudAction('export')
+        $action = Action::new('export_all', 'Exporteer alles', 'fa fa-file-excel')
+            ->linkToCrudAction('export_all')
             ->setCssClass('btn btn-secondary')
             ->createAsGlobalAction();
         $actions->add(Crud::PAGE_INDEX, $action);
+
+        $action = Action::new('export_selected', 'Exporteer selectie', 'fa fa-file-excel')
+            ->linkToCrudAction('export_selected')
+            ->setCssClass('btn btn-secondary');
+        $actions->addBatchAction($action);
+
         $contributionEnabled = $this->getParameter('app.contributionEnabled');
         if ($contributionEnabled) {
             $actionCancelMollie =
@@ -165,7 +173,40 @@ class MemberCrud extends AbstractCrudController
         return $this->redirect($redirectUrl);
     }
 
-    public function export(AdminContext $adminContext): BinaryFileResponse
+    public function export_all(AdminContext $adminContext): BinaryFileResponse
+    {
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
+        }
+        else {
+            // Just using the division objects should work, but for some reason
+            // it gave an error that the PersistentCollection could not be cast
+            // to int. So just collecting the id's first fixes this.
+            $divisions = [];
+            foreach ($this->getUser()->getManagedDivisions() as $division) {
+                $divisions[] = $division->getId();
+            }
+
+            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $divisions]);
+        }
+
+        return $this->export_members($members);
+    }
+
+    public function export_selected(BatchActionDto $batchActionDto): BinaryFileResponse
+    {
+        $cls = $batchActionDto->getEntityFqcn();
+        $entityManager = $this->getDoctrine()->getManagerForClass($cls);
+        $members = [];
+        foreach ($batchActionDto->getEntityIds() as $id) {
+            $user = $entityManager->find($cls, $id);
+            $members[] = $user;
+        }
+
+        return $this->export_members($members);
+    }
+
+    public function export_members($members): BinaryFileResponse
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -197,20 +238,6 @@ class MemberCrud extends AbstractCrudController
             Member::PERIOD_ANNUALLY => 'Jaarlijks'
         ];
         $now = new DateTime;
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
-            $members = $this->getDoctrine()->getRepository(Member::class)->findAll();
-        }
-        else {
-            // Just using the division objects should work, but for some reason
-            // it gave an error that the PersistentCollection could not be cast
-            // to int. So just collecting the id's first fixes this.
-            $divisions = [];
-            foreach ($this->getUser()->getManagedDivisions() as $division) {
-                $divisions[] = $division->getId();
-            }
-
-            $members = $this->getDoctrine()->getRepository(Member::class)->findBy(['division' => $divisions]);
-        }
 
         $i = 2;
         foreach ($members as $member)
