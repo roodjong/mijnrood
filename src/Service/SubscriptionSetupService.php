@@ -51,8 +51,39 @@ class SubscriptionSetupService
         ];
 
         $startDate = new DateTime();
-        $startDate->setDate((int)date('Y'), (int)floor(date('m') / 3) * 3, 1);
+
+        // Assuming quaterly interval:
+        // December-February -> March 25th
+        // March-May -> June 25th
+        // June-August -> September 25th
+        // September-November -> December 25th
+        // Note: PHP transforms month 0 like 2025-0-1 into 2024-12-1, which is why the floor here works
+        $startDate->setDate((int)date('Y'), (int)floor(date('m') / 3) * 3, 25);
         $startDate->add(new \DateInterval($dateTimeIntervals[$member->getContributionPeriod()]));
+
+        if ($member->getContributionPeriod() == Member::PERIOD_QUARTERLY) {
+            // We add another two months for two reasons:
+            //
+            // * In the current calculation it's possible that someone signs up
+            //   on November 30th and pays their initial dues, and then their
+            //   subscription starts in December, paying two months back to
+            //   back. This is a bit unfair.
+            // * The RSP has a lot of paying members in the
+            //   March-June-September-December and the January-April-July-October
+            //   cycles, but almost none in the February-May-August-November
+            //   cycle. Moving by another two months puts us in this cycle and
+            //   spreads the paying members out more evenly.
+            //
+            // Thus, if you sign up between June 1st and August 31th, your next
+            // payment will be on November 25th (keep in mind an initial
+            // payment has already been made on signup).
+            //
+            // TODO: In the future we want to look at the actual signup date of
+            // the member, as the time between signup and approval (and thus
+            // subscription start) can vary, and this is more fair and error
+            // proof. See: https://github.com/roodjong/mijnrood/issues/237
+            $startDate->add(new \DateInterval('P2M'));
+        }
 
         $description = $this->generateDescription($member);
 
