@@ -1,13 +1,19 @@
 contribution:
   tiers:
     - amount: 750
-      description: Tot en met €2000 bruto
+      description: Minimum
     - amount: 1500
-      description: €2000-€3499 bruto
-    - amount: 2250
-      description: €3500 bruto en daarboven
+      description: Basis
+    - amount: 2500
+      description: Minder
+    - amount: 3500
+      description: Gemiddeld
+    - amount: 5000
+      description: Hoog
+    - amount: 10000
+      description: Heel hoog
     - amount: null
-      description: ik betaal een hogere contributie, namelijk:
+      description: ik betaal een andere contributie, namelijk:
 signup:
   min_age: 14
   max_age: 27
