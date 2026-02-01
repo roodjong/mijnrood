@@ -32,12 +32,19 @@ class ContributionIncomeType extends AbstractType
             }
         }
 
+        if(count($choices)%2 === 0){
+            $middle = (count($choices)-1)/2 + 1;
+        }else{
+            $middle = count($choices)/2;
+        }
+
         $builder
             ->add('contributionAmount', ChoiceType::class, [
                 'error_bubbling' => true,
                 'label' => 'Maandinkomen',
                 'choices' => $choices,
-                'expanded' => true
+                'expanded' => true,
+                'data' => array_values($choices)[$middle]
             ])
             ->add('otherAmount', MoneyType::class, [
                 'error_bubbling' => true,
@@ -52,7 +59,7 @@ class ContributionIncomeType extends AbstractType
                 ],
                 'constraints' => new Assert\GreaterThan([
                     'value' => $min_amount,
-                    'message' => 'Als je een hoger bedrag selecteert, moet dit hoger dan €' . number_format($min_amount / 100, 2, ',') . ' zijn.'
+                    'message' => 'Als je een ander bedrag selecteert, moet dit hoger dan €' . number_format($min_amount / 100, 2, ',') . ' zijn.'
                 ])
             ]);
 
