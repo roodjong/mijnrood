@@ -45,6 +45,11 @@ class Event {
      */
     private DateTime $timeEnd;
 
+    /**
+     * @ORM\OneToMany(targetEntity="EventAttendant", mappedBy="event")
+     */
+    private Collection $attendants;
+
     public function __construct() {
 
     }
@@ -70,4 +75,36 @@ class Event {
         return $this->timeStart->format('Ymd') == $this->timeEnd->format('Ymd');
     }
 
+    public function getReservedAttendants() {
+        $items = [];
+        foreach ($this->attendants as $attendant) {
+            if ($attendant->getReserved() != null)
+            {
+                $items[] = $attendant;
+            }    
+        }
+        return $items;
+    }
+
+    public function getCheckedInWithReservation() {
+        $items = [];
+        foreach ($this->attendants as $attendant) {
+            if ($attendant->getReserved() != null && $attendant->isCheckedIn())
+            {
+                $items[] = $attendant;
+            }    
+        }
+        return $items;
+    }
+
+    public function getCheckedInWithoutReservation() {
+        $items = [];
+        foreach ($this->attendants as $attendant) {
+            if ($attendant->getReserved() == null && $attendant->isCheckedIn())
+            {
+                $items[] = $attendant;
+            }    
+        }
+        return $items;
+    }
 }

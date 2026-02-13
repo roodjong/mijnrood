@@ -87,6 +87,8 @@ class MemberController extends AbstractController {
 
         return $this->render('user/home.html.twig', [
             'events' => $events,
+            'member' => $member,
+            'isAdmin' => $this->isGranted('ROLE_ADMIN'),
 	    'contributionEnabled' => $contributionEnabled,
         ]);
     }

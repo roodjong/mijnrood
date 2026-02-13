@@ -1,5 +1,15 @@
 {% extends 'user/layout/members.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('documents') }}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('documents') }}
+{% endblock %}
+
 {% block content %}
     <div class="main-content">
         <h1><span class="rood">{{ organisatienaam }}</span></h1>
@@ -24,6 +34,25 @@
                     <span class="event-division">Georganiseerd door {{ event.division is null ? organisatienaam : event.division.name }}</span>
                     <span class="event-description">{{ event.description|raw }}</span>
                     {# <a href="{{ url('member_event') }}">Lees meer</a> #}
+                </div>
+                <div class="event-attendance">
+                    {% if member.hasReserved(event) != true %}
+                    <span class="reserve" data="{{event.id}}">
+                        <i class="fa fa-fw fa-plus"></i>
+                        Aanmelden
+                    </span>      
+                    {% else %}
+                    <span class="dereserve" data="{{event.id}}">
+                        <i class="fa fa-fw fa-times"></i>
+                        Afmelden
+                    </span>
+                    {% endif %}
+                    {% if isAdmin %}
+                        <a href="{{ url('event_inchecker', { eventId: event.getId() }) }}" class="btn-upload">
+                            Personen inchecken
+                            <i class="fa fa-fw fa-external-link"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         {% else %}
