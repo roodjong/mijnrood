@@ -2,6 +2,53 @@
 
 # Setup
 
+There are two ways to run the project locally: with [bougie](https://bougie.tools) (recommended, no Docker needed) or with docker-compose.
+
+## Setup with bougie
+
+Bougie manages the PHP toolchain, the composer dependencies, and the dev services (MariaDB and an HTTP server) for this project, so you don't need PHP, Composer, or a database installed. The PHP version and services are declared in `composer.json` under `extra.bougie`.
+
+Install bougie:
+
+`curl -LsSf https://bougie.tools/install.sh | sh`
+
+Bring the project up. This installs PHP 8.1 with the required extensions, installs the composer dependencies, and starts the MariaDB and dev-server services:
+
+`bougie start`
+
+Bougie provisions a project-specific MariaDB database with generated credentials. These are only injected into `bougie run` commands, not into web requests, so write them to `.env.local` where Symfony picks them up everywhere:
+
+```sh
+bougie run -- sh -c 'echo "DATABASE_URL=\"mysql://$BOUGIE_SERVICE_MARIADB_USER:$BOUGIE_SERVICE_MARIADB_PASSWORD@localhost/$BOUGIE_SERVICE_MARIADB_DATABASE?serverVersion=mariadb-11.4.4&unix_socket=$BOUGIE_SERVICE_MARIADB_SOCKET\""' >> .env.local
+```
+
+Also add the testing `MOLLIE_API_KEY` to `.env.local`:
+
+`echo MOLLIE_API_KEY=test_................................. >> .env.local`
+
+The database itself is already created by bougie, so you only need to create the schema and load the test data:
+
+```sh
+bougie run -- bin/console doctrine:migrations:migrate
+bougie run -- bin/console doctrine:fixtures:load
+```
+
+Bougie can also manage Node.js. Install it, then build the frontend (yarn is provided through corepack, pinned by the `packageManager` field in `package.json`):
+
+```sh
+bougie node install lts
+bougie run -- corepack yarn install --force
+bougie run -- corepack yarn build
+```
+
+Open the app with `bougie server open`, or go to the URL printed by `bougie start` (something like `http://mijnrood.bougie.run:7080`). You should be greeted by the MijnRood login page; test accounts are listed under [Local test login data](#local-test-login-data).
+
+Any Symfony console command can be run through bougie, e.g.:
+
+`bougie run -- bin/console doctrine:migrations:diff`
+
+## Setup with docker-compose
+
 The docker-compose file creates four containers:
 1. An nginx load balancer
 2. A PHP server
@@ -75,7 +122,7 @@ Member level:
 - Find your authentication token at dashboard.ngrok.com/get-started/your-authtoken and register it with your client:
 `ngrok config add-authtoken <YOUR AUTH TOKEN HERE>`
 - Start ngrok:
-`ngrok http 8080`
+`ngrok http 8080` (use port 7080 for the bougie setup)
 - Set `COOKIE_DOMAIN` to the domain (without http(s)://) mentioned in the `Forwarding` row in `.env.local`:
 `COOKIE_DOMAIN=<YOUR URL HERE>.ngrok-free.app`
 - Open the URL mentioned in the `Forwarding` row instead of `localhost:8080`.
