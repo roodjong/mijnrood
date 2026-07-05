@@ -212,6 +212,7 @@ class DocumentsController extends AbstractController
         if ($request->isXmlHttpRequest())
             return $this->json(['status' => 'renamed']);
 
+        $folder = $document->getFolder();
         return $this->redirectToRoute('member_documents', ['folderId' => $folder ? $folder->getId() : '']);
     }
 
