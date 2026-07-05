@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{ Response, Request };
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Entity\{ Document, DocumentFolder };
 use App\Form\Documents\{ UploadType, NewFolderType, MoveType };
@@ -63,6 +64,27 @@ class DocumentsController extends AbstractController
             $response->headers->set('Content-Disposition', 'attachment; filename="'.urlencode($document->getFileName()).'"');
             $response->headers->set('Content-Type', 'application/octet-stream');
         }
+        $response->setContent(file_get_contents($this->getParameter('documents_directory').'/'.$document->getUploadFileName()));
+        return $response;
+    }
+
+    /**
+     * Unauthenticated API route for downloading files from an export (export key is required)
+     * @Route("/api/documenten/download/{documentId<\d+>}", name="api_download")
+     */
+    public function apiDownload(Request $request, $documentId): Response {
+        $exportKey = $this->getParameter('export_key');
+        $authHeader = $request->headers->get('Authorization');
+        if (!$exportKey || $authHeader === null || !hash_equals($exportKey, $authHeader)) {
+            return new Response('Unauthorized', 401);
+        }
+        $document = $this->getDoctrine()->getRepository(Document::class)->find($documentId);
+        if ($document === null) {
+            throw $this->createNotFoundException('Het opgevraagde document is niet beschikbaar.');
+        }
+        $response = new Response();
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.urlencode($document->getFileName()).'"');
+        $response->headers->set('Content-Type', 'application/octet-stream');
         $response->setContent(file_get_contents($this->getParameter('documents_directory').'/'.$document->getUploadFileName()));
         return $response;
     }
@@ -190,6 +212,7 @@ class DocumentsController extends AbstractController
         if ($request->isXmlHttpRequest())
             return $this->json(['status' => 'renamed']);
 
+        $folder = $document->getFolder();
         return $this->redirectToRoute('member_documents', ['folderId' => $folder ? $folder->getId() : '']);
     }
 
