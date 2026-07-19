@@ -34,6 +34,7 @@ use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpFoundation\{ BinaryFileResponse, ResponseHeaderBag, Response };
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use DateTime;
+use DateTimeImmutable;
 
 class MemberCrud extends AbstractCrudController
 {
@@ -278,7 +279,7 @@ class MemberCrud extends AbstractCrudController
             Member::PERIOD_QUARTERLY => 'Per kwartaal',
             Member::PERIOD_ANNUALLY => 'Jaarlijks'
         ];
-        $now = new DateTime;
+        $now = new DateTimeImmutable;
 
         $i = 2;
         foreach ($members as $member)
