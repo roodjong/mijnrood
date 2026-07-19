@@ -274,13 +274,13 @@ class Member implements UserInterface {
     public function isContributionCompleted(DateTimeImmutable $when) {
         switch ($this->getContributionPeriod()) {
             case self::PERIOD_MONTHLY:
-                $when->modify('-1 month');
+                $when = $when->modify('-1 month');
                 break;
             case self::PERIOD_QUARTERLY:
-                $when->modify('-3 months');
+                $when = $when->modify('-3 months');
                 break;
             case self::PERIOD_ANNUALLY:
-                $when->modify('-12 months');
+                $when = $when->modify('-12 months');
                 break;
             default:
                 throw new \Exception('Period must be PERIOD_MONTHLY, PERIOD_QUARTERLY or PERIOD_ANNUALLY');
