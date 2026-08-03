@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\{ArrayCollection, Collection, Criteria, Order};
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Repository\MemberRepository;
 
@@ -271,7 +271,7 @@ class Member implements UserInterface {
             $this->roles = array_diff($this->roles, ['ROLE_ADMIN']);
     }
 
-    public function isContributionCompleted(DateTimeImmutable $when) {
+    public function isContributionCompleted(DateTimeInterface $when) {
         switch ($this->getContributionPeriod()) {
             case self::PERIOD_MONTHLY:
                 $when = $when->modify('-1 month');
