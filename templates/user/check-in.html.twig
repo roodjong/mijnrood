@@ -1,0 +1,60 @@
+{% extends 'user/layout/members.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('check-in') }}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('check-in') }}
+{% endblock %}
+
+{% block content %}
+<div class="event-details">
+    <div class="event-image"></div>
+    
+    <div class="event-info">
+        <span class="event-name">{{ event.name }}</span>
+        <span class="event-date">
+            {{ event.timeStart|format_date('medium') }}
+            {% if not event.startsAndEndsOnSameDay %}
+                - {{ event.timeEnd|format_date('medium') }}
+            {% endif %}
+        </span>
+        <span class="event-organizer">
+            Georganiseerd door {{ event.division is null ? organisatienaam : event.division.name }}
+        </span>
+        <span class="event-description">{{ event.description|raw }}</span>
+    </div>
+
+    <div class="registrations-section">
+        <h2 class="registrations-title">Aanmeldingen</h2>
+        
+        <div class="registrations-stats">
+            <div>Ingechecked: <span id="checked-in-count">{{ stats.checkedInWithReservations + stats.checkedInWithoutReservations }}</span></div>
+            <div>Aangemeld: <span id="reserved-count">{{ stats.reservations }}</span></div>
+            <div>Verwacht: <span id="not-checked-in-count">{{ stats.reservations - stats.checkedInWithReservations }}</span></div>
+            <div>Ingechecked zonder aanmelding: <span id="checked-in-without-reservation-count">{{ stats.checkedInWithoutReservations }}</span></div>
+        </div>
+
+        <div class="search-section">
+            <input id="search-input" type="text" placeholder="Naam, Afdeling, Plaats..." class="search-input">
+            <div id="clear-search-button" class="clear-search">X</div>
+        </div>
+
+        <div class="pagination-indicator"></div>
+
+        <div class="data-table">
+            <div class="table-header">
+                <div class="header-cell" data-column="firstname">Voornaam <i class="fa fa-sort"></i></div>
+                <div class="header-cell" data-column="lastname">Achternaam <i class="fa fa-sort"></i></div>
+                <div class="header-cell" data-column="division">Afdeling <i class="fa fa-sort"></i></div>
+                <div class="header-cell" data-column="isReserved">Aangemeld <i class="fa fa-sort"></i></div>
+                <div class="header-cell" data-column="isCheckedIn">Ingechecked <i class="fa fa-sort"></i></div>
+            </div>
+            <div class="table-body"></div>
+        </div>
+    </div>    
+</div>
+{% endblock %}

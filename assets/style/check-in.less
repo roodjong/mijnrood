@@ -1,0 +1,164 @@
+@import './common.less';
+
+@font-family: Arial, sans-serif;
+@primary-color: #007bff;
+@border-color: #ddd;
+@background-color: #f2f2f2;
+@hover-background-color: #f9f9f9;
+
+.event-details {
+    margin: 20px;
+
+    .event-image {
+        // Add styles for the event image if needed
+    }
+
+    .event-info {
+        .event-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .event-date,
+        .event-organizer,
+        .event-description {
+            display: block;
+            margin: 5px 0;
+        }
+    }
+
+    .registrations-section {
+        margin-top: 20px;
+
+        .registrations-title {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .registrations-stats {
+            margin-bottom: 20px;
+            font-size: 14px;
+
+            div {
+                span {
+                    font-weight: bold;
+                }
+            }
+        }
+
+        .search-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+
+            .search-input {
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                margin-right: 10px;
+            }
+
+            .clear-search {
+                cursor: pointer;
+                color: @rood; // Use the defined color variable
+            }
+        }
+
+        .pagination-indicator {
+            color: @rood; // Use the defined color variable
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 4px;
+
+            .pageNum {
+                cursor: pointer;
+
+                &.active {
+                    font-weight: bold;
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .data-table {
+            border-collapse: collapse;
+            width: 100%;
+
+            .table-header {
+                background-color: @background-color;
+                font-weight: bold;
+                display: flex;
+                flex-wrap: wrap;
+
+                .header-cell {
+                    padding: 10px;
+                    border: 1px solid @border-color;
+                    flex: 1; // Default flex for equal space
+
+                    // Specific widths for the last two columns
+                    &:nth-child(3), // Aangemeld
+                    &:nth-child(4) { // Ingechecked
+                        flex: 0 0 150px; // Fixed width for these columns
+                        text-align: center; // Center align for better appearance
+                    }
+
+                    // Style for sort icons
+                    i {
+                        margin-left: 5px;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .table-body {
+                background-color: #fff;
+
+                .table-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    border-bottom: 1px solid @border-color;
+
+                    div {
+                        padding: 10px;
+                        flex: 1;
+
+                        // Center align for the last two columns
+                        &:nth-child(3), // Aangemeld
+                        &:nth-child(4) { // Ingechecked
+                            flex: 0 0 150px; // Fixed width for these columns
+                            text-align: center;
+                        }
+                    }
+
+                    &:hover {
+                        background-color: @hover-background-color; // Use the defined hover color
+                    }
+                }
+
+                .checked-in {
+                    background-color: rgb(200, 200, 200);
+
+                    &:hover {
+                        background-color: @hover-background-color; // Use the defined hover color
+                    }
+                }
+            }
+        }
+
+        .btn-check-in, .btn-check-out {
+            text-decoration: none;
+            color: @rood; // Use the defined color variable
+            padding: 5px 10px;
+            border: 1px solid @rood; // Use the defined color variable
+            border-radius: 4px;
+
+            &:hover {
+                background-color: @rood; // Use the defined color variable
+                color: white;
+                border-color: white;
+            }
+        }
+    }
+}
